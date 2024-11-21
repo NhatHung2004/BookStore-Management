@@ -8,11 +8,13 @@ from enum import Enum as RoleEnum
 from bookstore import app, db
 from datetime import date
 
+# quyền của nhân viên
 class RolePermision(RoleEnum):
     MANAGER = 1
     SELLER = 2
 
 
+# vai trò người dùng
 class UserRole(RoleEnum):
     ADMIN = 1
     USER = 2
