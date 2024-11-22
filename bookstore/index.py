@@ -14,6 +14,10 @@ def index():
 def login_process():
     return render_template('login.html')
 
+@app.route('/register')
+def register_process():
+    return render_template('register.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
