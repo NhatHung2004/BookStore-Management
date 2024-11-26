@@ -15,7 +15,18 @@
             <div class="card-body">
                 <h4>Sign In</h4>
                 <p class="text-muted">Get the Best Book Here!</p>
-                <form action="" class="mt-4" method="post">
+                {% if err_msg %}
+                <div class="alert alert-danger">
+                    <p>{{ err_msg }}</p>
+                </div>
+                {% endif %}
+                <form action="/login" class="mt-4" method="post">
+                    <div>
+                        <select class="form-select" name="role" id="role">
+                            <option value="Staff">Staff</option>
+                            <option value="Customer">Customer</option>
+                          </select>
+                    </div>
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Username" name="username" id="username"
                             autocomplete="off" required />

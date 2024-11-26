@@ -15,9 +15,9 @@ function displayPassword() {
 }
 
 function displayPasswordConfirm() {
-    var passConfirm = document.getElementById("passwordConfirm");
-    var displayPassConfirm = document.getElementById("display-passConfirm");
-    var hidenPassConfirm = document.getElementById("hiden-passConfirm");
+    var passConfirm = document.getElementById("confirm");
+    var displayPassConfirm = document.getElementById("display-confirm");
+    var hidenPassConfirm = document.getElementById("hiden-confirm");
 
     if (passConfirm.type === "password") {
         console.log("click if");

@@ -3,6 +3,7 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum, Boolean
+from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
 from bookstore import app, db
@@ -20,46 +21,42 @@ class UserRole(RoleEnum):
     USER = 2
 
 
-class Account(db.Model):
+class User(db.Model):
+    __abstract__ = True
     id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
 
-    customer = relationship("Customer", backref="account", lazy=True, uselist=False)
-    staff = relationship("Staff", backref="account", lazy=True, uselist=False)
     
 
-class Customer(db.Model):
-    account_id = Column(Integer, ForeignKey(Account.id), primary_key=True)
-    ten = Column(String(50), nullable=False)
-    soDienThoai = Column(String(50))
+class Customer(User, UserMixin):
+    phone = Column(String(50))
     address = Column(String(100))
 
     onlineOrders = relationship('OnlineOrder', backref='customer', lazy=True)
     bills = relationship('Bill', backref='customer', lazy=True)
     
 
-class Staff(db.Model):
-    account_id = Column(Integer, ForeignKey(Account.id), primary_key=True)
-    ten = Column(String(50), nullable=False)
-    soDienThoai = Column(String(50))
+class Staff(User, UserMixin):
+    phone = Column(String(50))
     role_permision = Column(Enum(RolePermision))
 
     # quan hệ one-to-many với bảng OnlineOrder
     onlineOrders = relationship('OnlineOrder', backref='staff', lazy=True)
     # quan hệ one-to-many với bảng Bill
     bills = relationship('Bill', backref='staff', lazy=True)
-    # quan hệ one-to-many với bảng PurchaseOrder
-    purchaseOrders = relationship('PurchaseOrder', backref='staff', lazy=True)
+    # quan hệ one-to-many với bảng BookEntryForm
+    bookEntryForms = relationship('BookEntryForm', backref='staff', lazy=True)
 
 
 class Bill(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ngayXuat = Column(Date, default=date.today())
+    createdDate = Column(Date, default=date.today())
 
-    customer_id = Column(Integer, ForeignKey(Customer.account_id), nullable=False)
-    staff_id = Column(Integer, ForeignKey(Staff.account_id), nullable=False)
+    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    staff_id = Column(Integer, ForeignKey(Staff.id), nullable=False)
 
     onlineOrder = relationship("OnlineOrder", backref="order", lazy=True, uselist=False)
 
@@ -68,29 +65,29 @@ class Bill(db.Model):
 
 class Author(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten = Column(String(50), nullable=False)
+    name = Column(String(50), nullable=False)
 
     books = relationship('Book', backref='author', lazy=True)
 
 
 class Type(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten = Column(String(50), nullable=False)
+    type = Column(String(50), nullable=False)
 
     books = relationship('Book', backref='type', lazy=True)
 
 
 class Book(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ten = Column(String(50), nullable=False, unique=True)
-    soLuongTon = Column(Integer, nullable=False)
+    name = Column(String(50), nullable=False, unique=True)
+    inventoryQuantity = Column(Integer, nullable=False)
 
     # quan hệ many-to-many với bảng OnlineOrder
     onlineOrders = relationship('OnlineOrderDetail', backref='book')
     # quan hệ many-to-many với bảng Bill
     bills = relationship('BillDetail', backref='book')
-    # quan hệ many-to-many với bảng PurchaseOrder
-    purchaseOrders = relationship('PurchaseOrderDetail', backref='book')
+    # quan hệ many-to-many với bảng BookEntryForm
+    bookEntryForms = relationship('BookEntryFormDetail', backref='book')
     # quan hệ one-to-many với bảng Author
     author_id = Column(Integer, ForeignKey(Author.id), nullable=False)
     # quan hệ one-to-many với bảng Type
@@ -99,24 +96,24 @@ class Book(db.Model):
 
 class OnlineOrder(db.Model):
     onlineOrder_id = Column(Integer, ForeignKey(Bill.id), primary_key=True)
-    ngayTao = Column(Date, default=date.today(), nullable=False)
-    ngayLayHang = Column(Date, default=date.today(), nullable=False)
-    thanhToan = Column(Boolean, default=False)
+    createdDate = Column(Date, default=date.today(), nullable=False)
+    pickupDate = Column(Date, default=date.today(), nullable=False)
+    isPay = Column(Boolean, default=False)
 
     # quan hệ one-to-many với bảng Customer và bảng Staff
-    customer_id = Column(Integer, ForeignKey(Customer.account_id), nullable=False)
-    staff_id = Column(Integer, ForeignKey(Staff.account_id), nullable=False)
+    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    staff_id = Column(Integer, ForeignKey(Staff.id), nullable=False)
     
     # quan hệ many-to-many với bảng Book
     books = relationship('OnlineOrderDetail', backref='onlineOrder')
 
 
-class PurchaseOrder(db.Model):
+class BookEntryForm(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ngayNhap = Column(Date, default=date.today())
-    staff_id = Column(Integer, ForeignKey(Staff.account_id), nullable=False)
+    createdDate = Column(Date, default=date.today())
+    staff_id = Column(Integer, ForeignKey(Staff.id), nullable=False)
 
-    books = relationship('PurchaseOrderDetail', backref='purchaseOrder')
+    books = relationship('BookEntryFormDetail', backref='bookEntryForm')
 
 
 class OnlineOrderDetail(db.Model):
@@ -133,8 +130,8 @@ class BillDetail(db.Model):
     gia = Column(Integer, nullable=False)
 
 
-class PurchaseOrderDetail(db.Model):
-    purchaseOrder_id = Column(ForeignKey(PurchaseOrder.id), primary_key=True)
+class BookEntryFormDetail(db.Model):
+    bookEntryForm_id = Column(ForeignKey(BookEntryForm.id), primary_key=True)
     book_id = Column(ForeignKey(Book.id), primary_key=True)
     soLuong = Column(Integer, nullable=False)
 
@@ -148,6 +145,9 @@ if __name__ == '__main__':
         # db.session.add_all([u1, u2, u3])
         # db.session.commit()
 
+        # admin = Account(username="admin", password="admin123", user_role=UserRole.ADMIN)
+        # db.session.add(admin)
+        # db.session.commit()
         # c = Customer(id=3, ten="Customer", soDienThoai="123456789")
         # db.session.add(c)
         # db.session.commit()
