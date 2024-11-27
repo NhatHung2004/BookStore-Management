@@ -1,6 +1,6 @@
 import hashlib
 from bookstore import db
-from models import Customer, Staff
+from models import Customer, Staff, Book, Author, Type
 
 
 def add_user(phone, name, username, password):
@@ -23,8 +23,18 @@ def auth_user_staff(username, password):
     return Staff.query.filter(Staff.username.__eq__(username), Staff.password.__eq__(password)).first()
 
 
-def get_user_by_id(user_id, role):
-    if role == "Customer":
-        return Customer.query.get(user_id)
-    else:
-        return Staff.query.get(user_id)
+def get_user_by_id(user_id):
+    return Customer.query.get(user_id)
+
+
+def load_types():
+    return Type.query.all()
+
+    
+def load_books(kw=None):
+    books = db.session.query(Book, Author, Type).join(Author, Book.author_id == Author.id).join(Type, Book.type_id == Type.id)
+
+    if kw:
+        books = books.filter(Book.name.icontains(kw))
+
+    return books.all()

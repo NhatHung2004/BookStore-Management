@@ -1,0 +1,57 @@
+{% extends 'layout/base.html' %}
+
+{% block content %}
+<!-- <div class="row">
+    {% for b in books %}
+    <div class="col-md-3 col-12 p-3">
+        <div class="card">
+            <img class="card-img-top" src="{{ b.image }}" alt="{{ b.name }}">
+            <div class="card-body">
+                <h4 class="card-title">{{ b.name }}</h4>
+                <p class="card-text">{{ b.inventoryQuantity }}</p>
+                <a href="#" class="btn btn-primary">Chi tiết</a>
+                <button class="btn btn-danger">Đặt hàng</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div> -->
+<div class="row">
+    {% for book, author, type in books %}
+    <div class="col-md-6 col-sm-12 mb-4">
+        <!-- Product 2 -->
+        <div class="product-content product-wrap clearfix">
+            <div class="row">
+                <div class="col-md-5 col-sm-5 col-xs-12">
+                    <div class="product-image">
+                        <img src="{{ book.image }}" alt="194x228"
+                             class="img-responsive w-100">
+                        <span class="tag2 hot">HOT</span>
+                    </div>
+                </div>
+                <div class="col-md-7 col-sm-7 col-xs-12">
+                    <div class="product-deatil">
+                        <h5 class="name">
+                            <a href="#">{{ book.name }}<span>Type: {{ type.type }}</span></a>
+                        </h5>
+                        <p class="price-container"><span>${{ book.price }}</span></p>
+                    </div>
+                    <div class="description">
+                        <p>Author: {{ author.name }}</p>
+                    </div>
+                    <div class="product-info smart-form">
+                        <div class="row">
+                             <div class="col-md-12 text-center">
+                                    <!-- Buttons -->
+                                    <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Đặt hàng</a>
+                                    <a href="javascript:void(0);" class="btn btn-primary">Xem chi tiết</a>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

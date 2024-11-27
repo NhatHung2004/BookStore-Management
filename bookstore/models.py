@@ -79,8 +79,11 @@ class Type(db.Model):
 
 class Book(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False, unique=True)
+    name = Column(String(250), nullable=False, unique=True)
     inventoryQuantity = Column(Integer, nullable=False)
+    image = Column(String(300), nullable=True,
+                    default="https://res.cloudinary.com/dvahhupo0/image/upload/v1732094791/samples/cloudinary-icon.png")
+    price = Column(Integer, nullable=False)
 
     # quan hệ many-to-many với bảng OnlineOrder
     onlineOrders = relationship('OnlineOrderDetail', backref='book')
@@ -119,35 +122,127 @@ class BookEntryForm(db.Model):
 class OnlineOrderDetail(db.Model):
     book_id = Column(ForeignKey(Book.id), primary_key=True)
     onlineOrder_id = Column(ForeignKey(OnlineOrder.onlineOrder_id), primary_key=True)
-    soLuong = Column(Integer, nullable=False)
-    gia = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    price = Column(Integer, nullable=False)
 
 
 class BillDetail(db.Model):
     bill_id = Column(ForeignKey(Bill.id), primary_key=True)
     book_id = Column(ForeignKey(Book.id), primary_key=True)
-    soLuong = Column(Integer, nullable=False)
-    gia = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    price = Column(Integer, nullable=False)
 
 
 class BookEntryFormDetail(db.Model):
     bookEntryForm_id = Column(ForeignKey(BookEntryForm.id), primary_key=True)
     book_id = Column(ForeignKey(Book.id), primary_key=True)
-    soLuong = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
 
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
         # u1 = Account(username="admin", password="123", user_role=UserRole.ADMIN)
         # u2 = Account(username="seller", password="123", user_role=UserRole.USER)
         # u3 = Account(username="customer", password="123", user_role=UserRole.USER)
         # db.session.add_all([u1, u2, u3])
         # db.session.commit()
 
-        # admin = Account(username="admin", password="admin123", user_role=UserRole.ADMIN)
-        # db.session.add(admin)
+        dataAuthor = [
+            {
+                "name": "Trần Đức Tuấn"
+            },
+            {
+                "name": "Giản Tư Trung"
+            },
+            {
+                "name": "Huỳnh Lý"
+            },
+            {
+                "name": "José Mauro de Vasconcelos"
+            },
+            {
+                "name": "Chủ tịch Hồ Chí Minh"
+            }
+        ]
+
+        dataType = [
+            {
+                "type": "Nhân văn và sự kiện"
+            },
+            {
+                "type": "Quản Trị - Lãnh Đạo"
+            },
+            {
+                "type": "Tiểu thuyết"
+            },
+            {
+                "type": "Lịch sử"
+            },
+        ]
+
+        dataBook = [
+            {
+                "name": "Di Sản Hồ Chí Minh - Hành Trình Theo Chân Bác (Tái Bản 2021)",
+                "inventoryQuantity": 100,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp",
+                "price": 99,
+                "author_id": 1,
+                "type_id": 1
+            },
+            {
+                "name": "Quản Trị Bằng Văn Hóa - Cách Thức Kiến Tạo Và Tái Tạo Văn Hóa Tổ Chức",
+                "inventoryQuantity": 78,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681282/8935280401068_wnlrtk.webp",
+                "price": 99,
+                "author_id": 2,
+                "type_id": 2
+            },
+            {
+                "name": "Không Gia Đình",
+                "inventoryQuantity": 50,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681286/image_190973_ghrqko.webp",
+                "price": 99,
+                "author_id": 3,
+                "type_id": 3
+            },
+            {
+                "name": "Cây Cam Ngọt Của Tôi",
+                "inventoryQuantity": 50,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681983/image_217480_xmdzew.webp",
+                "price": 99,
+                "author_id": 4,
+                "type_id": 3
+            },
+            {
+                "name": "Di Chúc Của Chủ Tịch Hồ Chí Minh",
+                "inventoryQuantity": 124,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732682133/9786045892640_pjzzzm.webp",
+                "price": 99,
+                "author_id": 5,
+                "type_id": 1
+            },
+            {
+                "name": "Đi Dọc Dòng Sông Phật Giáo",
+                "inventoryQuantity": 5,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732682344/5819c3669f12f4487bd77ea4a0107d4b.jpg_rxmwwn.webp",
+                "price": 99,
+                "author_id": 1,
+                "type_id": 1
+            },
+        ]
+
+        # for p in dataType:
+        #     prod = Type(type=p['type'])
+        #     db.session.add(prod)
         # db.session.commit()
-        # c = Customer(id=3, ten="Customer", soDienThoai="123456789")
-        # db.session.add(c)
+
+        # for p in dataAuthor:
+        #     prod = Author(name=p['name'])
+        #     db.session.add(prod)
         # db.session.commit()
+
+        for p in dataBook:
+            prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
+            db.session.add(prod)
+        db.session.commit()

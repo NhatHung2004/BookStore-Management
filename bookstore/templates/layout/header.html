@@ -1,0 +1,102 @@
+<!-- <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">BÁN HÀNG TRỰC TUYẾN</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Trang chủ</a>
+                </li>
+                {% for c in categories %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">{{ c.name }}</a>
+                </li>
+                {% endfor %}
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/">
+                        <img src="{{ current_user.avatar }}" width="25" class="rounded-circle" />
+                        {{ current_user.name }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/logout">Đăng xuất</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/login">Đăng nhập</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/register">Đăng ký</a>
+                </li>
+                {% endif %}
+            </ul>
+            <form method="get" action="/" class="d-flex">
+                <input class="form-control me-2" type="text" placeholder="Tìm sản phẩm..." name="kw">
+                <button class="btn btn-primary" type="button">Tìm</button>
+            </form>
+        </div>
+    </div>
+</nav> -->
+<nav class="navbar navbar-expand-lg bg-info navbar-light ">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+        <!-- Navbar brand -->
+        <a class="navbar-brand" href="#">Brand</a>
+        <!-- Toggle button -->
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse"
+            data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Link -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
+                        Type
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for t in types %}
+                        <li><a class="dropdown-item" href="#">{{ t.type }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/">
+                        <img src="{{ current_user.avatar }}" width="25" class="rounded-circle" />
+                        {{ current_user.name }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-success" href="/logout">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="/login">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+            <!-- Icons -->
+            <ul class="navbar-nav d-flex flex-row me-1">
+                <li class="nav-item me-3 me-lg-0">
+                    <a class="nav-link" href="#"><i class="fas fa-shopping-cart"></i></a>
+                </li>
+            </ul>
+            <!-- Search -->
+            <form class="w-auto" method="get" action="/">
+                <input type="search" class="form-control" placeholder="Search..." aria-label="Search" name="kw">
+            </form>
+        </div>
+    </div>
+    <!-- Container wrapper -->
+</nav>
+<!-- Navbar -->

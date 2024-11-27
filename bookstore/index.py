@@ -11,7 +11,10 @@ from bookstore import app, login
 
 @app.route("/")
 def index():
-    return render_template("home.html")
+    kw = request.args.get('kw')
+    books = dao.load_books(kw=kw)
+    types = dao.load_types()
+    return render_template("index.html", books=books, types=types)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_process():
@@ -63,8 +66,7 @@ def register_process():
 
 @login.user_loader
 def load_user(user_id):
-    role = request.form.get("role")
-    return dao.get_user_by_id(user_id, role)
+    return dao.get_user_by_id(user_id)
 
 
 if __name__ == '__main__':
