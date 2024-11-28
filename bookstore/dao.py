@@ -31,10 +31,12 @@ def load_types():
     return Type.query.all()
 
     
-def load_books(kw=None):
+def load_books(kw=None, type=None):
     books = db.session.query(Book, Author, Type).join(Author, Book.author_id == Author.id).join(Type, Book.type_id == Type.id)
 
     if kw:
         books = books.filter(Book.name.icontains(kw))
+    if type:
+        books = books.filter(Type.type.in_(type))
 
     return books.all()

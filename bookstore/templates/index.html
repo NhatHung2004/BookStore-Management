@@ -1,22 +1,8 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<!-- <div class="row">
-    {% for b in books %}
-    <div class="col-md-3 col-12 p-3">
-        <div class="card">
-            <img class="card-img-top" src="{{ b.image }}" alt="{{ b.name }}">
-            <div class="card-body">
-                <h4 class="card-title">{{ b.name }}</h4>
-                <p class="card-text">{{ b.inventoryQuantity }}</p>
-                <a href="#" class="btn btn-primary">Chi tiết</a>
-                <button class="btn btn-danger">Đặt hàng</button>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div> -->
 <div class="row">
+    {% if books != None %}
     {% for book, author, type in books %}
     <div class="col-md-6 col-sm-12 mb-4">
         <!-- Product 2 -->
@@ -43,8 +29,8 @@
                         <div class="row">
                              <div class="col-md-12 text-center">
                                     <!-- Buttons -->
-                                    <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Đặt hàng</a>
-                                    <a href="javascript:void(0);" class="btn btn-primary">Xem chi tiết</a>
+                                    <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Mua ngay</a>
+                                    <a href="javascript:void(0);" class="btn btn-primary">Thêm vào giỏ hàng</a>
                              </div>
                         </div>
                     </div>
@@ -53,5 +39,10 @@
         </div>
     </div>
     {% endfor %}
+    {% else %}
+    <div class="spinner-grow text-success"></div>
+    <div class="spinner-grow text-info"></div>
+    <div class="spinner-grow text-warning"></div>
+    {% endif %}
 </div>
 {% endblock %}

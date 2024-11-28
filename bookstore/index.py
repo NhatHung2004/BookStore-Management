@@ -12,7 +12,8 @@ from bookstore import app, login
 @app.route("/")
 def index():
     kw = request.args.get('kw')
-    books = dao.load_books(kw=kw)
+    type = request.args.getlist("type")
+    books = dao.load_books(kw=kw, type=type)
     types = dao.load_types()
     return render_template("index.html", books=books, types=types)
 
@@ -70,5 +71,5 @@ def load_user(user_id):
 
 
 if __name__ == '__main__':
-    from admin import *
+    # from admin import *
     app.run(debug=True)
