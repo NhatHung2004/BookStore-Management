@@ -12,7 +12,7 @@ app.secret_key = 'HGHJAHA^&^&*AJAVAHJ*^&^&*%&*^GAFGFAG'
 
 db = SQLAlchemy(app)
 login = LoginManager(app)
-admin = Admin(app, name="Book Store", template_mode="bootstrap3")
+admin = Admin(app, name="Book Store", template_mode="bootstrap4")
 app.config["PAGE_SIZE"] = 4
 
 cloudinary.config(

@@ -1,7 +1,7 @@
 <header style="background-color: #212529;">
     <div class="px-3 py-2 text-bg-dark border-bottom">
         <div class="container">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
                 <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
                     <li>
                         <button type="button" class="btn btn-outline-dark text-white">
@@ -21,7 +21,6 @@
                         <button type="button" class="btn btn-outline-dark text-white">
                             <a href="/" class="nav-link text-white">
                                 Orders
-
                             </a>
                         </button>
                     </li>
@@ -43,6 +42,12 @@
                         </form>
                     </li>
                 </ul>
+                <div class="d-flex align-items-center">
+                    <a href="/cart" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge">3</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -78,7 +83,7 @@
                     </ul>
                     <form method="get" action="/" class="d-flex">
                         <input class="form-control me-2" type="text" placeholder="Tìm sản phẩm..." name="kw">
-                        <button class="btn btn-primary" type="button">Tìm</button>
+                        <button class="btn btn-primary" type="submit">Tìm</button>
                     </form>
                 </div>
             </div>

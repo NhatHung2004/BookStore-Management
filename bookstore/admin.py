@@ -1,14 +1,10 @@
 from flask_admin.contrib.sqla import ModelView
-from models import Staff
+from models import Staff, Book, Type, Author
 from bookstore import db, admin
+from wtforms import SelectField
 
 
-# class StaffView(ModelView):
-#     column_display_pk = False
-#     can_create = True
-#     can_edit = True
-#     can_delete = True
-#     create_modal = True
+admin.add_view(ModelView(Book, db.session))
 
-
-admin.add_view(ModelView(Staff, db.session))
+admin.add_view(ModelView(Type, db.session))
+admin.add_view(ModelView(Author, db.session))

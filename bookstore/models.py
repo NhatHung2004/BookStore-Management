@@ -67,14 +67,20 @@ class Author(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
 
-    books = relationship('Book', backref='author', lazy=True)
+    books = relationship('Book', backref='author')
+
+    def __str__(self):
+        return self.name
 
 
 class Type(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     type = Column(String(50), nullable=False)
 
-    books = relationship('Book', backref='type', lazy=True)
+    books = relationship('Book', backref='type')
+
+    def __str__(self):
+        return self.type
 
 
 class Book(db.Model):
@@ -93,8 +99,10 @@ class Book(db.Model):
     bookEntryForms = relationship('BookEntryFormDetail', backref='book')
     # quan hệ one-to-many với bảng Author
     author_id = Column(Integer, ForeignKey(Author.id), nullable=False)
+    # author = relationship("Author", backref="books")
     # quan hệ one-to-many với bảng Type
     type_id = Column(Integer, ForeignKey(Type.id), nullable=False)
+    # type = relationship("Type", backref="books")
 
 
 class OnlineOrder(db.Model):

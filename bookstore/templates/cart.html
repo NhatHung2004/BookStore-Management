@@ -1,0 +1,89 @@
+{% extends 'layout/base.html' %}
+
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <aside class="col-lg-9">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-shopping-cart">
+                        <thead class="text-muted">
+                            <tr class="small text-uppercase">
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col" width="120" class="quantity">Số lượng</th>
+                                <th scope="col" width="120">Giá</th>
+                                <th scope="col" class="text-right d-none d-md-block" width="200"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if books != None %}
+                            {% for book, author, type in books %}
+                            <tr>
+                                <td>
+                                    <figure class="itemside align-items-center">
+                                        <div class="aside"><img src="{{book.image}}" class="img-sm"></div>
+                                        <figcaption class="info"><a href="#" class="title text-dark"
+                                                data-abc="true">{{book.name}}</a>
+                                            <p class="text-muted small">Tác giả: {{author.name}}<br> Loại: {{type.type}}
+                                            </p>
+                                        </figcaption>
+                                    </figure>
+                                </td>
+                                <td>
+                                    <div class="input-group quantity-control">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary btn-decrement" type="button"
+                                                data-product-id="{{ book.id }}">-
+                                            </button>
+                                        </div>
+                                        <input type="text" class="form-control quantity-input" value="1"
+                                            data-product-id="{{ book.id }}">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary btn-increment" type="button"
+                                                data-product-id="{{ book.id }}">+
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="price-wrap"><var class="price">$10.00</var>
+                                        <small class="text-muted">$9.20 each</small>
+                                    </div>
+                                </td>
+                                <td class="text-right d-none d-md-block">
+                                    <a href="" class="btn btn-light" data-abc="true">Xoá Sản Phẩm</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </aside>
+        <aside class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="dlist-align">
+                        <dt style="font-size: 20px;">Total price:</dt>
+                        <dd class="text-right ml-3" style="font-size: 23px;">$69.97</dd>
+                    </dl>
+                    <dl class="dlist-align">
+                        <dt style="font-size: 18px;">Total:</dt>
+                        <dd class="text-right text-dark b ml-3" style="font-size: 20px;"><strong>$59.97</strong></dd>
+                    </dl>
+                    <hr>
+                    <a href="#" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
+                        data-abc="true">Make Purchase</a>
+                    <a href="#" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
+                        data-abc="true">Continue Shopping</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+
+{% endblock %}

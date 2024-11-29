@@ -71,5 +71,5 @@ def load_user(user_id):
 
 
 if __name__ == '__main__':
-    # from admin import *
+    from admin import *
     app.run(debug=True)
