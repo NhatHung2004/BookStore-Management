@@ -1,6 +1,6 @@
 from flask_admin.contrib.sqla import ModelView
+from app import db, admin
 from models import Staff, Book, Type, Author
-from bookstore import db, admin
 from wtforms import SelectField
 
 

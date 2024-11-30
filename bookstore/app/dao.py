@@ -1,11 +1,12 @@
 import hashlib
-from bookstore import db
-from models import Customer, Staff, Book, Author, Type
+from app import db
+from models import Customer, Staff, Book, Author, Type, User, UserRole
 
 
 def add_user(phone, name, username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    customer = Customer(phone=phone, name=name, username=username, password=password)
+    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER)
+    customer = Customer(phone=phone, user=user)
 
     db.session.add(customer)
     db.session.commit()
@@ -13,18 +14,14 @@ def add_user(phone, name, username, password):
     return customer
 
 
-def auth_user_customer(username, password):
+def auth_user(username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    return Customer.query.filter(Customer.username.__eq__(username), Customer.password.__eq__(password)).first()
-
-
-def auth_user_staff(username, password):
-    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    return Staff.query.filter(Staff.username.__eq__(username), Staff.password.__eq__(password)).first()
+    user = User.query.filter(User.username.__eq__(username), User.password.__eq__(password)).first()
+    return user
 
 
 def get_user_by_id(user_id):
-    return Customer.query.get(user_id)
+    return User.query.get(user_id)
 
 
 def load_types():

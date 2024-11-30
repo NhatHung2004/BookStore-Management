@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row">
-    {% if books != None %}
+    {% if books != null %}
     {% for book, author, type in books %}
     <div class="col-md-6 col-sm-12 mb-4">
         <!-- Product 2 -->
@@ -40,9 +40,11 @@
     </div>
     {% endfor %}
     {% else %}
-    <div class="spinner-grow text-success"></div>
-    <div class="spinner-grow text-info"></div>
-    <div class="spinner-grow text-warning"></div>
+    <div class="col-md-6 col-sm-12 mb-4">
+        <div class="spinner-grow text-success"></div>
+        <div class="spinner-grow text-info"></div>
+        <div class="spinner-grow text-warning"></div>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

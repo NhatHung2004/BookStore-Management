@@ -6,8 +6,11 @@ from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum, Boolean
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
-from bookstore import app, db
+from app import db, create_app
 from datetime import date
+import hashlib
+
+app = create_app()
 
 # quyền của nhân viên
 class RolePermision(RoleEnum):
@@ -18,20 +21,24 @@ class RolePermision(RoleEnum):
 # vai trò người dùng
 class UserRole(RoleEnum):
     ADMIN = 1
-    USER = 2
+    STAFF = 2
+    CUSTOMER = 3
 
 
-class User(db.Model):
-    __abstract__ = True
+class User(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(50), nullable=False)
-    user_role = Column(Enum(UserRole), default=UserRole.USER)
+    user_role = Column(Enum(UserRole), nullable=False)
+
+    customer = relationship('Customer', backref='user', uselist=False)
+    staff = relationship('Staff', backref='user', uselist=False)
 
     
 
-class Customer(User, UserMixin):
+class Customer(db.Model):
+    id = Column(Integer, ForeignKey(User.id), primary_key=True)
     phone = Column(String(50))
     address = Column(String(100))
 
@@ -39,9 +46,10 @@ class Customer(User, UserMixin):
     bills = relationship('Bill', backref='customer', lazy=True)
     
 
-class Staff(User, UserMixin):
+class Staff(db.Model):
+    id = Column(Integer, ForeignKey(User.id), primary_key=True)
     phone = Column(String(50))
-    role_permision = Column(Enum(RolePermision))
+    role_permision = Column(Enum(RolePermision), nullable=False)
 
     # quan hệ one-to-many với bảng OnlineOrder
     onlineOrders = relationship('OnlineOrder', backref='staff', lazy=True)
@@ -150,10 +158,19 @@ class BookEntryFormDetail(db.Model):
 if __name__ == '__main__':
     with app.app_context():
         # db.create_all()
-        # u1 = Account(username="admin", password="123", user_role=UserRole.ADMIN)
-        # u2 = Account(username="seller", password="123", user_role=UserRole.USER)
-        # u3 = Account(username="customer", password="123", user_role=UserRole.USER)
-        # db.session.add_all([u1, u2, u3])
+        # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
+        # db.session.add(admin)
+        # db.session.commit()
+        # manager = User(name='Manager', username='manager',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRole.STAFF)
+        # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
+
+        # seller = User(name='Seller', username='seller',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRole.STAFF)
+        # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
+        # db.session.add_all([m, s])
         # db.session.commit()
 
         dataAuthor = [
@@ -250,7 +267,7 @@ if __name__ == '__main__':
         #     db.session.add(prod)
         # db.session.commit()
 
-        for p in dataBook:
-            prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
-            db.session.add(prod)
-        db.session.commit()
+        # for p in dataBook:
+        #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
+        #     db.session.add(prod)
+        # db.session.commit()
