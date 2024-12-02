@@ -1,11 +1,14 @@
 import sys
 import os
+
+import cloudinary.uploader
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from models import User, UserRole
 from flask import render_template, redirect, request
 from flask_login import login_user, logout_user
 from app import login, dao, create_app
+import cloudinary
 
 app = create_app()
 
@@ -13,15 +16,23 @@ app = create_app()
 @app.route("/")
 def index():
     kw = request.args.get('kw')
-    type = request.args.getlist("type")
-    books = dao.load_books(kw=kw, type=type)
-    types = dao.load_types()
-    return render_template("index.html", books=books, types=types)
+    books = dao.load_books(kw=kw)
+    return render_template("index.html", books=books)
 
 @app.route("/cart")
 def cart():
     books = dao.load_books()
     return render_template("cart.html", books=books)
+
+@app.route("/order-online")
+def orderOnline():
+    books = dao.load_books()
+    return render_template("order_online.html", books=books)
+
+@app.route("/unplaced-order")
+def unplacedOrder():
+    books = dao.load_books()
+    return render_template("unplaced_order.html", books=books)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_process():
@@ -69,7 +80,11 @@ def register_process():
             if password.strip() != confirm.strip():
                 err_msg = "Mat khau khong khop"
             else:
-                if dao.add_user(phone=phone, name=name, username=username, password=password):
+                avatar = request.files.get('avatar')
+                if avatar:
+                    res = cloudinary.uploader.upload(avatar)
+                    avatar = res["secure_url"]
+                if dao.add_user(phone=phone, name=name, username=username, password=password, avatar=avatar):
                     return redirect('/login')
                 else:
                     err_msg = "Something Wrong!!!"
@@ -81,6 +96,13 @@ def register_process():
 @login.user_loader
 def load_user(user_id):
     return dao.get_user_by_id(user_id)
+
+
+@app.context_processor
+def common_response():
+    return {
+        "types" : dao.load_types(),
+    }
 
 
 if __name__ == "__main__":

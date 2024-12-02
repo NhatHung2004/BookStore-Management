@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link" href="/order_online">Đơn hàng đã đặt online</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" href="/unplaced_order">Đơn hàng chưa đặt trước</a>
+        </li>
+    </ul>
+    <div class="row g-3 mb-4 align-items-end">
+        <!-- Search -->
+        <div class="col-auto ms-auto d-flex align-items-center">
+            <input type="text" class="form-control me-2" style="width: 200px;" placeholder="Nhập Mã Sách...">
+            <button class="btn btn-primary">Tìm kiếm</button>
+        </div>
+    </div>
+    <!-- Product Items -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="product-item">
+                <figure class="product-style">
+                    <img src="https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp"
+                        alt="Books" class="product-item">
+                    <button type="button" class="add-to-cart" data-bs-toggle="modal" data-bs-target="#transactionModal"
+                        onclick="setProductInfo('Simple way of piece life', 40)">Xử lí giao dịch
+                    </button>
+                </figure>
+                <figcaption>
+                    <h3>Simple way of piece life</h3>
+                    <span>Armor Ramsey</span>
+                    <div class="item-price">$ 40.00</div>
+                </figcaption>
+            </div>
+        </div>
+        <!-- Thêm các sản phẩm khác tương tự -->
+    </div>
+    <!-- Modal Dialog -->
+    <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionModalLabel">Xử lí giao dịch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm">
+                        <div class="mb-3">
+                            <label for="bookQuantity" class="form-label">Số lượng sách:</label>
+                            <input type="number" class="form-control" id="bookQuantity" placeholder="Nhập số lượng"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <p id="totalPrice">Tổng tiền: $0</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="calculateTotal()">Tính toán</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" onclick="printInvoice()">In hóa đơn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

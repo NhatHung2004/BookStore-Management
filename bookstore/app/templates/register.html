@@ -21,7 +21,7 @@
                     <p>{{ err_msg }}</p>
                 </div>
                 {% endif %}
-                <form action="/register" class="mt-4" method="post">
+                <form action="/register" class="mt-4" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <input type="number" class="form-control" name="phone" id="phone" placeholder="Phone"
                             required />
@@ -53,6 +53,9 @@
                             </span>
                         </div>
                     </div>
+                    <div class="form-group mt-2">
+                        <input type="file" class="form-control" id="avatar" name="avatar">
+                    </div>
                     <div class="d-grid gap-2">
                         <button class="btn btn-primary mt-2 btn-color-theme" type="submit" name="register">
                             Sign Up
@@ -61,10 +64,6 @@
                             Already have an account?
                             <a class="text-theme nav-link text-danger" href="/login">Sign In</a>
                         </p>
-                        <!-- <p class="text-center">
-                Want to register your barber?
-                <a class="text-theme" href="/member.html">Sign In</a>
-              </p> -->
                     </div>
                 </form>
             </div>

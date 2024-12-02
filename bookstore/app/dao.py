@@ -3,9 +3,9 @@ from app import db
 from models import Customer, Staff, Book, Author, Type, User, UserRole
 
 
-def add_user(phone, name, username, password):
+def add_user(phone, name, username, password, avatar=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER)
+    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, avatar=avatar)
     customer = Customer(phone=phone, user=user)
 
     db.session.add(customer)
@@ -28,12 +28,10 @@ def load_types():
     return Type.query.all()
 
     
-def load_books(kw=None, type=None):
+def load_books(kw=None):
     books = db.session.query(Book, Author, Type).join(Author, Book.author_id == Author.id).join(Type, Book.type_id == Type.id)
 
     if kw:
         books = books.filter(Book.name.icontains(kw))
-    if type:
-        books = books.filter(Type.type.in_(type))
 
     return books.all()
