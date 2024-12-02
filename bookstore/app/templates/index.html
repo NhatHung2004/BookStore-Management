@@ -1,8 +1,8 @@
 {% extends 'layout/base.html' %}
 
 {% block content %}
-<div class="row">
-    {% if books != null %}
+<div class="row content">
+    {% if books %}
     {% for book, author, type in books %}
     <div class="col-md-6 col-sm-12 mb-4">
         <!-- Product 2 -->
@@ -10,8 +10,7 @@
             <div class="row">
                 <div class="col-md-5 col-sm-5 col-xs-12">
                     <div class="product-image">
-                        <img src="{{ book.image }}" alt="194x228"
-                             class="img-responsive w-100">
+                        <img src="{{ book.image }}" alt="194x228" class="img-responsive w-100">
                         <span class="tag2 hot">HOT</span>
                     </div>
                 </div>
@@ -27,11 +26,12 @@
                     </div>
                     <div class="product-info smart-form">
                         <div class="row">
-                             <div class="col-md-12 text-center">
-                                    <!-- Buttons -->
-                                    <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Mua ngay</a>
-                                    <a href="javascript:void(0);" class="btn btn-primary">Thêm vào giỏ hàng</a>
-                             </div>
+                            <div class="col-md-12 text-center">
+                                <!-- Buttons -->
+                                <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Mua
+                                    ngay</a>
+                                <a href="javascript:void(0);" class="btn btn-primary">Thêm vào giỏ hàng</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -40,11 +40,10 @@
     </div>
     {% endfor %}
     {% else %}
-    <div class="col-md-6 col-sm-12 mb-4">
-        <div class="spinner-grow text-success"></div>
-        <div class="spinner-grow text-info"></div>
-        <div class="spinner-grow text-warning"></div>
-    </div>
+    <button class="btn btn-primary">
+        <span class="spinner-border spinner-border-sm"></span>
+        Không tìm thấy sách..
+    </button>
     {% endif %}
 </div>
 {% endblock %}

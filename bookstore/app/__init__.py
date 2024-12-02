@@ -20,5 +20,5 @@ def create_app():
         api_secret=app.config["CLOUDINARY_API_SECRET"],  # Click 'View API Keys' above to copy your API secret
         secure=True
     )
-    # from app import models
+    
     return app

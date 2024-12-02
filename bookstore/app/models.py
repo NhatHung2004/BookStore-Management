@@ -31,6 +31,7 @@ class User(db.Model, UserMixin):
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(50), nullable=False)
     user_role = Column(Enum(UserRole), nullable=False)
+    avatar = Column(String(250), default='https://res.cloudinary.com/dvahhupo0/image/upload/v1733131895/user_e5uokm.jpg')
 
     customer = relationship('Customer', backref='user', uselist=False)
     staff = relationship('Staff', backref='user', uselist=False)
