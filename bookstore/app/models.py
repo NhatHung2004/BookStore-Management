@@ -78,18 +78,12 @@ class Author(db.Model):
 
     books = relationship('Book', backref='author')
 
-    def __str__(self):
-        return self.name
-
 
 class Type(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(String(50), nullable=False)
+    name = Column(String(50), nullable=False)
 
     books = relationship('Book', backref='type')
-
-    def __str__(self):
-        return self.type
 
 
 class Book(db.Model):
@@ -194,16 +188,16 @@ if __name__ == '__main__':
 
         dataType = [
             {
-                "type": "Nhân văn và sự kiện"
+                "name": "Nhân văn và sự kiện"
             },
             {
-                "type": "Quản Trị - Lãnh Đạo"
+                "name": "Quản Trị - Lãnh Đạo"
             },
             {
-                "type": "Tiểu thuyết"
+                "name": "Tiểu thuyết"
             },
             {
-                "type": "Lịch sử"
+                "name": "Lịch sử"
             },
         ]
 
@@ -259,7 +253,7 @@ if __name__ == '__main__':
         ]
 
         # for p in dataType:
-        #     prod = Type(type=p['type'])
+        #     prod = Type(name=p['name'])
         #     db.session.add(prod)
         # db.session.commit()
 

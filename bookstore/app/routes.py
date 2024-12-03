@@ -15,9 +15,16 @@ app = create_app()
 
 @app.route("/")
 def index():
-    kw = request.args.get('kw')
+    kw = request.form.get("kw")
     books = dao.load_books(kw=kw)
     return render_template("index.html", books=books)
+
+
+@app.route('/type/<int:type_id>')
+def books_by_type(type_id):
+    books = dao.load_books_by_type(type_id)
+    return render_template("index.html", books=books)
+
 
 @app.route("/cart")
 def cart():

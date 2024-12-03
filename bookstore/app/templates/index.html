@@ -3,39 +3,18 @@
 {% block content %}
 <div class="row content">
     {% if books %}
-    {% for book, author, type in books %}
-    <div class="col-md-6 col-sm-12 mb-4">
-        <!-- Product 2 -->
-        <div class="product-content product-wrap clearfix">
-            <div class="row">
-                <div class="col-md-5 col-sm-5 col-xs-12">
-                    <div class="product-image">
-                        <img src="{{ book.image }}" alt="194x228" class="img-responsive w-100">
-                        <span class="tag2 hot">HOT</span>
-                    </div>
-                </div>
-                <div class="col-md-7 col-sm-7 col-xs-12">
-                    <div class="product-deatil">
-                        <h5 class="name">
-                            <a href="#">{{ book.name }}<span>Type: {{ type.type }}</span></a>
-                        </h5>
-                        <p class="price-container"><span>${{ book.price }}</span></p>
-                    </div>
-                    <div class="description">
-                        <p>Author: {{ author.name }}</p>
-                    </div>
-                    <div class="product-info smart-form">
-                        <div class="row">
-                            <div class="col-md-12 text-center">
-                                <!-- Buttons -->
-                                <a href="javascript:void(0);" class="btn btn-danger" style="margin-right: 10px;">Mua
-                                    ngay</a>
-                                <a href="javascript:void(0);" class="btn btn-primary">Thêm vào giỏ hàng</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    {% for book in books %}
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="product-item">
+            <figure class="product-style">
+                <img src="{{ book.image }}" alt="{{ book.name }}" class="img-fluid w-100">
+                <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to Cart</button>
+            </figure>
+            <figcaption>
+                <h3>{{ book.name }}</h3>
+                <span>{{ book.author.name }}</span>
+                <div class="item-price">${{ book.price }}</div>
+            </figcaption>
         </div>
     </div>
     {% endfor %}

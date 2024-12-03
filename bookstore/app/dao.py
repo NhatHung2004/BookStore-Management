@@ -29,9 +29,13 @@ def load_types():
 
     
 def load_books(kw=None):
-    books = db.session.query(Book, Author, Type).join(Author, Book.author_id == Author.id).join(Type, Book.type_id == Type.id)
+    books = Book.query
 
     if kw:
-        books = books.filter(Book.name.icontains(kw))
-
+        books = books.filter(Book.name.__eq__(kw))
+    
     return books.all()
+
+
+def load_books_by_type(id):
+    return Type.query.get(id).books
