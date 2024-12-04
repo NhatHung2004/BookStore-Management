@@ -111,6 +111,10 @@ def common_response():
         "types" : dao.load_types(),
     }
 
+@app.route("/checkout")
+def checkout():
+    return render_template("checkout.html")
+
 
 if __name__ == "__main__":
     from admin import *

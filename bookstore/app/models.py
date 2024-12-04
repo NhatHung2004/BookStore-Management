@@ -152,21 +152,21 @@ class BookEntryFormDetail(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
-        # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
-        # db.session.add(admin)
-        # db.session.commit()
-        # manager = User(name='Manager', username='manager',
-        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #             user_role=UserRole.STAFF)
-        # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
+        db.create_all()
+        admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
+        db.session.add(admin)
+        db.session.commit()
+        manager = User(name='Manager', username='manager',
+                    password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                    user_role=UserRole.STAFF)
+        m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
 
-        # seller = User(name='Seller', username='seller',
-        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #             user_role=UserRole.STAFF)
-        # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
-        # db.session.add_all([m, s])
-        # db.session.commit()
+        seller = User(name='Seller', username='seller',
+                    password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+                    user_role=UserRole.STAFF)
+        s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
+        db.session.add_all([m, s])
+        db.session.commit()
 
         dataAuthor = [
             {
@@ -252,17 +252,17 @@ if __name__ == '__main__':
             },
         ]
 
-        # for p in dataType:
-        #     prod = Type(name=p['name'])
-        #     db.session.add(prod)
-        # db.session.commit()
+        for p in dataType:
+            prod = Type(name=p['name'])
+            db.session.add(prod)
+        db.session.commit()
 
-        # for p in dataAuthor:
-        #     prod = Author(name=p['name'])
-        #     db.session.add(prod)
-        # db.session.commit()
+        for p in dataAuthor:
+            prod = Author(name=p['name'])
+            db.session.add(prod)
+        db.session.commit()
 
-        # for p in dataBook:
-        #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
-        #     db.session.add(prod)
-        # db.session.commit()
+        for p in dataBook:
+            prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
+            db.session.add(prod)
+        db.session.commit()
