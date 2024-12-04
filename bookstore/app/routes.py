@@ -38,8 +38,8 @@ def orderOnline():
 
 @app.route("/unplaced-order")
 def unplacedOrder():
-    books = dao.load_books()
-    return render_template("unplaced_order.html", books=books)
+    # books = dao.load_books()
+    return render_template("unplaced_order.html")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_process():

@@ -20,6 +20,7 @@
     </script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="../../static/css/loginReg.css" />
     <link rel="stylesheet" href="../../static/css/home.css" />
@@ -27,7 +28,9 @@
     <link rel="stylesheet" href="../../static/css/cart.css" />
     <link rel="stylesheet" href="../../static/css/seller.css" />
     <link rel="stylesheet" href="../../static/css/checkout.css" />
-    <script src="../../static/js/script.js"></script>
+    <link rel="stylesheet" href="../../static/css/unplaced_order.css" />
+<!--    <script src="../../static/js/script.js"></script>-->
+<!--    <script src="../../static/js/unplaced_order.js"></script>-->
 
 
     <style>
@@ -121,9 +124,13 @@
         {% endblock %}
     </main>
 
+
     {% block footer %}
     {% include 'layout/footer.html' %}
     {% endblock %}
+
+    <script src="../../static/js/script.js"></script>
+    <script src="../../static/js/unplaced_order.js"></script>
 </body>
 
 </html>
