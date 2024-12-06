@@ -13,8 +13,8 @@
                     class="add-to-cart"
                     data-product-tile="add-to-cart"
                     onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
-                    '{{ book.category.name }}', '{{ book.image }}', {{ book.price }})">
-                    Add to Cart
+                    '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
+                    Mua ngay
                 </button>
             </figure>
             <figcaption>
@@ -28,5 +28,22 @@
     {% else %}
     <div class="alert alert-info mt-1">Không có sản phẩm nào!</div>
     {% endif %}
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Thông báo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Bạn cần đăng nhập để tiếp tục mua sắm.
+                </div>
+                <div class="modal-footer">
+                    <a type="button" href="/register" class="btn btn-secondary">Đăng ký</a>
+                    <a type="button" href="/login" class="btn btn-primary">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

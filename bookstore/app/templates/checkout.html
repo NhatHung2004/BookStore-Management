@@ -6,128 +6,119 @@
             <div class="col-md-5 col-lg-4 order-md-last">
                 <h4 class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-primary">Đơn hàng của bạn</span>
-                    <span class="badge bg-primary rounded-pill">7</span>
+                    <span class="badge bg-primary rounded-pill">{{ cart_stats.total_quantity }}</span>
                 </h4>
                 <ul class="list-group mb-3">
+                    {% if cart %}
+                    {% for c in cart.values() %}
                     <li class="list-group-item d-flex justify-content-between lh-sm">
                         <div>
-                            <h6 class="my-0">Tên sản phẩm</h6>
-                            <small class="text-body-secondary">Số lượng: 3</small>
+                            <h6 class="my-0">{{ c.name }}</h6>
+                            <small class="text-body-secondary">Số lượng: {{ c.quantity }}</small>
                         </div>
-                        <span class="text-body-secondary">$12</span>
+                        <span class="text-body-secondary">{{ c.price|currency }}</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <h6 class="my-0">Tên sản phẩm</h6>
-                            <small class="text-body-secondary">Số lượng: 2</small>
-                        </div>
-                        <span class="text-body-secondary">$8</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between lh-sm">
-                        <div>
-                            <h6 class="my-0">Tên sản phẩm</h6>
-                            <small class="text-body-secondary">Số lượng: 2</small>
-                        </div>
-                        <span class="text-body-secondary">$5</span>
-                    </li>
+                    {% endfor %}
                     <li class="list-group-item d-flex justify-content-between bg-light">
-                        <strong class="text-danger">Tổng (USD)</strong>
-                        <strong class="text-danger" style="font-size: 1.5rem;">$25</strong>
+                        <strong class="text-danger">Tổng (VND)</strong>
+                        <strong class="text-danger" style="font-size: 1.5rem;">{{ cart_stats.total_amount|currency
+                            }}</strong>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="col-md-7 col-lg-8">
                 <h4 class="mb-3">Thông tin thanh toán khách hàng</h4>
-                <form class="needs-validation" novalidate>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label for="username" class="form-label">Tên khách hàng</label>
-                            <div class="input-group has-validation">
-                                <input type="text" class="form-control" id="username" placeholder="Dương Hữu Thành"
-                                    required>
-                                <div class="invalid-feedback">
-                                    Your username is required.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label for="customerid" class="form-label">Mã khách hàng</label>
-                            <input class="form-control" id="customerid" placeholder="KH01234">
-                            <div class="invalid-feedback">
-                                Please enter a valid email address for shipping updates.
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label for="address" class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" id="address" placeholder="Khu dân cư Nhơn Đức"
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="username" class="form-label">Tên khách hàng</label>
+                        <div class="input-group has-validation">
+                            <input type="text" class="form-control" id="username" value="{{ current_user.name }}"
                                 required>
-                        </div>
-                        <div class="col-12">
-                            <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="phone" placeholder="0123456789">
-                        </div>
-                        <hr class="my-4">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="same-address">
-                            <label class="form-check-label" for="same-address">Shipping address is the same as my
-                                billing
-                                address</label>
-                        </div>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="save-info">
-                            <label class="form-check-label" for="save-info">Save this information for next time</label>
-                        </div>
-                        <hr class="my-4">
-                        <h4 class="mb-3">Phương thức thanh toán</h4>
-                        <div class="my-3">
-                            <div class="form-check">
-                                <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked
-                                    required>
-                                <label class="form-check-label" for="credit">Credit card</label>
-                            </div>
-                            <div class="form-check">
-                                <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required>
-                                <label class="form-check-label" for="debit">Debit card</label>
-                            </div>
-                            <div class="form-check">
-                                <input id="paypal" name="paymentMethod" type="radio" class="form-check-input" required>
-                                <label class="form-check-label" for="paypal">PayPal</label>
+                            <div class="invalid-feedback">
+                                Your username is required.
                             </div>
                         </div>
-                        <div class="row gy-3">
-                            <div class="col-md-6">
-                                <label for="cc-name" class="form-label">Tên chủ thẻ</label>
-                                <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Name on card is required
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cc-number" class="form-label">Số thẻ</label>
-                                <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Credit card number is required
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="cc-expiration" class="form-label">Ngày hết hạn</label>
-                                <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Expiration date required
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="cc-cvv" class="form-label">CVV</label>
-                                <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                                <div class="invalid-feedback">
-                                    Security code required
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="my-4">
-                        <button class="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
                     </div>
-                </form>
+                    <div class="col-12">
+                        <label for="customerid" class="form-label">Mã khách hàng</label>
+                        <input class="form-control" id="customerid" value="{{ current_user.id }}">
+                        <div class="invalid-feedback">
+                            Please enter a valid email address for shipping updates.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="address" class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" id="address" value="{{ current_user.customer.address }}"
+                            required>
+                    </div>
+                    <div class="col-12">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="phone" value="{{ current_user.customer.phone }}">
+                    </div>
+                    <hr class="my-4">
+                    <h4 class="mb-3">Phương thức thanh toán</h4>
+                    <div class="my-3">
+                        <div class="form-check">
+                            <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked
+                                required>
+                            <label class="form-check-label" for="credit">Online</label>
+                        </div>
+                        <div class="form-check">
+                            <input id="debit" name="paymentMethod" type="radio" class="form-check-input" required>
+                            <label class="form-check-label" for="debit">Trực tiếp</label>
+                        </div>
+                    </div>
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <label for="cc-name" class="form-label">Tên chủ thẻ</label>
+                            <input type="text" class="form-control" id="cc-name" placeholder="" required>
+                            <div class="invalid-feedback">
+                                Name on card is required
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cc-number" class="form-label">Số thẻ</label>
+                            <input type="text" class="form-control" id="cc-number" placeholder="" required>
+                            <div class="invalid-feedback">
+                                Credit card number is required
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cc-expiration" class="form-label">Ngày hết hạn</label>
+                            <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
+                            <div class="invalid-feedback">
+                                Expiration date required
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="cc-cvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
+                            <div class="invalid-feedback">
+                                Security code required
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <button class="w-100 btn btn-primary btn-lg"
+                        onclick="orderOnline({{ current_user.id }}, {{ cart }})">Đặt hàng</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="orderModalLabel">Thông báo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="modalMessage">Đặt hàng thành công!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

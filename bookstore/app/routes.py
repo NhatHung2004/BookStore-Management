@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import cloudinary.uploader
 from models import User, UserRole
-from flask import render_template, redirect, request, session, jsonify
+from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user
 from app import login, dao, app, utils
 import cloudinary
@@ -69,21 +69,22 @@ def remove_from_cart():
     del cart[id]
 
     session['cart'] = cart
-    session.modified = True
 
     return jsonify(utils.stats_cart(cart))
 
 
-# @app.route('/api/updateQuantity/carts', methods=['post'])
-# def update_quantity():
-#     cart = session.get('cart')
+@app.route('/api/updateQuantity/carts', methods=['post'])
+def update_quantity():
+    cart = session.get('cart')
 
-#     id = str(request.json.get('id'))
-#     cart[id]['quantity'] += 1
+    id = str(request.json.get('id'))
+    cart[id]['quantity'] += 1
 
-#     session['cart'] = cart
+    session['cart'] = cart
 
-#     return jsonify({ "cart": cart[id] })
+    stats = utils.stats_cart(cart)
+
+    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
 
 
 @app.route("/order-online")
@@ -127,10 +128,10 @@ def login_admin_process():
     return redirect('/admin')
 
 
-@app.route("/logout", methods=['GET', 'POST'])
+@app.route("/logout")
 def logout_process():
     logout_user()
-    return redirect('/login')
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -142,6 +143,7 @@ def register_process():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        address = request.form.get("address")
         if not User.query.filter(User.username.__eq__(username)).first():
             if password.strip() != confirm.strip():
                 err_msg = "Mat khau khong khop"
@@ -150,13 +152,26 @@ def register_process():
                 if avatar:
                     res = cloudinary.uploader.upload(avatar)
                     avatar = res["secure_url"]
-                if dao.add_user(phone=phone, name=name, username=username, password=password, avatar=avatar):
+                if dao.add_user(phone=phone, name=name, username=username, password=password, address=address, avatar=avatar):
                     return redirect('/login')
                 else:
                     err_msg = "Something Wrong!!!"
         else:
             err_msg = "Username already exists"
     return render_template('register.html', err_msg=err_msg)
+
+
+@app.route("/api/checkout", methods=['POST'])
+def checkout_api():
+    customerID = request.json.get('customerID')
+    cart = request.json.get('cart')
+
+    orderID = dao.add_online_order(customerID=customerID, cart=cart)
+
+    if orderID != None:
+        session['cart'] = {}
+
+    return jsonify({ "orderID": orderID, "stats": utils.stats_cart(cart)})
 
 
 @app.route("/checkout")

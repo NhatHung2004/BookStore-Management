@@ -34,15 +34,15 @@
                                 <td>
                                     <div class="input-group quantity-control">
                                         <div class="input-group-prepend">
-                                            <button class="btn btn-outline-secondary btn-decrement" type="button"
+                                            <a class="btn btn-outline-secondary btn-decrement" type="button"
                                                 data-product-id="{{ c.id }}">-
-                                            </button>
+                                            </a>
                                         </div>
-                                        <input type="text" class="form-control quantity-input" value="1"
-                                            data-product-id="{{ c.id }}">
+                                        <input type="text" class="form-control quantity-input" id="quantity-input-{{ c.id }}" value="{{ c.quantity }}">
                                         <div class="input-group-append">
                                             <a class="btn btn-outline-secondary btn-increment" type="button"
-                                                data-product-id="{{ c.id }}">+
+                                                data-product-id="{{ c.id }}"
+                                                onclick="updateQuantity({{ c.id }})">+
                                             </a>
                                         </div>
 
@@ -54,7 +54,7 @@
                                     </div>
                                 </td>
                                 <td class="text-right d-none d-md-block">
-                                    <a href="" class="btn btn-light" data-abc="true" onclick="removeFromCart({{ c.id }})">
+                                    <a type="button" href="" class="btn btn-light" onclick="removeFromCart({{ c.id }})">
                                         Xoá Sản Phẩm
                                     </a>
                                 </td>

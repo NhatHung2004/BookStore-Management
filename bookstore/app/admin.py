@@ -1,6 +1,6 @@
 from flask_admin.contrib.sqla import ModelView
 from app import db, app
-from models import Staff, Book, Category, Author, UserRole, User, OnlineOrder, Bill, BookEntryForm
+from models import Staff, Book, Category, Author, UserRole, User, OnlineOrder, Bill, Form
 from flask_admin import Admin, BaseView, expose
 from flask_login import current_user, logout_user
 from flask import redirect
