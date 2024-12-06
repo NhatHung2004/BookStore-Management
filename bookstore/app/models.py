@@ -6,11 +6,9 @@ from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum, Boolean
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship
 from enum import Enum as RoleEnum
-from app import db, create_app
+from app import db, app
 from datetime import date
 import hashlib
-
-app = create_app()
 
 # quyền của nhân viên
 class RolePermision(RoleEnum):
@@ -76,14 +74,20 @@ class Author(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
 
-    books = relationship('Book', backref='author')
+    books = relationship('Book', backref='author', lazy=True)
+
+    def __str__(self):
+        return self.name
 
 
-class Type(db.Model):
+class Category(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
 
-    books = relationship('Book', backref='type')
+    books = relationship('Book', backref='category', lazy=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Book(db.Model):
@@ -102,10 +106,11 @@ class Book(db.Model):
     bookEntryForms = relationship('BookEntryFormDetail', backref='book')
     # quan hệ one-to-many với bảng Author
     author_id = Column(Integer, ForeignKey(Author.id), nullable=False)
-    # author = relationship("Author", backref="books")
-    # quan hệ one-to-many với bảng Type
-    type_id = Column(Integer, ForeignKey(Type.id), nullable=False)
-    # type = relationship("Type", backref="books")
+    # quan hệ one-to-many với bảng Category
+    category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+
+    def __str__(self):
+        return self.name
 
 
 class OnlineOrder(db.Model):
@@ -183,10 +188,22 @@ if __name__ == '__main__':
             },
             {
                 "name": "Chủ tịch Hồ Chí Minh"
+            },
+            {
+                "name": "Yuval Noah Harari"
+            },
+            {
+                "name": "Nam Phong Tùng Thư"
+            },
+            {
+                "name": "Jared Diamond"
+            },
+            {
+                "name": "Phan Văn Trường"
             }
         ]
 
-        dataType = [
+        dataCategory = [
             {
                 "name": "Nhân văn và sự kiện"
             },
@@ -206,54 +223,118 @@ if __name__ == '__main__':
                 "name": "Di Sản Hồ Chí Minh - Hành Trình Theo Chân Bác (Tái Bản 2021)",
                 "inventoryQuantity": 100,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp",
-                "price": 99,
+                "price": 96000,
                 "author_id": 1,
-                "type_id": 1
+                "category_id": 1
             },
             {
                 "name": "Quản Trị Bằng Văn Hóa - Cách Thức Kiến Tạo Và Tái Tạo Văn Hóa Tổ Chức",
                 "inventoryQuantity": 78,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681282/8935280401068_wnlrtk.webp",
-                "price": 99,
+                "price": 175000,
                 "author_id": 2,
-                "type_id": 2
+                "category_id": 2
             },
             {
                 "name": "Không Gia Đình",
-                "inventoryQuantity": 50,
+                "inventoryQuantity": 115,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681286/image_190973_ghrqko.webp",
-                "price": 99,
+                "price": 99000,
                 "author_id": 3,
-                "type_id": 3
+                "category_id": 3
             },
             {
                 "name": "Cây Cam Ngọt Của Tôi",
                 "inventoryQuantity": 50,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732681983/image_217480_xmdzew.webp",
-                "price": 99,
+                "price": 81000,
                 "author_id": 4,
-                "type_id": 3
+                "category_id": 3
             },
             {
                 "name": "Di Chúc Của Chủ Tịch Hồ Chí Minh",
                 "inventoryQuantity": 124,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732682133/9786045892640_pjzzzm.webp",
-                "price": 99,
+                "price": 20000,
                 "author_id": 5,
-                "type_id": 1
+                "category_id": 1
             },
             {
                 "name": "Đi Dọc Dòng Sông Phật Giáo",
                 "inventoryQuantity": 5,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1732682344/5819c3669f12f4487bd77ea4a0107d4b.jpg_rxmwwn.webp",
-                "price": 99,
+                "price": 70000,
                 "author_id": 1,
-                "type_id": 1
+                "category_id": 1
+            },
+            {
+                "name": "Sapiens Lược Sử Loài Người",
+                "inventoryQuantity": 10,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733281851/8935270703554_xkwlgz.webp",
+                "price": 230000,
+                "author_id": 6,
+                "category_id": 4
+            },
+            {
+                "name": "Lịch Sử Thế Giới",
+                "inventoryQuantity": 54,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282144/image_195509_1_39442_tqqj9h.webp",
+                "price": 61000,
+                "author_id": 7,
+                "category_id": 4
+            },
+            {
+                "name": "Súng, Vi Trùng Và Thép (Tái Bản)",
+                "inventoryQuantity": 194,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282253/8935270703837_hqyrwi.webp",
+                "price": 261000,
+                "author_id": 8,
+                "category_id": 4
+            },
+            {
+                "name": "Lịch Sử Và Học Thuyết Của Voltaire",
+                "inventoryQuantity": 32,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282407/47428666a6baa0505014e07398493afb.jpg_ejkjvc.webp",
+                "price": 71000,
+                "author_id": 7,
+                "category_id": 4
+            },
+            {
+                "name": "Vun Đắp Tâm Hồn - Tiệm Bánh Của Thỏ Mina",
+                "inventoryQuantity": 18,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282609/515d86965a6f9b4d639726cebaca6619.jpg_hseyv8.webp",
+                "price": 45000,
+                "author_id": 3,
+                "category_id": 3
+            },
+            {
+                "name": "Chuyện Kể Trước Giờ Đi Ngủ: Giấc Mơ Bơ Cà Rốt",
+                "inventoryQuantity": 100,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282684/961f1400e47b123cb0dd8d681312a8a8.jpg_zkweli.webp",
+                "price": 56000,
+                "author_id": 3,
+                "category_id": 3
+            },
+            {
+                "name": "Một Đời Quản Trị (Tái Bản 2019)",
+                "inventoryQuantity": 610,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282895/8934974164623_ogy5ya.webp",
+                "price": 154000,
+                "author_id": 9,
+                "category_id": 2
+            },
+            {
+                "name": "Cơn lốc quản trị - Ba trụ cột của văn hóa doanh nghiệp",
+                "inventoryQuantity": 200,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733283038/58c17950e24e1f9b0b08221edec27dc5.jpg_bueomz.webp",
+                "price": 93000,
+                "author_id": 9,
+                "category_id": 2
             },
         ]
 
-        # for p in dataType:
-        #     prod = Type(name=p['name'])
+        # for p in dataCategory:
+        #     prod = Category(name=p['name'])
         #     db.session.add(prod)
         # db.session.commit()
 
@@ -263,6 +344,6 @@ if __name__ == '__main__':
         # db.session.commit()
 
         # for p in dataBook:
-        #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], type_id=p['type_id'],)
+        #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
         #     db.session.add(prod)
         # db.session.commit()

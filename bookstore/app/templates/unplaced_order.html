@@ -10,58 +10,114 @@
             <a class="nav-link active" href="/unplaced_order">Đơn hàng chưa đặt trước</a>
         </li>
     </ul>
-    <div class="row g-3 mb-4 align-items-end">
-        <!-- Search -->
-        <div class="col-auto ms-auto d-flex align-items-center">
-            <input type="text" class="form-control me-2" style="width: 200px;" placeholder="Nhập Mã Sách...">
-            <button class="btn btn-primary">Tìm kiếm</button>
-        </div>
-    </div>
-    <!-- Product Items -->
-    <div class="row">
-        <div class="col-md-3">
-            <div class="product-item">
-                <figure class="product-style">
-                    <img src="https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp"
-                        alt="Books" class="product-item">
-                    <button type="button" class="add-to-cart" data-bs-toggle="modal" data-bs-target="#transactionModal"
-                        onclick="setProductInfo('Simple way of piece life', 40)">Xử lí giao dịch
-                    </button>
-                </figure>
-                <figcaption>
-                    <h3>Simple way of piece life</h3>
-                    <span>Armor Ramsey</span>
-                    <div class="item-price">$ 40.00</div>
-                </figcaption>
+    <div class="row mb-4">
+        <!-- Phần Tìm kiếm và sản phẩm -->
+        <div class="col-md-8">
+            <div class="search-and-products-container"
+                style="background-color: #9b9b9e; padding: 15px; border-radius: 8px;">
+                <div class="row g-3">
+                    <!-- Phần Tìm kiếm sản phẩm -->
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <!-- Biểu tượng kính lúp bên trong ô nhập liệu -->
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="Nhập Tên Sách...">
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn custom-btn">Tìm kiếm</button>
+                    </div>
+                </div>
+
+                <!-- Sản phẩm -->
+                <div class="product-background p-4 mt-4" style="background-color: #f7f7f7; border-radius: 8px;">
+                    <div class="row">
+                        <!-- Product Card 1 -->
+                        <div class="col-md-3 col-lg-3 mb-4">
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp"
+                                        alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart btn btn-primary mt-2"
+                                        onclick="addToCart('Simple way of piece life', 40, 'https://res.cloudinary.com/dvahhupo0/image/upload/v1732681292/image_237825_injgum.webp')">
+                                        Xử
+                                        lí giao dịch
+                                    </button>
+                                </figure>
+                                <figcaption>
+                                    <h3>Simple way of piece life</h3>
+                                    <span>Armor Ramsey</span>
+                                    <div class="item-price">$ 40.00</div>
+                                </figcaption>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 mb-4">
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="https://res.cloudinary.com/dvahhupo0/image/upload/v1732682133/9786045892640_pjzzzm.webp"
+                                        alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart btn btn-primary mt-2"
+                                        onclick="addToCart('Simple way of piece life', 45, 'https://res.cloudinary.com/dvahhupo0/image/upload/v1732682133/9786045892640_pjzzzm.webp')">
+                                        Xử
+                                        lí giao dịch
+                                    </button>
+                                </figure>
+                                <figcaption>
+                                    <h3>Another Book</h3>
+                                    <span>John Doe</span>
+                                    <div class="item-price">$ 45.00</div>
+                                </figcaption>
+                            </div>
+                        </div>
+                        <!-- Các sản phẩm khác... -->
+                    </div>
+                </div>
             </div>
+
         </div>
-        <!-- Thêm các sản phẩm khác tương tự -->
-    </div>
-    <!-- Modal Dialog -->
-    <div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="transactionModalLabel">Xử lí giao dịch</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="transactionForm">
-                        <div class="mb-3">
-                            <label for="bookQuantity" class="form-label">Số lượng sách:</label>
-                            <input type="number" class="form-control" id="bookQuantity" placeholder="Nhập số lượng"
-                                required>
+
+        <!-- Phần Thanh toán -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header" style="background-color: #9b9b9e; color: white;">Sản phẩm đang chờ</div>
+                <div class="card-body payment-card-body">
+                    <!-- Mã khách hàng -->
+                    <div class="mb-3">
+                        <label class="form-label">Nhập mã khách hàng:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" placeholder="KH1234...">
                         </div>
-                        <div class="mb-3">
-                            <p id="totalPrice">Tổng tiền: $0</p>
-                        </div>
-                        <button type="button" class="btn btn-primary" onclick="calculateTotal()">Tính toán</button>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-success" onclick="printInvoice()">In hóa đơn</button>
+                    </div>
+
+                    <!-- Giỏ hàng nếu có sản phẩm -->
+                    <div id="cartItemsContainer">
+                        <table class="table cart-table">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sách</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng Giá</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartItems">
+                                <!-- Các sản phẩm sẽ được thêm vào đây -->
+                            </tbody>
+                        </table>
+                        <h5 class="text-end">Tổng cộng: <span id="totalAmount">$0</span></h5>
+                    </div>
+
+                    <!-- Thông báo giỏ hàng trống -->
+                    <div id="emptyCartMessage" class="text-center d-none">
+                        <p><i class="bi bi-cart-dash"></i> Hiện chưa có đơn hàng nào.</p>
+                    </div>
+
+                    <!-- Các nút thanh toán và xóa giỏ hàng -->
+                    <div class="mt-auto payment-buttons">
+                        <button class="btn btn-warning" onclick="clearCart()">Xóa giỏ hàng</button>
+                        <button class="btn btn-danger" onclick="proceedToPayment()">Thanh toán</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,21 +8,25 @@
         <div class="product-item">
             <figure class="product-style">
                 <img src="{{ book.image }}" alt="{{ book.name }}" class="img-fluid w-100">
-                <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to Cart</button>
+                <button
+                    type="button"
+                    class="add-to-cart"
+                    data-product-tile="add-to-cart"
+                    onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
+                    '{{ book.category.name }}', '{{ book.image }}', {{ book.price }})">
+                    Add to Cart
+                </button>
             </figure>
             <figcaption>
                 <h3>{{ book.name }}</h3>
                 <span>{{ book.author.name }}</span>
-                <div class="item-price">${{ book.price }}</div>
+                <div class="item-price">{{ book.price|currency }}</div>
             </figcaption>
         </div>
     </div>
     {% endfor %}
     {% else %}
-    <button class="btn btn-primary">
-        <span class="spinner-border spinner-border-sm"></span>
-        Không tìm thấy sách..
-    </button>
+    <div class="alert alert-info mt-1">Không có sản phẩm nào!</div>
     {% endif %}
 </div>
 {% endblock %}

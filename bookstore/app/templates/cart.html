@@ -1,6 +1,4 @@
 {% extends 'layout/base.html' %}
-
-
 {% block content %}
 
 <div class="container-fluid">
@@ -18,15 +16,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% if books != None %}
-                            {% for book, author, type in books %}
+                            {% if cart %}
+                            {% for c in cart.values() %}
                             <tr>
                                 <td>
                                     <figure class="itemside align-items-center">
-                                        <div class="aside"><img src="{{book.image}}" class="img-sm"></div>
+                                        <div class="aside"><img src="{{ c.image }}" class="img-sm"></div>
                                         <figcaption class="info"><a href="#" class="title text-dark"
-                                                data-abc="true">{{book.name}}</a>
-                                            <p class="text-muted small">Tác giả: {{author.name}}<br> Loại: {{type.type}}
+                                                data-abc="true">{{ c.name }}</a>
+                                            <p class="text-muted small">
+                                                Tác giả: {{ c.author }}<br>
+                                                Loại: {{ c.category }}
                                             </p>
                                         </figcaption>
                                     </figure>
@@ -35,26 +35,28 @@
                                     <div class="input-group quantity-control">
                                         <div class="input-group-prepend">
                                             <button class="btn btn-outline-secondary btn-decrement" type="button"
-                                                data-product-id="{{ book.id }}">-
+                                                data-product-id="{{ c.id }}">-
                                             </button>
                                         </div>
                                         <input type="text" class="form-control quantity-input" value="1"
-                                            data-product-id="{{ book.id }}">
+                                            data-product-id="{{ c.id }}">
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary btn-increment" type="button"
-                                                data-product-id="{{ book.id }}">+
-                                            </button>
+                                            <a class="btn btn-outline-secondary btn-increment" type="button"
+                                                data-product-id="{{ c.id }}">+
+                                            </a>
                                         </div>
 
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="price-wrap"><var class="price">$10.00</var>
-                                        <small class="text-muted">$9.20 each</small>
+                                    <div class="price-wrap"><var class="price">{{ c.price|currency }}</var>
+                                        <small class="text-muted">9.20 VNĐ</small>
                                     </div>
                                 </td>
                                 <td class="text-right d-none d-md-block">
-                                    <a href="" class="btn btn-light" data-abc="true">Xoá Sản Phẩm</a>
+                                    <a href="" class="btn btn-light" data-abc="true" onclick="removeFromCart({{ c.id }})">
+                                        Xoá Sản Phẩm
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -69,11 +71,11 @@
                 <div class="card-body">
                     <dl class="dlist-align">
                         <dt style="font-size: 20px;">Total price:</dt>
-                        <dd class="text-right ml-3" style="font-size: 23px;">$69.97</dd>
+                        <dd class="text-right ml-3" style="font-size: 23px;">{{ cart_stats.total_amount|currency }}</dd>
                     </dl>
                     <dl class="dlist-align">
                         <dt style="font-size: 18px;">Total:</dt>
-                        <dd class="text-right text-dark b ml-3" style="font-size: 20px;"><strong>$59.97</strong></dd>
+                        <dd class="text-right text-dark b ml-3" style="font-size: 20px;"><strong>59.97 VNĐ</strong></dd>
                     </dl>
                     <hr>
                     <a href="#" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
