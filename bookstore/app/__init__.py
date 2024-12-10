@@ -1,24 +1,31 @@
 from flask import Flask
-from app.config import Config
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 import cloudinary
-from app.extensions import db, migrate, login, admin
+from vnpay import VNPay
 
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
+app = Flask(__name__)
+app.secret_key = 'HGHJAHA^&^&*AJAVAHJ*^&^&*%&*^GAFGFAG'
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://admin:1@localhost/storedb?charset=utf8mb4"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["PAGE_SIZE"] = 8
 
-    # Khởi tạo extensions
-    db.init_app(app)
-    migrate.init_app(app, db)
-    login.init_app(app)
-    admin.init_app(app)
 
-    cloudinary.config (
-        cloud_name=app.config["CLOUDINARY_CLOUD_NAME"],
-        api_key=app.config["CLOUDINARY_API_KEY"],
-        api_secret=app.config["CLOUDINARY_API_SECRET"],  # Click 'View API Keys' above to copy your API secret
-        secure=True
-    )
-    
-    return app
+db = SQLAlchemy(app)
+login = LoginManager(app)
+
+
+cloudinary.config(
+    cloud_name="dvahhupo0",
+    api_key="461556863519315",
+    api_secret="lBLWun6CURjcaUNB8G7qUQtHtxo",  # Click 'View API Keys' above to copy your API secret
+    secure=True
+)
+
+
+VNP_TMN_CODE = "265WA8JT"
+VNP_HASH_SECRET = "R98T5GT4US65NUVY1IIINX8LWN9BM2G2"
+VNP_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+
+vnpay = VNPay(VNP_TMN_CODE, VNP_HASH_SECRET, VNP_URL)

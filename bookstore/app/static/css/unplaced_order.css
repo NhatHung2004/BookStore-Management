@@ -195,17 +195,20 @@ footer#footer {
 
 
 .row.g-3.mb-4 {
-    min-height: 90px; /* Đảm bảo ô tìm kiếm có chiều cao đủ lớn */
+    min-height: 90px;
+    /* Đảm bảo ô tìm kiếm có chiều cao đủ lớn */
 }
 
 /* Tinh chỉnh chiều cao của sản phẩm trong giỏ hàng */
 .card-body table {
-    flex-grow: 1; /* Cho phép bảng sản phẩm chờ chiếm không gian còn lại */
+    flex-grow: 1;
+    /* Cho phép bảng sản phẩm chờ chiếm không gian còn lại */
 }
 
 /* Căn chỉnh nút thanh toán và xóa giỏ hàng */
 .card-body .btn {
-    width: 48%;  /* Đảm bảo các nút không chiếm hết chiều rộng */
+    width: 48%;
+    /* Đảm bảo các nút không chiếm hết chiều rộng */
     font-size: 14px;
 }
 
@@ -217,26 +220,33 @@ footer#footer {
 
 /* Các nút phía dưới cùng */
 .mt-auto {
-    margin-top: auto; /* Đảm bảo các nút thanh toán và xóa giỏ hàng ở dưới cùng */
+    margin-top: auto;
+    /* Đảm bảo các nút thanh toán và xóa giỏ hàng ở dưới cùng */
 }
 
 .search-input {
-    height: 40px;  /* Điều chỉnh chiều cao theo yêu cầu */
-     /* Padding của ô tìm kiếm */
-    font-size: 14px;  /* Kích thước chữ */
+    height: 40px;
+    /* Điều chỉnh chiều cao theo yêu cầu */
+    /* Padding của ô tìm kiếm */
+    font-size: 14px;
+    /* Kích thước chữ */
 }
 
 /* Điều chỉnh ô tìm kiếm */
 .search-container {
     display: flex;
-    align-items: center;  /* Căn chỉnh các phần tử theo chiều dọc */
-    height: 40px;  /* Đảm bảo chiều cao của ô tìm kiếm giống như ô sách */
-    padding: 0 10px;  /* Padding cho ô tìm kiếm */
+    align-items: center;
+    /* Căn chỉnh các phần tử theo chiều dọc */
+    height: 40px;
+    /* Đảm bảo chiều cao của ô tìm kiếm giống như ô sách */
+    padding: 0 10px;
+    /* Padding cho ô tìm kiếm */
 }
 
 /* Nếu cần căn chỉnh thêm các phần tử trong ô tìm kiếm */
 .search-container input {
-    height: 100%;  /* Đảm bảo input chiếm hết chiều cao */
+    height: 100%;
+    /* Đảm bảo input chiếm hết chiều cao */
     padding: 5px 10px;
 }
 
@@ -262,30 +272,38 @@ footer#footer {
 .payment-card-body {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Đảm bảo chiều cao của thẻ chứa giỏ hàng chiếm hết không gian */
+    height: 100%;
+    /* Đảm bảo chiều cao của thẻ chứa giỏ hàng chiếm hết không gian */
 }
 
 
 .payment-buttons {
-    margin-top: auto;  /* Đẩy các nút về phía dưới */
+    margin-top: auto;
+    /* Đẩy các nút về phía dưới */
     display: flex;
-    justify-content: space-between;  /* Căn đều các nút */
+    justify-content: space-between;
+    /* Căn đều các nút */
 }
 
 .custom-btn {
-    background-color: #3498db;  /* Màu xanh dương nhẹ */
+    background-color: #3498db;
+    /* Màu xanh dương nhẹ */
     color: white;
     border: none;
 }
 
 .custom-btn:hover {
-    background-color: #2980b9;  /* Màu xanh đậm khi hover */
+    background-color: #2980b9;
+    /* Màu xanh đậm khi hover */
 }
 
 .add-to-cart {
-    font-size: 0.8rem; /* Giảm kích thước chữ */
-    padding: 4px 8px; /* Điều chỉnh padding để nút nhỏ lại */
-    height: auto; /* Đảm bảo chiều cao không bị cố định */
+    font-size: 0.8rem;
+    /* Giảm kích thước chữ */
+    padding: 4px 8px;
+    /* Điều chỉnh padding để nút nhỏ lại */
+    height: auto;
+    /* Đảm bảo chiều cao không bị cố định */
 }
 
 

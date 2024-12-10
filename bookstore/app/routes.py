@@ -1,28 +1,43 @@
 import sys
 import os
-
-import cloudinary.uploader
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import math
+import cloudinary.uploader
 from models import User, UserRole
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user
-from app import login, dao, create_app
+from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
+import hmac
+import hashlib
 import cloudinary
-
-app = create_app()
+import urllib.parse
 
 
 @app.route("/")
 def index():
-    kw = request.form.get("kw")
-    books = dao.load_books(kw=kw)
-    return render_template("index.html", books=books)
+    kw = request.args.get("kw")
+    page = request.args.get('page', 1)
+    total = dao.count_books()
+    books = dao.load_books(kw=kw, page=int(page))
+    message = session.pop('message', None)  # Lấy và xóa sau khi sử dụng
+    order_id = session.pop('order_id', None)
+    if message == "success":
+        alert = f"Thanh toán thành công! Mã giao dịch: {order_id}"
+        alert_type = "success"
+    elif message == "failure":
+        alert = "Xác thực giao dịch thất bại!"
+        alert_type = "danger"
+    else:
+        alert = None
+        alert_type = None
+    return render_template("index.html", books=books, alert=alert, alert_type=alert_type,
+                           pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
-@app.route('/type/<int:type_id>')
-def books_by_type(type_id):
-    books = dao.load_books_by_type(type_id)
+@app.route('/category/<int:cate_id>')
+def books_by_type(cate_id):
+    books = dao.load_books_by_cate(cate_id)
     return render_template("index.html", books=books)
 
 
@@ -31,15 +46,79 @@ def cart():
     books = dao.load_books()
     return render_template("cart.html", books=books)
 
-@app.route("/order-online")
+
+@app.route('/api/add/carts', methods=['post'])
+def add_to_cart():
+    cart = session.get('cart')
+
+    if not cart:
+        cart = {}
+
+    id = str(request.json.get('id'))
+    name = request.json.get('name')
+    author = request.json.get('author')
+    category = request.json.get('category')
+    image = request.json.get('image')
+    price = request.json.get('price')
+
+    if id in cart:
+        cart[id]["quantity"] += 1
+    else:
+        cart[id] = {
+            "id": id,
+            "name": name,
+            "author": author,
+            "category": category,
+            "image": image,
+            "price": price,
+            "quantity": 1
+        }
+
+    session['cart'] = cart
+
+    return jsonify(utils.stats_cart(cart))
+
+
+@app.route('/api/remove/carts', methods=['post'])
+def remove_from_cart():
+    cart = session.get('cart')
+
+    id = str(request.json.get('id'))
+    del cart[id]
+
+    session['cart'] = cart
+
+    return jsonify(utils.stats_cart(cart))
+
+
+@app.route('/api/updateQuantity/carts', methods=['post'])
+def update_quantity():
+    cart = session.get('cart')
+
+    id = str(request.json.get('id'))
+    cart[id]['quantity'] += 1
+
+    session['cart'] = cart
+
+    stats = utils.stats_cart(cart)
+
+    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
+
+
+@app.route("/list-order")
 def orderOnline():
     books = dao.load_books()
     return render_template("order_online.html", books=books)
 
-@app.route("/unplaced-order")
+
+@app.route("/order")
 def unplacedOrder():
-    # books = dao.load_books()
-    return render_template("unplaced_order.html")
+    kw = request.args.get('kw')
+    page = request.args.get('page', 1)
+    total = dao.count_books()
+    books = dao.load_books(kw=kw, page=int(page))
+    return render_template("unplaced_order.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_process():
@@ -51,7 +130,10 @@ def login_process():
 
         if user:
             login_user(user)
-            return redirect('/')
+            if user.user_role == UserRole.CUSTOMER:
+                return redirect('/')
+            else:
+                return redirect('/order')
         else:
             err_msg = "Invalid username or password"
     return render_template("login.html", err_msg=err_msg)
@@ -68,10 +150,11 @@ def login_admin_process():
 
     return redirect('/admin')
 
-@app.route("/logout", methods=['GET', 'POST'])
+
+@app.route("/logout")
 def logout_process():
     logout_user()
-    return redirect('/login')
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -83,6 +166,7 @@ def register_process():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        address = request.form.get("address")
         if not User.query.filter(User.username.__eq__(username)).first():
             if password.strip() != confirm.strip():
                 err_msg = "Mat khau khong khop"
@@ -91,13 +175,73 @@ def register_process():
                 if avatar:
                     res = cloudinary.uploader.upload(avatar)
                     avatar = res["secure_url"]
-                if dao.add_user(phone=phone, name=name, username=username, password=password, avatar=avatar):
+                if dao.add_user(phone=phone, name=name, username=username, password=password, address=address, avatar=avatar):
                     return redirect('/login')
                 else:
                     err_msg = "Something Wrong!!!"
         else:
             err_msg = "Username already exists"
     return render_template('register.html', err_msg=err_msg)
+
+
+@app.route("/api/checkout", methods=['POST'])
+def checkout_api():
+    customerID = request.json.get('customerID')
+    cart = request.json.get('cart')
+    phone = request.json.get('phone')
+
+    orderID = dao.add_order(customerID=customerID, phone=phone, cart=cart)
+
+    if orderID != None:
+        session['cart'] = {}
+
+    return jsonify({ "orderID": orderID, "stats": utils.stats_cart(cart)})
+
+
+@app.route('/create_payment', methods=['POST'])
+def create_payment():
+    """Tạo URL thanh toán."""
+    order_id = int(request.json.get('order_id'))
+    amount = int(request.json.get('amount'))
+    ip_address = request.remote_addr
+
+    payment_url = vnpay.create_payment_url(order_id, amount, 'http://127.0.0.1:5000/payment_success', ip_address)
+    return jsonify({"payment_url": payment_url})
+
+
+@app.route('/payment_success', methods=['GET'])
+def payment_success():
+    """Xử lý sau khi thanh toán."""
+    vnp_params = request.args.to_dict()
+    vnp_secure_hash = vnp_params.pop("vnp_SecureHash", None)
+
+    # Sắp xếp tham số
+    sorted_params = sorted(vnp_params.items())
+    query_string = "&".join(f"{key}={urllib.parse.quote_plus(str(value))}" for key, value in sorted_params)
+
+    # Tạo hash
+    generated_hash = hmac.new(
+        VNP_HASH_SECRET.encode("utf-8"),
+        query_string.encode("utf-8"),
+        hashlib.sha512
+    ).hexdigest()
+
+    if generated_hash.upper() == vnp_secure_hash.upper():  # So sánh không phân biệt hoa thường
+        # return f"Thanh toán thành công! Giao dịch: {vnp_params.get('vnp_TxnRef')}"
+        session['message'] = 'success'
+        session['order_id'] = vnp_params.get('vnp_TxnRef')
+        return redirect(url_for('index'))
+        # return redirect(url_for("index", order_id=vnp_params.get("vnp_TxnRef"), message="success"))
+    else:
+        # return "Xác thực giao dịch thất bại!", 400
+        session['message'] = 'failure'
+        return redirect(url_for('index'))
+        # return redirect(url_for("index", message="failure"))
+    
+
+@app.route("/checkout")
+def checkout():
+    return render_template("checkout.html")
 
 
 @login.user_loader
@@ -108,14 +252,18 @@ def load_user(user_id):
 @app.context_processor
 def common_response():
     return {
-        "types" : dao.load_types(),
+        "cates" : dao.load_cates(),
+        'cart_stats': utils.stats_cart(session.get('cart')),
+        "cart": session.get('cart'),
+        "UserRole": UserRole
     }
 
-@app.route("/checkout")
-def checkout():
-    return render_template("checkout.html")
+
+@app.template_filter('currency')
+def currency_filter(value):
+    return f"{value:,.0f} VND"
 
 
 if __name__ == "__main__":
-    from admin import *
+    from app import admin
     app.run(debug=True)
