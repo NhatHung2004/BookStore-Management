@@ -1,28 +1,25 @@
 import sys
 import os
-
-import cloudinary.uploader
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import cloudinary.uploader
 from models import User, UserRole
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user
-from app import login, dao, create_app
+from app import login, dao, app, utils
 import cloudinary
-
-app = create_app()
 
 
 @app.route("/")
 def index():
-    kw = request.form.get("kw")
+    kw = request.args.get("kw")
     books = dao.load_books(kw=kw)
     return render_template("index.html", books=books)
 
 
-@app.route('/type/<int:type_id>')
-def books_by_type(type_id):
-    books = dao.load_books_by_type(type_id)
+@app.route('/category/<int:cate_id>')
+def books_by_type(cate_id):
+    books = dao.load_books_by_cate(cate_id)
     return render_template("index.html", books=books)
 
 
@@ -31,15 +28,77 @@ def cart():
     books = dao.load_books()
     return render_template("cart.html", books=books)
 
+
+@app.route('/api/add/carts', methods=['post'])
+def add_to_cart():
+    cart = session.get('cart')
+
+    if not cart:
+        cart = {}
+
+    id = str(request.json.get('id'))
+    name = request.json.get('name')
+    author = request.json.get('author')
+    category = request.json.get('category')
+    image = request.json.get('image')
+    price = request.json.get('price')
+
+    if id in cart:
+        cart[id]["quantity"] += 1
+    else:
+        cart[id] = {
+            "id": id,
+            "name": name,
+            "author": author,
+            "category": category,
+            "image": image,
+            "price": price,
+            "quantity": 1
+        }
+
+    session['cart'] = cart
+
+    return jsonify(utils.stats_cart(cart))
+
+
+@app.route('/api/remove/carts', methods=['post'])
+def remove_from_cart():
+    cart = session.get('cart')
+
+    id = str(request.json.get('id'))
+    del cart[id]
+
+    session['cart'] = cart
+
+    return jsonify(utils.stats_cart(cart))
+
+
+@app.route('/api/updateQuantity/carts', methods=['post'])
+def update_quantity():
+    cart = session.get('cart')
+
+    id = str(request.json.get('id'))
+    cart[id]['quantity'] += 1
+
+    session['cart'] = cart
+
+    stats = utils.stats_cart(cart)
+
+    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
+
+
 @app.route("/order-online")
 def orderOnline():
     books = dao.load_books()
     return render_template("order_online.html", books=books)
 
+
 @app.route("/unplaced-order")
 def unplacedOrder():
-    books = dao.load_books()
-    return render_template("unplaced_order.html", books=books)
+    # books = dao.load_books()
+    # return render_template("unplaced_order.html", books=books)
+    return render_template("unplaced_order.html")
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_process():
@@ -68,10 +127,11 @@ def login_admin_process():
 
     return redirect('/admin')
 
-@app.route("/logout", methods=['GET', 'POST'])
+
+@app.route("/logout")
 def logout_process():
     logout_user()
-    return redirect('/login')
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -83,6 +143,7 @@ def register_process():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        address = request.form.get("address")
         if not User.query.filter(User.username.__eq__(username)).first():
             if password.strip() != confirm.strip():
                 err_msg = "Mat khau khong khop"
@@ -91,13 +152,31 @@ def register_process():
                 if avatar:
                     res = cloudinary.uploader.upload(avatar)
                     avatar = res["secure_url"]
-                if dao.add_user(phone=phone, name=name, username=username, password=password, avatar=avatar):
+                if dao.add_user(phone=phone, name=name, username=username, password=password, address=address, avatar=avatar):
                     return redirect('/login')
                 else:
                     err_msg = "Something Wrong!!!"
         else:
             err_msg = "Username already exists"
     return render_template('register.html', err_msg=err_msg)
+
+
+@app.route("/api/checkout", methods=['POST'])
+def checkout_api():
+    customerID = request.json.get('customerID')
+    cart = request.json.get('cart')
+
+    orderID = dao.add_online_order(customerID=customerID, cart=cart)
+
+    if orderID != None:
+        session['cart'] = {}
+
+    return jsonify({ "orderID": orderID, "stats": utils.stats_cart(cart)})
+
+
+@app.route("/checkout")
+def checkout():
+    return render_template("checkout.html")
 
 
 @login.user_loader
@@ -108,10 +187,17 @@ def load_user(user_id):
 @app.context_processor
 def common_response():
     return {
-        "types" : dao.load_types(),
+        "cates" : dao.load_cates(),
+        'cart_stats': utils.stats_cart(session.get('cart')),
+        "cart": session.get('cart')
     }
 
 
+@app.template_filter('currency')
+def currency_filter(value):
+    return f"{value:,.0f} VND"
+
+
 if __name__ == "__main__":
-    from admin import *
+    from app import admin
     app.run(debug=True)

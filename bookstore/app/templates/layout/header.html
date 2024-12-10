@@ -9,19 +9,17 @@
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="/" class="nav-link px-2 link-light">All</a></li>
-                {% for t in types %}
-                <li><a href="/type/{{ t.id }}" class="nav-link px-2 link-light">{{ t.name }}</a></li>
+                {% for c in cates %}
+                <li><a href="/category/{{ c.id }}" class="nav-link px-2 link-light">{{ c.name }}</a></li>
                 {% endfor %}
             </ul>
-
-            {% if current_user.is_authenticated %}
+            
             <div class="d-flex align-items-center" style="margin-right: 30px;">
-                <a href="/cart" class="cart-icon">
+                <a href="/checkout" class="cart-icon">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="badge">3</span>
+                    <span class="badge cart-counter">{{ cart_stats.total_quantity }}</span>
                 </a>
             </div>
-            {% endif %}
 
             <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
                 <input type="search" class="form-control" placeholder="Search..." aria-label="Search" name="kw">
