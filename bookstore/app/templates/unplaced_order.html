@@ -21,11 +21,18 @@
                         <div class="input-group">
                             <!-- Biểu tượng kính lúp bên trong ô nhập liệu -->
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" placeholder="Nhập Tên Sách...">
+                            <input type="search" name="kw" class="form-control" placeholder="Nhập Tên Sách...">
                         </div>
                     </div>
                     <div class="col-auto">
-                        <button class="btn custom-btn">Tìm kiếm</button>
+                        <button class="btn custom-btn" type="submit">Tìm kiếm</button>
+                    </div>
+                    <div class="col-auto">
+                        <ul class="pagination mt-1">
+                            {% for i in range (1, pages + 1) %}
+                            <li class="page-item"><a class="page-link" href="/?page={{ i }}">{{ i }}</a></li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
 
