@@ -1,6 +1,6 @@
 import hashlib
-from app import db
-from models import Customer, Staff, Book, Author, Category, User, UserRole, OnlineOrder, Bill, book_onlOrder
+from app import db, app
+from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
 from sqlalchemy import insert
 
 
@@ -15,11 +15,11 @@ def add_user(phone, name, username, password, address, avatar=None):
     return customer
 
 
-def add_to_book_onlOrder(book_id, onlOrder_id, quantity, price):
+def add_to_book_order(book_id, order_id, quantity, price):
     # Tạo câu lệnh chèn vào bảng trung gian
-    stmt = insert(book_onlOrder).values(
+    stmt = insert(book_order).values(
         book_id=book_id,
-        onlOrder_id=onlOrder_id,
+        order_id=order_id,
         quantity=quantity,
         price=price
     )
@@ -28,24 +28,22 @@ def add_to_book_onlOrder(book_id, onlOrder_id, quantity, price):
     db.session.commit()
 
 
-def add_online_order(customerID, cart):
+def add_order(customerID, phone, cart):
     if cart != None:
-        bill = Bill(customer_id=customerID)
-        db.session.add(bill)
+        order = Order(phone=phone, customer_id=customerID)
+        db.session.add(order)
         db.session.flush()
-        onlineOrder = OnlineOrder(customer_id=customerID, order=bill)
-        db.session.add(onlineOrder)
-        db.session.flush()
+
         for c in cart.values():
-            add_to_book_onlOrder(
+            add_to_book_order(
                 book_id=int(c['id']),
-                onlOrder_id=onlineOrder.id,
-                quantity=c['quantity'],
+                order_id=order.id, 
+                quantity=c['quantity'], 
                 price=c['price']
             )
-
+            
         db.session.commit()
-        return onlineOrder.id
+        return order.id
     return None
 
 
@@ -66,14 +64,22 @@ def get_user_by_id(user_id):
 def load_cates():
     return Category.query.all()
 
-
-def load_books(kw=None):
+    
+def load_books(kw=None, page=1):
     books = Book.query
 
     if kw:
         books = books.filter(Book.name.icontains(kw))
 
+    page_size = app.config["PAGE_SIZE"]
+    start = (page - 1) * page_size
+    books = books.slice(start, start + page_size)
+    
     return books.all()
+
+
+def count_books():
+    return Book.query.count()
 
 
 def load_books_by_cate(id):

@@ -2,16 +2,24 @@
 
 {% block content %}
 <div class="row content">
+    {% if alert %}
+    <div class="alert alert-{{ alert_type }} alert-dismissible fade show" role="alert">
+        {{ alert }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
     {% if books %}
+    <ul class="pagination mt-1">
+        {% for i in range (1, pages + 1) %}
+        <li class="page-item"><a class="page-link" href="/?page={{ i }}">{{ i }}</a></li>
+        {% endfor %}
+    </ul>
     {% for book in books %}
     <div class="col-md-3 col-sm-6 mb-4">
         <div class="product-item">
             <figure class="product-style">
                 <img src="{{ book.image }}" alt="{{ book.name }}" class="img-fluid w-100">
-                <button
-                    type="button"
-                    class="add-to-cart"
-                    data-product-tile="add-to-cart"
+                <button type="button" class="add-to-cart" data-product-tile="add-to-cart"
                     onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
                     '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
                     Mua ngay

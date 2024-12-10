@@ -41,8 +41,7 @@ class Customer(db.Model):
     phone = Column(String(50), nullable=False)
     address = Column(String(100), nullable=False)
 
-    onlineOrders = relationship('OnlineOrder', backref='customer', lazy=True)
-    bills = relationship('Bill', backref='customer', lazy=True)
+    orders = relationship('Order', backref='customer', lazy=True)
     
 
 class Staff(db.Model):
@@ -50,8 +49,8 @@ class Staff(db.Model):
     phone = Column(String(50))
     role_permision = Column(Enum(RolePermision), nullable=False)
 
-    # quan hệ one-to-many với bảng Bill
-    bills = relationship('Bill', backref='staff', lazy=True)
+    # quan hệ one-to-many với bảng Order
+    orders = relationship('Order', backref='staff', lazy=True)
     # quan hệ one-to-many với bảng Form
     forms = relationship('Form', backref='staff', lazy=True)
 
@@ -76,16 +75,9 @@ class Category(db.Model):
         return self.name
     
 
-book_onlOrder = db.Table("book_onlOrder", 
+book_order = db.Table("book_order", 
                         Column("book_id", Integer, ForeignKey('book.id'), primary_key=True),
-                        Column("onlOrder_id", Integer, ForeignKey('online_order.id'), primary_key=True),
-                        Column('quantity', Integer, nullable=False),
-                        Column('price', Integer, nullable=False))
-
-
-book_bill = db.Table("book_bill", 
-                        Column("book_id", Integer, ForeignKey('book.id'), primary_key=True),
-                        Column("bill_id", Integer, ForeignKey('bill.id'), primary_key=True),
+                        Column("order_id", Integer, ForeignKey('order.id'), primary_key=True),
                         Column('quantity', Integer, nullable=False),
                         Column('price', Integer, nullable=False))
 
@@ -113,17 +105,19 @@ class Book(db.Model):
         return self.name
 
 
-class OnlineOrder(db.Model):
-    id = Column(Integer, ForeignKey('bill.id'), primary_key=True)
+class Order(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
     createdDate = Column(Date, default=date.today(), nullable=False)
     pickupDate = Column(Date, default=date.today(), nullable=False)
     isPay = Column(Boolean, default=False)
+    phone = Column(String(20), nullable=True)
 
     # quan hệ one-to-many với bảng Customer
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
+    staff_id = Column(Integer, ForeignKey('staff.id'), nullable=True)
     
     # quan hệ many-to-many với bảng Book
-    books = relationship('Book', secondary='book_onlOrder', lazy='subquery', backref=backref('onlOrders', lazy=True))
+    books = relationship('Book', secondary='book_order', lazy='subquery', backref=backref('orders', lazy=True))
 
 
 class Form(db.Model):
@@ -133,19 +127,6 @@ class Form(db.Model):
 
     # quan hệ many-to-many với bảng Book
     books = relationship('Book', secondary='book_form', lazy='subquery', backref=backref('forms', lazy=True))
-
-
-class Bill(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    createdDate = Column(Date, default=date.today())
-
-    customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
-    staff_id = Column(Integer, ForeignKey('staff.id'), nullable=True)
-
-    onlineOrder = relationship("OnlineOrder", backref="order", lazy=True, uselist=False)
-
-     # quan hệ many-to-many với bảng Book
-    books = relationship('Book', secondary='book_bill', lazy='subquery', backref=backref('bills', lazy=True))
 
 
 if __name__ == '__main__':
@@ -166,7 +147,9 @@ if __name__ == '__main__':
         db.session.add_all([m, s])
         db.session.commit()
 
-        customer = User(name="Nguyễn Nhật Hưng", username="nhathung", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.CUSTOMER)
+        customer = User(name="Nguyễn Nhật Hưng", username="nhathung",
+                        password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.CUSTOMER,
+                        avatar="https://res.cloudinary.com/dvahhupo0/image/upload/v1733470370/vbwqwhu5l0w8cf3yljux.jpg")
         c = Customer(phone="0836367981", address="Nhà Bè", user=customer)
         db.session.add(c)
         db.session.commit()
@@ -326,6 +309,14 @@ if __name__ == '__main__':
                 "inventoryQuantity": 200,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733283038/58c17950e24e1f9b0b08221edec27dc5.jpg_bueomz.webp",
                 "price": 93000,
+                "author_id": 9,
+                "category_id": 2
+            },
+            {
+                "name": "test",
+                "inventoryQuantity": 24,
+                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733283038/58c17950e24e1f9b0b08221edec27dc5.jpg_bueomz.webp",
+                "price": 10000,
                 "author_id": 9,
                 "category_id": 2
             },

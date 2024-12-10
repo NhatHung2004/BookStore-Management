@@ -2,19 +2,37 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+import math
 import cloudinary.uploader
 from models import User, UserRole
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user
-from app import login, dao, app, utils
+from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
+import hmac
+import hashlib
 import cloudinary
+import urllib.parse
 
 
 @app.route("/")
 def index():
     kw = request.args.get("kw")
-    books = dao.load_books(kw=kw)
-    return render_template("index.html", books=books)
+    page = request.args.get('page', 1)
+    total = dao.count_books()
+    books = dao.load_books(kw=kw, page=int(page))
+    message = session.pop('message', None)  # Lấy và xóa sau khi sử dụng
+    order_id = session.pop('order_id', None)
+    if message == "success":
+        alert = f"Thanh toán thành công! Mã giao dịch: {order_id}"
+        alert_type = "success"
+    elif message == "failure":
+        alert = "Xác thực giao dịch thất bại!"
+        alert_type = "danger"
+    else:
+        alert = None
+        alert_type = None
+    return render_template("index.html", books=books, alert=alert, alert_type=alert_type,
+                           pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
 @app.route('/category/<int:cate_id>')
@@ -87,17 +105,19 @@ def update_quantity():
     return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
 
 
-@app.route("/order-online")
+@app.route("/list-order")
 def orderOnline():
     books = dao.load_books()
     return render_template("order_online.html", books=books)
 
 
-@app.route("/unplaced-order")
+@app.route("/order")
 def unplacedOrder():
-    # books = dao.load_books()
-    # return render_template("unplaced_order.html", books=books)
-    return render_template("unplaced_order.html")
+    kw = request.args.get('kw')
+    page = request.args.get('page', 1)
+    total = dao.count_books()
+    books = dao.load_books(kw=kw, page=int(page))
+    return render_template("unplaced_order.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -110,7 +130,10 @@ def login_process():
 
         if user:
             login_user(user)
-            return redirect('/')
+            if user.user_role == UserRole.CUSTOMER:
+                return redirect('/')
+            else:
+                return redirect('/order')
         else:
             err_msg = "Invalid username or password"
     return render_template("login.html", err_msg=err_msg)
@@ -165,14 +188,56 @@ def register_process():
 def checkout_api():
     customerID = request.json.get('customerID')
     cart = request.json.get('cart')
+    phone = request.json.get('phone')
 
-    orderID = dao.add_online_order(customerID=customerID, cart=cart)
+    orderID = dao.add_order(customerID=customerID, phone=phone, cart=cart)
 
     if orderID != None:
         session['cart'] = {}
 
     return jsonify({ "orderID": orderID, "stats": utils.stats_cart(cart)})
 
+
+@app.route('/create_payment', methods=['POST'])
+def create_payment():
+    """Tạo URL thanh toán."""
+    order_id = int(request.json.get('order_id'))
+    amount = int(request.json.get('amount'))
+    ip_address = request.remote_addr
+
+    payment_url = vnpay.create_payment_url(order_id, amount, 'http://127.0.0.1:5000/payment_success', ip_address)
+    return jsonify({"payment_url": payment_url})
+
+
+@app.route('/payment_success', methods=['GET'])
+def payment_success():
+    """Xử lý sau khi thanh toán."""
+    vnp_params = request.args.to_dict()
+    vnp_secure_hash = vnp_params.pop("vnp_SecureHash", None)
+
+    # Sắp xếp tham số
+    sorted_params = sorted(vnp_params.items())
+    query_string = "&".join(f"{key}={urllib.parse.quote_plus(str(value))}" for key, value in sorted_params)
+
+    # Tạo hash
+    generated_hash = hmac.new(
+        VNP_HASH_SECRET.encode("utf-8"),
+        query_string.encode("utf-8"),
+        hashlib.sha512
+    ).hexdigest()
+
+    if generated_hash.upper() == vnp_secure_hash.upper():  # So sánh không phân biệt hoa thường
+        # return f"Thanh toán thành công! Giao dịch: {vnp_params.get('vnp_TxnRef')}"
+        session['message'] = 'success'
+        session['order_id'] = vnp_params.get('vnp_TxnRef')
+        return redirect(url_for('index'))
+        # return redirect(url_for("index", order_id=vnp_params.get("vnp_TxnRef"), message="success"))
+    else:
+        # return "Xác thực giao dịch thất bại!", 400
+        session['message'] = 'failure'
+        return redirect(url_for('index'))
+        # return redirect(url_for("index", message="failure"))
+    
 
 @app.route("/checkout")
 def checkout():
@@ -189,7 +254,8 @@ def common_response():
     return {
         "cates" : dao.load_cates(),
         'cart_stats': utils.stats_cart(session.get('cart')),
-        "cart": session.get('cart')
+        "cart": session.get('cart'),
+        "UserRole": UserRole
     }
 
 
