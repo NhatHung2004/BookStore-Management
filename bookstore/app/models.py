@@ -77,7 +77,7 @@ class Category(db.Model):
 
 book_order = db.Table("book_order", 
                         Column("book_id", Integer, ForeignKey('book.id'), primary_key=True),
-                        Column("order_id", Integer, ForeignKey('order.id'), primary_key=True),
+                        Column("order_id", String(50), ForeignKey('order.id'), primary_key=True),
                         Column('quantity', Integer, nullable=False),
                         Column('price', Integer, nullable=False))
 
@@ -106,7 +106,7 @@ class Book(db.Model):
 
 
 class Order(db.Model):
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String(50), primary_key=True)
     createdDate = Column(Date, default=date.today(), nullable=False)
     pickupDate = Column(Date, default=date.today(), nullable=False)
     isPay = Column(Boolean, default=False)
@@ -311,15 +311,7 @@ if __name__ == '__main__':
                 "price": 93000,
                 "author_id": 9,
                 "category_id": 2
-            },
-            {
-                "name": "test",
-                "inventoryQuantity": 24,
-                "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733283038/58c17950e24e1f9b0b08221edec27dc5.jpg_bueomz.webp",
-                "price": 10000,
-                "author_id": 9,
-                "category_id": 2
-            },
+            }
         ]
 
         # for p in dataCategory:

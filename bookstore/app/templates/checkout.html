@@ -71,40 +71,11 @@
                             </div>
                         </div>
                     </form>
-                    <div class="row gy-3">
-                        <div class="col-md-6">
-                            <label for="cc-name" class="form-label">Tên chủ thẻ</label>
-                            <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                            <div class="invalid-feedback">
-                                Name on card is required
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="cc-number" class="form-label">Số thẻ</label>
-                            <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                            <div class="invalid-feedback">
-                                Credit card number is required
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="cc-expiration" class="form-label">Ngày hết hạn</label>
-                            <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                            <div class="invalid-feedback">
-                                Expiration date required
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="cc-cvv" class="form-label">CVV</label>
-                            <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                            <div class="invalid-feedback">
-                                Security code required
-                            </div>
-                        </div>
-                    </div>
                     <hr class="my-4">
                     <button class="w-100 btn btn-primary btn-lg"
-                        onclick="orderOnline({{ current_user.id }}, {{ current_user.customer.phone }}, {{ cart }})">Tạo đơn hàng
-                        hàng</button>
+                        onclick="orderOnline({{ current_user.id }}, {{ current_user.customer.phone }}, {{ cart }})">
+                        Tạo đơn hàng hàng
+                    </button>
                 </div>
             </div>
         </div>
@@ -123,7 +94,7 @@
                         <input type="text" id="total_amount" value="">
                     </div>
                     <div class="modal-footer">
-                        <button onclick="payment({{ cart_stats.total_amount }})" class="btn btn-primary">Tiếp tục mua sắm</button>
+                        <button onclick="payment({{ cart_stats.total_amount }})" class="btn btn-primary">Thực hiện thanh toán</button>
                     </div>
                 </div>
             </div>

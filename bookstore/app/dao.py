@@ -1,5 +1,6 @@
 import hashlib
 from app import db, app
+import uuid
 from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
 from sqlalchemy import insert
 
@@ -30,7 +31,8 @@ def add_to_book_order(book_id, order_id, quantity, price):
 
 def add_order(customerID, phone, cart):
     if cart != None:
-        order = Order(phone=phone, customer_id=customerID)
+        orderID = str(uuid.uuid4())
+        order = Order(id=orderID, phone=phone, customer_id=customerID)
         db.session.add(order)
         db.session.flush()
 
@@ -45,6 +47,12 @@ def add_order(customerID, phone, cart):
         db.session.commit()
         return order.id
     return None
+
+
+def update_order_status(orderID):
+    order = Order.query.filter_by(id=orderID).first()
+    order.isPay = True if order.isPay == False else False
+    db.session.commit()
 
 
 def auth_user(username, password, role=None):
@@ -65,11 +73,13 @@ def load_cates():
     return Category.query.all()
 
     
-def load_books(kw=None, page=1):
+def load_books(kw=None, page=1, cate=None):
     books = Book.query
 
     if kw:
         books = books.filter(Book.name.icontains(kw))
+    if cate:
+        books = books.filter(Book.category_id.__eq__(cate))
 
     page_size = app.config["PAGE_SIZE"]
     start = (page - 1) * page_size
@@ -82,5 +92,18 @@ def count_books():
     return Book.query.count()
 
 
-def load_books_by_cate(id):
-    return Category.query.get(id).books
+def load_orders(kw=None, customerID=None):
+    orders = Order.query
+
+    if kw:
+        orders = orders.filter(Order.id.icontains(kw))
+
+    return orders.all()
+
+
+def calculate_order_total(order_id):
+    total = db.session.query(
+        db.func.sum(book_order.quantity * book_order.price)
+    ).filter(book_order.order_id == order_id).scalar()
+
+    return total or 0.0
