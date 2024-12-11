@@ -10,7 +10,7 @@
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="/" class="nav-link px-2 link-light">All</a></li>
                 {% for c in cates %}
-                <li><a href="/category/{{ c.id }}" class="nav-link px-2 link-light">{{ c.name }}</a></li>
+                <li><a href="/?category={{ c.id }}" class="nav-link px-2 link-light">{{ c.name }}</a></li>
                 {% endfor %}
             </ul>
             
@@ -35,7 +35,9 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><p class="dropdown-item">Chào {{ current_user.name }}</p></li>
+                    {% if current_user.user_role != UserRole.STAFF %}
                     <li><a class="dropdown-item" href="#">Chỉnh sửa trang cá nhân</a></li>
+                    {% endif %}
                     <li><a class="dropdown-item" href="#">Đơn hàng</a></li>
                     <li>
                         <hr class="dropdown-divider">

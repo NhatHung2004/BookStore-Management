@@ -1,3 +1,7 @@
+import dao
+from app import app
+import math
+
 def stats_cart(cart):
     total_amount, total_quantity = 0, 0
 

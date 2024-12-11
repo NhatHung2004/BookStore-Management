@@ -13,10 +13,10 @@
     <!-- Date Range -->
     <div class="row g-3 mb-4 align-items-end">
         <!-- Search -->
-        <div class="col-auto ms-auto d-flex align-items-center">
-            <input type="text" class="form-control me-2" style="width: 200px;" placeholder="Nhập Mã Đơn Hàng...">
-            <button class="btn btn-primary">Tìm kiếm</button>
-        </div>
+        <form class="col-auto ms-auto d-flex align-items-center">
+            <input type="search" name="kw" class="form-control me-2" style="width: 200px;" placeholder="Nhập Mã Đơn Hàng...">
+            <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+        </form>
     </div>
     <!-- Card Body -->
     <div class="card">
@@ -31,19 +31,24 @@
                         <th class="nosort">Order ID</th>
                         <th class="customer-id">Mã khách hàng</th>
                         <th>Ngày đặt</th>
-                        <th>Hạn lấy</th>
+                        <th>Ngày lấy</th>
                         <th>Trạng thái</th>
                         <th>Tổng tiền</th>
                         <th class="settings-header">Cài đặt</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for o in orders %}
                     <tr>
-                        <td>#12345</td>
-                        <td>KH001</td>
-                        <td>2024-12-01</td>
-                        <td>2024-12-05</td>
+                        <td>{{ o.id }}</td>
+                        <td>{{ o.customer_id }}</td>
+                        <td>{{ o.createdDate }}</td>
+                        <td>{{ o.pickupDate }}</td>
+                        {% if o.isPay == True %}
                         <td><span class="badge bg-success">Đã thanh toán</span></td>
+                        {% else %}
+                        <td><span class="badge bg-warning">Chưa thanh toán</span></td>
+                        {% endif %}
                         <td>$320.80</td>
                         <td>
                             <!-- Dropdown for settings -->
@@ -60,42 +65,15 @@
                                         <button class="dropdown-item" onclick="deleteOrder()">Xóa đơn hàng</button>
                                     </li>
                                     <li>
-                                        <button class="dropdown-item" onclick="orderDetail()">Chi tiết đơn hàng đã đặt
+                                        <button class="dropdown-item" onclick="orderDetail()">
+                                            Chi tiết đơn hàng
                                         </button>
                                     </li>
                                 </ul>
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>#12346</td>
-                        <td>KH002</td>
-                        <td>2024-12-02</td>
-                        <td>2024-12-06</td>
-                        <td><span class="badge bg-warning">Chưa thanh toán</span></td>
-                        <td>$150.00</td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-light btn-sm" type="button" id="dropdownMenuButton2"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots-vertical"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
-                                    <li>
-                                        <button class="dropdown-item" onclick="printInvoice()">In hóa đơn</button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" onclick="deleteOrder()">Xóa đơn hàng</button>
-                                    </li>
-                                    <li>
-                                        <button class="dropdown-item" onclick="orderDetail()">Chi tiết đơn hàng đã đặt
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Các đơn hàng khác có thể thêm vào đây -->
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
