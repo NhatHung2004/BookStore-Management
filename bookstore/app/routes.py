@@ -268,6 +268,14 @@ def currency_filter(value):
 def manage():
     return render_template("manage.html")
 
+@app.route("/detail-order")
+def detail_order():
+    return render_template("detail-order.html")
+
+@app.route("/bill")
+def bill():
+    return render_template("bill.html")
+
 
 if __name__ == "__main__":
     from app import admin
