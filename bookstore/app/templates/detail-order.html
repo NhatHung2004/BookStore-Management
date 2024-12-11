@@ -1,0 +1,53 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<body class="detail-order-body">
+    <div class="detail-order-container">
+        <h2 class="detail-order-heading">Chi tiết đơn hàng</h2>
+        <table class="table detail-order-table table-bordered table-striped">
+            <thead class="detail-order-thead">
+                <tr>
+                    <th scope="col">Mã sách</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Hình ảnh</th>
+                    <th scope="col">Giá sách (VND)</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Tổng giá sách (VND)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BK001</td>
+                    <td>Book Title 1</td>
+                    <td><img src="https://via.placeholder.com/70" alt="Book 1" class="detail-order-book-image"></td>
+                    <td>100,000</td>
+                    <td>2</td>
+                    <td>200,000</td>
+                </tr>
+                <tr>
+                    <td>BK002</td>
+                    <td>Book Title 2</td>
+                    <td><img src="https://via.placeholder.com/70" alt="Book 2" class="detail-order-book-image"></td>
+                    <td>150,000</td>
+                    <td>1</td>
+                    <td>150,000</td>
+                </tr>
+                <tr>
+                    <td>BK003</td>
+                    <td>Book Title 3</td>
+                    <td><img src="https://via.placeholder.com/70" alt="Book 3" class="detail-order-book-image"></td>
+                    <td>200,000</td>
+                    <td>3</td>
+                    <td>600,000</td>
+                </tr>
+            </tbody>
+            <tfoot class="detail-order-tfoot">
+                <tr>
+                    <td colspan="5" class="detail-order-text-end"><strong>Tổng số tiền (VND):</strong></td>
+                    <td>950,000</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+{% endblock %}

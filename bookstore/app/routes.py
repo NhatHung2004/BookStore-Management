@@ -36,6 +36,21 @@ def index():
                            pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
+@app.route("/manage")
+def manage():
+    return render_template("manage.html")
+
+
+@app.route("/detail-order")
+def detail_order():
+    return render_template("detail-order.html")
+
+
+@app.route("/bill")
+def bill():
+    return render_template("bill.html")
+
+
 @app.route("/cart")
 def cart():
     books = dao.load_books()
@@ -105,7 +120,7 @@ def orderOnline():
     kw = request.args.get("kw")
     orders = dao.load_orders(kw=kw)
     books = dao.load_books()
-    return render_template("order_online.html", books=books, orders=orders)
+    return render_template("list_order.html", books=books, orders=orders)
 
 
 @app.route("/order/")

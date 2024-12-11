@@ -1,0 +1,110 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<body class="book-manager">
+    <!-- Sidebar -->
+    <div class="d-flex">
+        <!-- Main content -->
+        <div class="container-fluid">
+            <div class="table-container fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Danh sách sản phẩm</h2>
+                    <button class="btn btn-primary" onclick="showDialog('add')">+ Thêm sách mới</button>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Mã sách</th>
+                            <th>Tên sách</th>
+                            <th>Ảnh sách</th>
+                            <th>Thể loại</th> <!-- Thêm cột Category -->
+                            <th>Giá</th>
+                            <th>Tác giả</th>
+                            <th>Số lượng</th>
+                            <th>Ngày nhập</th>
+                            <th>Tuỳ chọn</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody">
+                        <tr>
+                            <td>1</td>
+                            <td>Lorem Ipsum</td>
+                            <td><img src="https://res.cloudinary.com/dvahhupo0/image/upload/v1732682133/9786045892640_pjzzzm.webp"
+                                    alt="Book Cover"></td>
+                            <td>Novel</td> <!-- Giá trị thể loại -->
+                            <td>$20.78</td>
+                            <td><span class="author-badge">Steve Backlund</span></td>
+                            <td>10</td>
+                            <td>June 3, 1986</td>
+                            <td>
+                                <button class="btn-icon edit" onclick="showDialog('edit')" title="Edit">
+                                    <span class="fas fa-pencil-alt"></span>
+                                </button>
+                                <button class="btn-icon delete" title="Delete">
+                                    <span class="fas fa-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="bookModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Add/Edit Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookForm">
+                        <div class="mb-3">
+                            <label for="bookName" class="form-label">Book Name</label>
+                            <input type="text" class="form-control" id="bookName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookPrice" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="bookPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookAuthor" class="form-label">Author</label>
+                            <input type="text" class="form-control" id="bookAuthor" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookStock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="bookStock">
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookDate" class="form-label">Added Date</label>
+                            <input type="date" class="form-control" id="bookDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookImage" class="form-label">Book Image</label>
+                            <input type="file" class="form-control" id="bookImage" accept="image/*">
+                        </div>
+                        <!-- New Category Field -->
+                        <div class="mb-3">
+                            <label for="bookCategory" class="form-label">Category</label>
+                            <select class="form-select" id="bookCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="Novel">Novel</option>
+                                <option value="Biography">Biography</option>
+                                <option value="Economy">Economy</option>
+                                <option value="History">History</option>
+                                <option value="Science">Science</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBook()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
