@@ -2,9 +2,7 @@
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 0;
-    /* Loại bỏ padding mặc định của body */
     font-size: 16px;
-    /* Đặt font size chung cho toàn bộ trang */
 }
 
 .bill-container {
@@ -16,10 +14,10 @@
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     margin-top: 120px;
+    text-align: center; /* Căn nội dung ở trung tâm */
 }
 
 .bill-header {
-    text-align: center;
     margin-bottom: 20px;
     color: #004d40;
 }
@@ -40,6 +38,7 @@
 .bill-customer-info div,
 .bill-employee-info div {
     width: 48%;
+    display: inline-block; /* Đảm bảo mỗi div có width 48% */
 }
 
 .bill-table {
@@ -48,28 +47,28 @@
     margin-bottom: 20px;
     border-radius: 5px;
     overflow: hidden;
+    font-size: 18px; /* Tăng font-size cho bảng */
 }
 
 .bill-table,
-th,
-td {
+th.bill-th,
+td.bill-td {
     border: 1px solid #b2dfdb;
 }
 
-th,
-td {
-    padding: 12px;
-    text-align: left;
-    font-size: 16px;
+th.bill-th,
+td.bill-td {
+    padding: 16px; /* Tăng padding cho cột */
+    text-align: center; /* Căn nội dung ở giữa */
 }
 
-th {
+th.bill-th {
     background-color: #009688;
     color: #ffffff;
 }
 
-td img {
-    max-width: 60px;
+td img.bill-td {
+    max-width: 80px; /* Tăng kích thước ảnh */
     border-radius: 5px;
 }
 
@@ -77,5 +76,4 @@ td img {
     text-align: right;
     font-size: 14px;
     color: #004d40;
-<<<<<<< HEAD
 }

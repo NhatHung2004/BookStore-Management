@@ -255,7 +255,7 @@ footer#footer {
 }
 
 
-.card {
+.card-order {
     height: 700px;
 }
 
@@ -269,7 +269,7 @@ footer#footer {
     border: 1px solid #ced4da;
 }
 
-.payment-card-body {
+.payment-card-body-order {
     display: flex;
     flex-direction: column;
     height: 100%;
