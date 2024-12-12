@@ -17,9 +17,10 @@ import urllib.parse
 @app.route("/")
 def index():
     kw = request.args.get("kw")
+    cate = request.args.get("category")
     page = request.args.get('page', 1)
     total = dao.count_books()
-    books = dao.load_books(kw=kw, page=int(page))
+    books = dao.load_books(kw=kw, page=int(page), cate=cate)
     message = session.pop('message', None)  # Lấy và xóa sau khi sử dụng
     order_id = session.pop('order_id', None)
     if message == "success":
@@ -33,12 +34,6 @@ def index():
         alert_type = None
     return render_template("index.html", books=books, alert=alert, alert_type=alert_type,
                            pages=math.ceil(total / app.config["PAGE_SIZE"]))
-
-
-@app.route('/category/<int:cate_id>')
-def books_by_type(cate_id):
-    books = dao.load_books_by_cate(cate_id)
-    return render_template("index.html", books=books)
 
 
 @app.route("/cart")
@@ -107,17 +102,24 @@ def update_quantity():
 
 @app.route("/list-order")
 def orderOnline():
+    kw = request.args.get("kw")
+    orders = dao.load_orders(kw=kw)
     books = dao.load_books()
-    return render_template("order_online.html", books=books)
+    return render_template("order_online.html", books=books, orders=orders)
 
 
-@app.route("/order")
+@app.route("/order/")
 def unplacedOrder():
     kw = request.args.get('kw')
     page = request.args.get('page', 1)
     total = dao.count_books()
     books = dao.load_books(kw=kw, page=int(page))
     return render_template("unplaced_order.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]))
+
+
+@app.route("/order/<string:order_id>")
+def order_details(order_id):
+    pass
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -201,7 +203,7 @@ def checkout_api():
 @app.route('/create_payment', methods=['POST'])
 def create_payment():
     """Tạo URL thanh toán."""
-    order_id = int(request.json.get('order_id'))
+    order_id = request.json.get('order_id')
     amount = int(request.json.get('amount'))
     ip_address = request.remote_addr
 
@@ -227,16 +229,13 @@ def payment_success():
     ).hexdigest()
 
     if generated_hash.upper() == vnp_secure_hash.upper():  # So sánh không phân biệt hoa thường
-        # return f"Thanh toán thành công! Giao dịch: {vnp_params.get('vnp_TxnRef')}"
         session['message'] = 'success'
         session['order_id'] = vnp_params.get('vnp_TxnRef')
+        dao.update_order_status(vnp_params.get('vnp_TxnRef'))
         return redirect(url_for('index'))
-        # return redirect(url_for("index", order_id=vnp_params.get("vnp_TxnRef"), message="success"))
     else:
-        # return "Xác thực giao dịch thất bại!", 400
         session['message'] = 'failure'
         return redirect(url_for('index'))
-        # return redirect(url_for("index", message="failure"))
     
 
 @app.route("/checkout")

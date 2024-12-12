@@ -32,183 +32,9 @@ function displayPasswordConfirm() {
     }
 }
 
-// document.querySelector("#search-btn").onclick = () => {
-//     searchForm.classList.toggle("active");
-// };
-
-// var navLinks = document.querySelectorAll("header .navbar a");
-// var section = document.querySelectorAll("section");
-
-// window.onscroll = () => {
-//     searchForm.classList.remove("active");
-
-//     section.forEach((sec) => {
-//         var top = window.scrollY;
-//         var height = sec.offsetHeight;
-//         var offset = sec.offsetTop - 150;
-//         var id = sec.getAttribute("id");
-
-//         if (top >= offset && top < offset + height) {
-//             navLinks.forEach((links) => {
-//                 links.classList.remove("active");
-//                 document
-//                     .querySelector("header .navbar a[href *= " + id + "]")
-//                     .classList.add("active");
-//             });
-//         }
-//     });
-
-//     if (window.scrollY > 80) {
-//         document.querySelector(".header .header-2").classList.add("active");
-//     } else {
-//         document.querySelector(".header .header-2").classList.remove("active");
-//     }
-// };
-// function loader() {
-//     document.querySelector(".loader-container").classList.add("active");
-// }
-// function fadeOut() {
-//     setTimeout(loader, 4000);
-// }
-// window.onload = () => {
-//     if (window.scrollY > 80) {
-//         document.querySelector(".header .header-2").classList.add("active");
-//     } else {
-//         document.querySelector(".header .header-2").classList.remove("active");
-//     }
-//     fadeOut();
-// };
-
-// var swiper = new Swiper(".books-slider", {
-//     loop: true,
-//     centeredSlides: true,
-//     autoplay: {
-//         delay: 3000,
-//         disableOnInteraction: false,
-//     },
-//     breakpoints: {
-//         0: {
-//             slidesPerView: 1,
-//         },
-//         768: {
-//             slidesPerView: 2,
-//         },
-//         1024: {
-//             slidesPerView: 3,
-//         },
-//     },
-// });
-
-// var swiper = new Swiper(".populer-slider", {
-//     spaceBetween: 10,
-//     loop: true,
-//     centeredSlides: true,
-//     autoplay: {
-//         delay: 5000,
-//         disableOnInteraction: false,
-//     },
-//     navigation: {
-//         nextEl: ".swiper-button-next",
-//         prevEl: ".swiper-button-prev",
-//     },
-//     breakpoints: {
-//         0: {
-//             slidesPerView: 1,
-//         },
-//         450: {
-//             slidesPerView: 2,
-//         },
-//         768: {
-//             slidesPerView: 3,
-//         },
-//         1024: {
-//             slidesPerView: 4,
-//         },
-//     },
-// });
-
-// var swiper = new Swiper(".new-slider", {
-//     spaceBetween: 10,
-//     loop: true,
-//     centeredSlides: true,
-//     autoplay: {
-//         delay: 3500,
-//         disableOnInteraction: false,
-//     },
-//     breakpoints: {
-//         0: {
-//             slidesPerView: 1,
-//         },
-//         768: {
-//             slidesPerView: 2,
-//         },
-//         1024: {
-//             slidesPerView: 3,
-//         },
-//     },
-// });
-
-// var swiper = new Swiper(".new-slider-2", {
-//     spaceBetween: 10,
-//     loop: true,
-//     centeredSlides: true,
-//     autoplay: {
-//         delay: 6000,
-//         disableOnInteraction: false,
-//     },
-//     breakpoints: {
-//         0: {
-//             slidesPerView: 1,
-//         },
-//         768: {
-//             slidesPerView: 2,
-//         },
-//         1024: {
-//             slidesPerView: 3,
-//         },
-//     },
-// });
-
-// var swiper = new Swiper(".reviews-slider", {
-//     spaceBetween: 10,
-//     grabCursor: true,
-//     loop: true,
-//     centeredSlides: true,
-//     autoplay: {
-//         delay: 33500,
-//         disableOnInteraction: false,
-//     },
-//     breakpoints: {
-//         0: {
-//             slidesPerView: 1,
-//         },
-//         768: {
-//             slidesPerView: 2,
-//         },
-//         1024: {
-//             slidesPerView: 3,
-//         },
-//     },
-// });
-
-// let loadMoreBtn = document.querySelector("#load-more");
-// let currentItem = 3;
-
-// loadMoreBtn.onclick = () => {
-//     let boxes = [...document.querySelectorAll(".container .box-container .box")];
-//     for (var i = currentItem; i < currentItem + 3; i++) {
-//         boxes[i].style.display = "inline-block";
-//     }
-//     currentItem += 3;
-
-//     if (currentItem >= boxes.length) {
-//         loadMoreBtn.style.display = "none";
-//     }
-// };
-
 let cart = [];
 // Hàm thêm sản phẩm vào giỏ hàng
-function addToCart(productName, productPrice, productImage) {
+function addToOrder(productName, productPrice, productImage) {
     // Kiểm tra nếu sản phẩm đã có trong giỏ hàng bằng cách so sánh tên sản phẩm và hình ảnh
     const existingProduct = cart.find(item => item.name === productName && item.image === productImage);
     if (existingProduct) {
@@ -219,7 +45,7 @@ function addToCart(productName, productPrice, productImage) {
         cart.push({ name: productName, price: productPrice, image: productImage, quantity: 1 });
     }
     // Cập nhật lại giao diện giỏ hàng
-    updateCartDisplay();
+    updateOrderDisplay();
 }
 // Hàm rút gọn tên sách nếu dài hơn 16 ký tự
 function truncateName(name) {
@@ -229,7 +55,7 @@ function truncateName(name) {
     return name;
 }
 // Hàm cập nhật giỏ hàng
-function updateCartDisplay() {
+function updateOrderDisplay() {
     const cartItemsContainer = document.getElementById('cartItems');
     const emptyCartMessage = document.getElementById('emptyCartMessage');
     const cartItemsContainerWrapper = document.getElementById('cartItemsContainer');
@@ -276,7 +102,7 @@ function proceedToPayment() {
     alert("Proceeding to payment...");
 }
 // Hàm xóa giỏ hàng
-function clearCart() {
+function clearOrder() {
     cart = [];
-    updateCartDisplay();
+    updateOrderDisplay();
 }
