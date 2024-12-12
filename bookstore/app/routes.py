@@ -36,6 +36,7 @@ def index():
                            pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
+
 @app.route("/cart")
 def cart():
     books = dao.load_books()
@@ -105,7 +106,7 @@ def orderOnline():
     kw = request.args.get("kw")
     orders = dao.load_orders(kw=kw)
     books = dao.load_books()
-    return render_template("order_online.html", books=books, orders=orders)
+    return render_template("list_order.html", books=books, orders=orders)
 
 
 @app.route("/order/")
