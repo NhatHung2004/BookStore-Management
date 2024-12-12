@@ -2,12 +2,6 @@
 
 {% block content %}
 <div class="row content">
-    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="/" class="nav-link px-2">All</a></li>
-        {% for c in cates %}
-        <li><a href="/?category={{ c.id }}" class="nav-link px-2">{{ c.name }}</a></li>
-        {% endfor %}
-    </ul>
     {% if alert %}
     <div class="alert alert-{{ alert_type }} alert-dismissible fade show" role="alert">
         {{ alert }}
@@ -28,7 +22,7 @@
                 <button type="button" class="add-to-cart" data-product-tile="add-to-cart"
                     onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
                     '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
-                    Mua ngay
+                    Thêm vào giỏ hàng
                 </button>
             </figure>
             <figcaption>

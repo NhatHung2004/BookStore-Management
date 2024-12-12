@@ -16,35 +16,21 @@
                 </tr>
             </thead>
             <tbody>
+                {% for do in detailOrder %}
                 <tr>
-                    <td>BK001</td>
-                    <td>Book Title 1</td>
-                    <td><img src="https://via.placeholder.com/70" alt="Book 1" class="detail-order-book-image"></td>
-                    <td>100,000</td>
-                    <td>2</td>
-                    <td>200,000</td>
+                    <td>{{ do.id }}</td>
+                    <td>{{ do.name }}</td>
+                    <td><img src="{{ do.image }}" alt="Book 1" class="detail-order-book-image"></td>
+                    <td>{{ do.price|currency }}</td>
+                    <td>{{ do.quantity }}</td>
+                    <td>{{ do.total_price|currency }}</td>
                 </tr>
-                <tr>
-                    <td>BK002</td>
-                    <td>Book Title 2</td>
-                    <td><img src="https://via.placeholder.com/70" alt="Book 2" class="detail-order-book-image"></td>
-                    <td>150,000</td>
-                    <td>1</td>
-                    <td>150,000</td>
-                </tr>
-                <tr>
-                    <td>BK003</td>
-                    <td>Book Title 3</td>
-                    <td><img src="https://via.placeholder.com/70" alt="Book 3" class="detail-order-book-image"></td>
-                    <td>200,000</td>
-                    <td>3</td>
-                    <td>600,000</td>
-                </tr>
+                {% endfor %}
             </tbody>
             <tfoot class="detail-order-tfoot">
                 <tr>
                     <td colspan="5" class="detail-order-text-end"><strong>Tổng số tiền (VND):</strong></td>
-                    <td>950,000</td>
+                    <td>{{ total|currency }}</td>
                 </tr>
             </tfoot>
         </table>

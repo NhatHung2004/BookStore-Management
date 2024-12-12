@@ -6,12 +6,13 @@ import math
 import cloudinary.uploader
 from models import User, UserRole
 from flask import render_template, redirect, request, session, jsonify, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
 import hmac
 import hashlib
 import cloudinary
 import urllib.parse
+import uuid
 
 
 @app.route("/")
@@ -39,11 +40,6 @@ def index():
 @app.route("/manage")
 def manage():
     return render_template("manage.html")
-
-
-@app.route("/detail-order")
-def detail_order():
-    return render_template("detail-order.html")
 
 
 @app.route("/bill")
@@ -123,6 +119,13 @@ def orderOnline():
     return render_template("list_order.html", books=books, orders=orders)
 
 
+@app.route("/list-order/<string:orderID>")
+def detail_order(orderID):
+    detailOrder = dao.load_detail_order(orderID=orderID)
+    total = utils.total_price(detailOrder=detailOrder)
+    return render_template("detail-order.html", detailOrder=detailOrder, total=total)
+
+
 @app.route("/order/")
 def unplacedOrder():
     kw = request.args.get('kw')
@@ -183,46 +186,34 @@ def register_process():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm = request.form.get("confirm")
+        email = request.form.get("email")
         address = request.form.get("address")
         if not User.query.filter(User.username.__eq__(username)).first():
             if password.strip() != confirm.strip():
-                err_msg = "Mat khau khong khop"
+                err_msg = "Mật khẩu không trùng khớp"
             else:
                 avatar = request.files.get('avatar')
                 if avatar:
                     res = cloudinary.uploader.upload(avatar)
                     avatar = res["secure_url"]
-                if dao.add_user(phone=phone, name=name, username=username, password=password, address=address, avatar=avatar):
+                if dao.add_user(phone=phone, name=name, username=username, password=password, email=email,
+                                address=address, avatar=avatar):
                     return redirect('/login')
                 else:
-                    err_msg = "Something Wrong!!!"
+                    err_msg = "Có lỗi xảy ra !!!"
         else:
-            err_msg = "Username already exists"
+            err_msg = "Tên người dùng đã tồn tại"
     return render_template('register.html', err_msg=err_msg)
-
-
-@app.route("/api/checkout", methods=['POST'])
-def checkout_api():
-    customerID = request.json.get('customerID')
-    cart = request.json.get('cart')
-    phone = request.json.get('phone')
-
-    orderID = dao.add_order(customerID=customerID, phone=phone, cart=cart)
-
-    if orderID != None:
-        session['cart'] = {}
-
-    return jsonify({ "orderID": orderID, "stats": utils.stats_cart(cart)})
 
 
 @app.route('/create_payment', methods=['POST'])
 def create_payment():
     """Tạo URL thanh toán."""
-    order_id = request.json.get('order_id')
+    orderID = str(uuid.uuid4())
     amount = int(request.json.get('amount'))
     ip_address = request.remote_addr
 
-    payment_url = vnpay.create_payment_url(order_id, amount, 'http://127.0.0.1:5000/payment_success', ip_address)
+    payment_url = vnpay.create_payment_url(orderID, amount, 'http://127.0.0.1:5000/payment_success', ip_address)
     return jsonify({"payment_url": payment_url})
 
 
@@ -231,6 +222,12 @@ def payment_success():
     """Xử lý sau khi thanh toán."""
     vnp_params = request.args.to_dict()
     vnp_secure_hash = vnp_params.pop("vnp_SecureHash", None)
+
+    transaction_status = vnp_params.get('vnp_TransactionStatus')  # Lấy trạng thái giao dịch
+
+    if transaction_status != '00':  # '00' là mã trạng thái giao dịch thành công
+        session['message'] = 'failure'
+        return redirect(url_for('index'))  # Giao dịch không thành công, trả về trang chính
 
     # Sắp xếp tham số
     sorted_params = sorted(vnp_params.items())
@@ -246,7 +243,9 @@ def payment_success():
     if generated_hash.upper() == vnp_secure_hash.upper():  # So sánh không phân biệt hoa thường
         session['message'] = 'success'
         session['order_id'] = vnp_params.get('vnp_TxnRef')
-        dao.update_order_status(vnp_params.get('vnp_TxnRef'))
+        dao.add_order(vnp_params.get('vnp_TxnRef'), current_user.customer.id, current_user.customer.phone, True, session.get('cart'))
+        dao.send_email(vnp_params.get('vnp_TxnRef'), current_user.name)
+        session['cart'] = {}
         return redirect(url_for('index'))
     else:
         session['message'] = 'failure'

@@ -73,29 +73,9 @@
                     </form>
                     <hr class="my-4">
                     <button class="w-100 btn btn-primary btn-lg"
-                        onclick="orderOnline({{ current_user.id }}, {{ current_user.customer.phone }}, {{ cart }})">
+                        onclick="payment({{ cart_stats.total_amount }})">
                         Tạo đơn hàng hàng
                     </button>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="orderModalLabel">Thông báo</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <label for="orderID">Order ID</label>
-                        <input type="text" id="orderID" value="">
-                        <br>
-                        <label for="total_amount">Tổng tiền</label>
-                        <input type="text" id="total_amount" value="">
-                    </div>
-                    <div class="modal-footer">
-                        <button onclick="payment({{ cart_stats.total_amount }})" class="btn btn-primary">Thực hiện thanh toán</button>
-                    </div>
                 </div>
             </div>
         </div>

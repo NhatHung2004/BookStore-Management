@@ -1,8 +1,9 @@
 import hashlib
-from app import db, app
+from app import db, app, utils, mail
 import uuid
 from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
 from sqlalchemy import insert
+from flask_mail import Message
 
 
 def add_user(phone, name, username, password, address, avatar=None):
@@ -29,10 +30,9 @@ def add_to_book_order(book_id, order_id, quantity, price):
     db.session.commit()
 
 
-def add_order(customerID, phone, cart):
+def add_order(orderID, customerID, phone, isPay, cart):
     if cart != None:
-        orderID = str(uuid.uuid4())
-        order = Order(id=orderID, phone=phone, customer_id=customerID)
+        order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
         db.session.add(order)
         db.session.flush()
 
@@ -107,3 +107,52 @@ def calculate_order_total(order_id):
     ).filter(book_order.order_id == order_id).scalar()
 
     return total or 0.0
+
+
+def load_detail_order(orderID):
+    order = Order.query.get(orderID)
+    order_books = db.session.execute(db.select(book_order).filter_by(order_id=order.id)).fetchall()
+    detailOrder = []
+    for order_book in order_books:
+        book  = Book.query.filter(Book.id == order_book.book_id).first()
+        detailOrder.append({
+            "id": order_book.book_id,
+            "name": book.name,
+            "author": book.author,
+            "image": book.image,
+            "price": int(order_book.price),
+            "quantity": int(order_book.quantity),
+            "total_price": int(order_book.price * order_book.quantity)
+        })
+    return detailOrder
+
+
+def send_email(orderID, customerName):
+    # Nội dung email
+    orderData = load_detail_order(orderID)
+    total = utils.total_price(orderData)
+    email_body = f"""
+    Hóa đơn bán sách
+
+    Mã đơn hàng: {orderID}
+    Tên khách hàng: {customerName}
+    Tổng tiền: {total}
+    
+    Chi tiết đơn hàng:
+    """
+    for book in orderData:
+        email_body += f"- {book['name']} (Mã: {book['id']}): {book['quantity']} quyển, Tác giả: {book['author']}\n"
+    
+    email_body += "\nCảm ơn quý khách đã mua hàng!"
+
+    # Gửi email
+    try:
+        msg = Message(
+            subject="Hóa đơn bán sách",
+            recipients=["hung2004py@gmail.com"],  # Email người nhận
+            body=email_body
+        )
+        mail.send(msg)
+        return "Email đã được gửi thành công!"
+    except Exception as e:
+        return f"Không thể gửi email: {str(e)}"
