@@ -28,6 +28,7 @@ class User(db.Model, UserMixin):
     name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False, unique=True)
     password = Column(String(50), nullable=False)
+    email = Column(String(100), nullable=False)
     user_role = Column(Enum(UserRole), nullable=False)
     avatar = Column(String(250), default='https://res.cloudinary.com/dvahhupo0/image/upload/v1733131895/user_e5uokm.jpg')
 
@@ -131,28 +132,29 @@ class Form(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
-        admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
-        db.session.add(admin)
-        db.session.commit()
-        manager = User(name='Manager', username='manager',
-                    password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                    user_role=UserRole.STAFF)
-        m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
+        # db.create_all()
+        # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
+        # db.session.add(admin)
+        # db.session.commit()
+        # manager = User(name='Manager', username='manager',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             email="manager@gmail.com", user_role=UserRole.STAFF)
+        # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
 
-        seller = User(name='Seller', username='seller',
-                    password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-                    user_role=UserRole.STAFF)
-        s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
-        db.session.add_all([m, s])
-        db.session.commit()
+        # seller = User(name='Seller', username='seller',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             email="seller@gmail.com", user_role=UserRole.STAFF)
+        # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
+        # db.session.add_all([m, s])
+        # db.session.commit()
 
-        customer = User(name="Nguyễn Nhật Hưng", username="nhathung",
-                        password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.CUSTOMER,
-                        avatar="https://res.cloudinary.com/dvahhupo0/image/upload/v1733470370/vbwqwhu5l0w8cf3yljux.jpg")
-        c = Customer(phone="0836367981", address="Nhà Bè", user=customer)
-        db.session.add(c)
-        db.session.commit()
+        # customer = User(name="Nguyễn Nhật Hưng", username="nhathung",
+        #                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #                 email="hung2004py@gmail.com", user_role=UserRole.CUSTOMER,
+        #                 avatar="https://res.cloudinary.com/dvahhupo0/image/upload/v1733470370/vbwqwhu5l0w8cf3yljux.jpg")
+        # c = Customer(phone="0836367981", address="Nhà Bè", user=customer)
+        # db.session.add(c)
+        # db.session.commit()
 
         dataAuthor = [
             {
@@ -314,17 +316,17 @@ if __name__ == '__main__':
             }
         ]
 
-        for p in dataCategory:
-            prod = Category(name=p['name'])
-            db.session.add(prod)
-        db.session.commit()
+        # for p in dataCategory:
+        #     prod = Category(name=p['name'])
+        #     db.session.add(prod)
+        # db.session.commit()
 
-        for p in dataAuthor:
-            prod = Author(name=p['name'])
-            db.session.add(prod)
-        db.session.commit()
+        # for p in dataAuthor:
+        #     prod = Author(name=p['name'])
+        #     db.session.add(prod)
+        # db.session.commit()
 
-        for p in dataBook:
-            prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
-            db.session.add(prod)
-        db.session.commit()
+        # for p in dataBook:
+        #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
+        #     db.session.add(prod)
+        # db.session.commit()

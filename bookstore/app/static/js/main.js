@@ -66,11 +66,9 @@ function updateQuantity(id) {
 }
 
 function payment(amount) {
-    var orderID = document.getElementById("orderID").value
     fetch('/create_payment', {
         method: "POST",
         body: JSON.stringify({
-            'order_id': orderID, // Mã đơn hàng
             'amount': amount
         }),
         headers: {
@@ -84,29 +82,4 @@ function payment(amount) {
             alert('Lỗi khi tạo thanh toán VNPay!');
         }
     })
-}
-
-function orderOnline(customerID, phone, cart) {
-    fetch("/api/checkout", {
-        method: "POST",
-        body: JSON.stringify({
-            "customerID": customerID,
-            "phone": phone,
-            "cart": cart,
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json()).then(async data => {
-        var orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
-        orderModal.show();
-
-        document.getElementById("orderID").value = data.orderID
-        document.getElementById("total_amount").value = data.stats.total_amount
-
-        // let items = document.getElementsByClassName("cart-counter");
-        // for (let item of items)
-        //     item.innerText = data.stats.total_quantity;
-    });
-
 }
