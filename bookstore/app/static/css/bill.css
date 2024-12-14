@@ -77,3 +77,16 @@ td img.bill-td {
     font-size: 14px;
     color: #004d40;
 }
+
+.bill-footer-row {
+    text-align: right;
+    padding-right: 20px;
+}
+
+.bill-footer-label {
+    font-size: 1.8rem;
+}
+
+
+
+

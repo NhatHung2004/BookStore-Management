@@ -2,66 +2,63 @@
 {% block content %}
 
 <body class="bill-body">
-    <div class="bill-container">
-        <div class="bill-header">
-            <h1 class="bill-title">Hóa đơn bán sách</h1>
+<div class="bill-container">
+    <div class="bill-header">
+        <h1 class="bill-title">Hóa đơn bán sách</h1>
+    </div>
+    <div class="bill-customer-info">
+        <div class="bill-customer-details">
+            <p><strong>Mã khách hàng:</strong> KH001</p>
+            <p><strong>Tên khách hàng:</strong> Nguyễn Văn A</p>
         </div>
-        <div class="bill-customer-info">
-            <div class="bill-customer-details">
-                <p><strong>Mã khách hàng:</strong> KH001</p>
-                <p><strong>Tên khách hàng:</strong> Nguyễn Văn A</p>
-            </div>
-            <div class="bill-invoice-date">
-                <p><strong>Ngày lập hóa đơn:</strong> 11/12/2024</p>
-            </div>
-        </div>
-        <table class="bill-table">
-            <thead>
-                <tr class="bill-header-row">
-                    <th class="bill-th">Mã sách</th>
-                    <th class="bill-th">Tên sách</th>
-                    <th class="bill-th">Ảnh sách</th>
-                    <th class="bill-th">Thể loại</th>
-                    <th class="bill-th">Số lượng</th>
-                    <th class="bill-th">Tác giả</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="bill-row">
-                    <td class="bill-td">S001</td>
-                    <td class="bill-td">Hành Trình Khát Vọng</td>
-                    <td class="bill-td"><img src="image-placeholder.png" alt="Ảnh sách 1"></td>
-                    <td class="bill-td">Truyện</td>
-                    <td class="bill-td">2</td>
-                    <td class="bill-td">Nguyễn Nhật Ánh</td>
-                </tr>
-                <tr class="bill-row">
-                    <td class="bill-td">S002</td>
-                    <td class="bill-td">Cuộc Đời Tươi Đẹp</td>
-                    <td class="bill-td"><img src="image-placeholder.png" alt="Ảnh sách 2"></td>
-                    <td class="bill-td">Tiểu thuyết</td>
-                    <td class="bill-td">1</td>
-                    <td class="bill-td">J.K. Rowling</td>
-                </tr>
-                <tr class="bill-row">
-                    <td class="bill-td">S003</td>
-                    <td class="bill-td">Khúc Giao Mùa</td>
-                    <td class="bill-td"><img src="image-placeholder.png" alt="Ảnh sách 3"></td>
-                    <td class="bill-td">Thơ</td>
-                    <td class="bill-td">3</td>
-                    <td class="bill-td">Hoàng Cầm</td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="bill-employee-info">
-            <div class="bill-employee-details">
-                <p><strong>Mã nhân viên thanh toán:</strong> NV001</p>
-                <p><strong>Tên nhân viên thanh toán:</strong> Trần Thị B</p>
-            </div>
-        </div>
-        <div class="bill-footer">
-            <p class="bill-footer-text">Cảm ơn quý khách đã mua hàng!</p>
+        <div class="bill-invoice-date">
+            <p><strong>Ngày lập hóa đơn:</strong> 11/12/2024</p>
         </div>
     </div>
+    <table class="bill-table">
+        <thead>
+        <tr class="bill-header-row">
+            <th class="bill-th">Mã sách</th>
+            <th class="bill-th">Tên sách</th>
+            <th class="bill-th">Thể loại</th>
+            <th class="bill-th">Giá</th>
+            <th class="bill-th">Số lượng</th>
+            <th class="bill-th">Giá tổng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="bill-row">
+            <td class="bill-td">S001</td>
+            <td class="bill-td">Hành Trình Khát Vọng</td>
+            <td class="bill-td">Truyện</td>
+            <td class="bill-td">15,000VND</td>
+            <td class="bill-td">1</td>
+            <td class="bill-td">15,000VND</td>
+        </tr>
+        <tr class="bill-row">
+            <td class="bill-td">S001</td>
+            <td class="bill-td">Hành Trình Khát Vọng</td>
+            <td class="bill-td">Truyện</td>
+            <td class="bill-td">15,000VND</td>
+            <td class="bill-td">1</td>
+            <td class="bill-td">15,000VND</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="bill-footer-row">
+        <p class="bill-footer-label"><strong>Tổng cộng: </strong>30,000VND</p>
+    </div>
+    <div class="bill-employee-info">
+        <div class="bill-employee-details">
+            <p><strong>Mã nhân viên thanh toán:</strong> NV001</p>
+            <p><strong>Tên nhân viên thanh toán:</strong> Trần Thị B</p>
+        </div>
+    </div>
+
+    <div class="bill-footer">
+        <p class="bill-footer-text">Cảm ơn quý khách đã mua hàng!</p>
+    </div>
+</div>
 </body>
 {% endblock %}

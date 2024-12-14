@@ -202,3 +202,31 @@ function deleteBook(index) {
         updateBookTable();
     }
 }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+    const addressInput = document.getElementById('address');
+    const addressLabel = document.querySelector('label[for="address"]');
+    const checkoutButton = document.querySelector('.payment-checkout-radio-btn button');
+
+    // Hiện hoặc ẩn ô địa chỉ và label khi thay đổi phương thức thanh toán
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (radio.value === 'direct') {
+                addressInput.style.display = 'block';
+                addressLabel.style.display = 'block';
+            } else {
+                addressInput.style.display = 'none';
+                addressLabel.style.display = 'none';
+            }
+        });
+    });
+
+    // Đặt mặc định ẩn ô địa chỉ và label nếu chọn VNPAY
+    if (document.getElementById('credit').checked) {
+        addressInput.style.display = 'none';
+        addressLabel.style.display = 'none';
+    }
+
+});

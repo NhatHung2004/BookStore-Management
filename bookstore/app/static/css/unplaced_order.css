@@ -147,6 +147,14 @@ footer#footer {
     margin-top: 30px;
     margin-bottom: 30px;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Rút gọn nội dung */
+}
+
+.card-order .card-body {
+    overflow-y: auto; /* Thêm cuộn dọc nếu nội dung quá lớn */
+    max-height: 500px; /* Giới hạn chiều cao tối đa */
 }
 
 .product-item figcaption>h3 {
@@ -309,6 +317,15 @@ footer#footer {
 
 .cart-table td {
     vertical-align: middle;
+    white-space: nowrap; /* Giữ nội dung trong một dòng */
+    overflow: hidden; /* Ẩn phần tràn */
+    text-overflow: ellipsis; /* Thêm "..." nếu nội dung quá dài */
+}
+
+.cart-table {
+    table-layout: fixed; /* Giới hạn chiều rộng các cột */
+    word-wrap: break-word; /* Tự động xuống dòng nếu quá dài */
+    overflow-x: auto; /* Cuộn ngang nếu cần */
 }
 
 .product-name {
@@ -324,4 +341,8 @@ footer#footer {
 
 .product-image {
     width: 50px;
+}
+
+.nav.nav-tabs {
+    margin-top: 70px;
 }
