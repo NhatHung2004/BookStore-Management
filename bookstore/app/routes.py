@@ -277,7 +277,9 @@ def currency_filter(value):
     return f"{value:,.0f} VND"
 
 
-
+@app.route("/book-detail")
+def book_detail():
+    return render_template("book-detail.html")
 
 
 

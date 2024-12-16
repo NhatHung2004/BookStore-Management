@@ -4,7 +4,7 @@
     font-family: "Poppins", sans-serif;
     box-sizing: border-box;
     padding: 0;
-    margin: 0;
+    margin: 0g
 }
 
 .img-login .img-fluid {
@@ -21,7 +21,7 @@
     color: #93987c;
 }
 
-.btn-color-theme {
+.btn-color-theme{
     background-color: #385b64;
     color: white !important;
     border-color: #385b64;
