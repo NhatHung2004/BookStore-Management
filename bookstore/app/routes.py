@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole
+from models import User, UserRole, RolePermision
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -85,8 +85,32 @@ def add_to_cart():
     return jsonify(utils.stats_cart(cart))
 
 
-@app.route('/api/remove/carts', methods=['post'])
-def remove_from_cart():
+@app.route("/api/add/cartOrders", methods=['post'])
+def add_cartOrders():
+    cartOrder = request.json.get('cartOrder')
+    cart = session.get('cart')
+
+    if not cart:
+        cart = {}
+
+    if cartOrder:
+        for c in cartOrder:
+            cart[c['id']] = c
+            cart[c['id']]['total_price'] = int(c['price']) * int(c['quantity'])
+
+    session['cart'] = cart
+
+    return jsonify({"url": "http://127.0.0.1:5000/cart"})
+
+
+@app.route('/api/remove/carts')
+def remove_cart():
+    session['cart'] = {}
+    return jsonify({})
+
+
+@app.route('/api/remove/cartID', methods=['post'])
+def remove_from_cartID():
     cart = session.get('cart')
 
     id = str(request.json.get('id'))
@@ -97,12 +121,27 @@ def remove_from_cart():
     return jsonify(utils.stats_cart(cart))
 
 
-@app.route('/api/updateQuantity/carts', methods=['post'])
-def update_quantity():
+@app.route('/api/increaseQuantity/carts', methods=['post'])
+def increase_quantity():
     cart = session.get('cart')
 
     id = str(request.json.get('id'))
     cart[id]['quantity'] += 1
+
+    session['cart'] = cart
+
+    stats = utils.stats_cart(cart)
+
+    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
+
+
+@app.route('/api/decreaseQuantity/carts', methods=['post'])
+def decrease_quantity():
+    cart = session.get('cart')
+
+    id = str(request.json.get('id'))
+    if cart[id]['quantity'] > 0:
+        cart[id]['quantity'] -= 1
 
     session['cart'] = cart
 
@@ -117,6 +156,12 @@ def orderOnline():
     orders = dao.load_orders(kw=kw)
     books = dao.load_books()
     return render_template("list_order.html", books=books, orders=orders)
+
+
+@app.route("/book-detail/<int:bookID>")
+def book_detail(bookID):
+    book = dao.load_book_by_id(bookID=bookID)
+    return render_template("book-detail.html", book=book)
 
 
 @app.route("/list-order/<string:orderID>")
@@ -206,6 +251,15 @@ def register_process():
     return render_template('register.html', err_msg=err_msg)
 
 
+@app.route('/api/payment-direct', methods=['POST'])
+def payment_direct():
+    orderID = str(uuid.uuid4())
+    dao.add_order(orderID, current_user.customer.id, current_user.customer.phone, False, session.get('cart'))
+    dao.send_email(orderID, current_user.name)
+    session['cart'] = {}
+    return jsonify({})
+
+
 @app.route('/create_payment', methods=['POST'])
 def create_payment():
     """Tạo URL thanh toán."""
@@ -268,7 +322,8 @@ def common_response():
         "cates" : dao.load_cates(),
         'cart_stats': utils.stats_cart(session.get('cart')),
         "cart": session.get('cart'),
-        "UserRole": UserRole
+        "UserRole": UserRole,
+        "RolePer": RolePermision
     }
 
 
@@ -277,9 +332,9 @@ def currency_filter(value):
     return f"{value:,.0f} VND"
 
 
-@app.route("/book-detail")
-def book_detail():
-    return render_template("book-detail.html")
+# @app.route("/book-detail")
+# def book_detail():
+#     return render_template("book-detail.html")
 
 
 

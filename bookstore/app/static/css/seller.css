@@ -127,7 +127,8 @@ h1 {
 /* Hiệu ứng bo góc và bóng nhẹ cho toàn bộ bảng */
 
 .table-list-order {
-    width: 100%; /* Ensure the table takes full width */
+    width: 100%;
+    /* Ensure the table takes full width */
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -363,7 +364,3 @@ body {
     background-color: #f4f6f9;
     /* Màu nền nhẹ cho toàn bộ trang */
 }
-
-
-
-

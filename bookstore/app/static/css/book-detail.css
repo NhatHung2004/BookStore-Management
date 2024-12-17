@@ -1,4 +1,3 @@
-/* Reset CSS */
 * {
     margin: 0;
     padding: 0;
@@ -163,7 +162,8 @@
 .book-detail-review-box {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Tạo khoảng cách giữa các comment */
+    gap: 15px;
+    /* Tạo khoảng cách giữa các comment */
 }
 
 .book-detail-review {
@@ -173,5 +173,6 @@
     padding: 15px;
     border: 1px solid #dcdcdc;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm đổ bóng nhẹ */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Thêm đổ bóng nhẹ */
 }

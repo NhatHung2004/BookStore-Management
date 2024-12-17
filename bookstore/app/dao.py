@@ -73,6 +73,10 @@ def get_user_by_id(user_id):
 def load_cates():
     return Category.query.all()
 
+
+def load_book_by_id(bookID):
+    return Book.query.get(bookID)
+
     
 def load_books(kw=None, page=1, cate=None):
     books = Book.query
@@ -129,9 +133,11 @@ def load_detail_order(orderID):
 
 
 def send_email(orderID, customerName):
-    # Nội dung email
+    order = Order.query.get(orderID)
+
     orderData = load_detail_order(orderID)
     total = utils.total_price(orderData)
+
     email_body = f"""
     Hóa đơn bán sách
 
@@ -143,6 +149,9 @@ def send_email(orderID, customerName):
     """
     for book in orderData:
         email_body += f"- {book['name']} (Mã: {book['id']}): {book['quantity']} quyển, Tác giả: {book['author']}\n"
+
+    if order.isPay == False:
+        email_body += f"\nPhương thức thanh toán: tiền mặt\n\n Sau 48 tiếng từ thời điểm đặt sách, nếu khách hàng không đến tiệm nhận sách thì đơn hàng sẽ bị hủy bỏ.\n"
     
     email_body += "\nCảm ơn quý khách đã mua hàng!"
 

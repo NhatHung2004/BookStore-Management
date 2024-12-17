@@ -16,16 +16,12 @@
                             <h6 class="my-0">{{ c.name }}</h6>
                             <small class="text-body-secondary">Số lượng: {{ c.quantity }}</small>
                         </div>
-                        <span class="price-display text-body-secondary">{{ c.price|currency }}</span>
-                        <button class="btn btn-danger btn-sm remove-product-btn ms-2"
-                                onclick="removeFromCart({{ c.id }})">Xóa
-                        </button>
+                        <span class="text-body-secondary">{{ c.price|currency }}</span>
                     </li>
                     {% endfor %}
                     <li class="list-group-item d-flex justify-content-between bg-light">
                         <strong class="text-danger">Tổng (VND)</strong>
-                        <strong class="text-danger" style="font-size: 1.5rem;">{{ cart_stats.total_amount|currency
-                            }}</strong>
+                        <strong class="text-danger" style="font-size: 1.5rem;">{{ cart_stats.total_amount|currency }}</strong>
                     </li>
                     {% endif %}
                 </ul>
@@ -37,7 +33,7 @@
                         <label for="username" class="form-label">Tên khách hàng</label>
                         <div class="input-group has-validation">
                             <input type="text" class="form-control" id="username" value="{{ current_user.name }}"
-                                   required>
+                                required>
                             <div class="invalid-feedback">
                                 Your username is required.
                             </div>
@@ -59,17 +55,13 @@
                     <form id="payment-form">
                         <div class="my-3 payment-checkout-radio-btn">
                             <div class="form-check">
-                                <input id="credit" name="paymentMethod" value="vnpay" type="radio"
-                                       class="form-check-input" checked
-                                       required>
+                                <input id="credit" name="paymentMethod" value="vnpay" type="radio" class="form-check-input" required>
                                 <label class="form-check-label" for="credit">Thanh toán qua vnpay</label>
                             </div>
                             <div class="form-check">
-                                <input id="debit" name="paymentMethod" value="direct" type="radio"
-                                       class="form-check-input" required>
+                                <input id="debit" name="paymentMethod" value="direct" type="radio" class="form-check-input" checked required>
                                 <label class="form-check-label" for="debit">Trực tiếp</label>
                             </div>
-
                             <div class="col-12 my-4">
                                 <label for="address" class="form-label ">Địa chỉ</label>
                                 <input type="text" class="form-control" id="address"
@@ -79,7 +71,10 @@
                         </div>
                     </form>
                     <hr class="my-4">
-                    <button class="w-100 btn btn-primary btn-lg" onclick="payment({{ cart_stats.total_amount }})">Tạo đơn hàng hàng</button>
+                    <button class="w-100 btn btn-primary btn-lg"
+                        onclick="payment({{ cart_stats.total_amount }})">
+                        Thanh toán
+                    </button>
                 </div>
             </div>
         </div>

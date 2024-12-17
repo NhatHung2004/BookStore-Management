@@ -16,21 +16,16 @@
     </ul>
     {% for book in books %}
     <div class="col-md-3 col-sm-6 mb-4">
-        <div class="product-item">
+        <a href="/book-detail/{{ book.id }}" class="product-item">
             <figure class="product-style">
                 <img src="{{ book.image }}" alt="{{ book.name }}" class="img-fluid w-100">
-                <button type="button" class="add-to-cart" data-product-tile="add-to-cart"
-                    onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
-                    '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
-                    Thêm vào giỏ hàng
-                </button>
             </figure>
             <figcaption>
                 <h3>{{ book.name }}</h3>
                 <span>{{ book.author.name }}</span>
                 <div class="item-price">{{ book.price|currency }}</div>
             </figcaption>
-        </div>
+        </a>
     </div>
     {% endfor %}
     {% else %}

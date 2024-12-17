@@ -11,7 +11,7 @@
         <!-- Phần Tìm kiếm và sản phẩm -->
         <div class="col-md-8">
             <div class="search-and-products-container"
-                 style="background-color: #9b9b9e; padding: 15px; border-radius: 8px;">
+                style="background-color: #9b9b9e; padding: 15px; border-radius: 8px;">
                 <div class="row g-3">
                     <!-- Phần Tìm kiếm sản phẩm -->
                     <div class="col-auto">
@@ -19,7 +19,7 @@
                             <!-- Biểu tượng kính lúp bên trong ô nhập liệu -->
                             <!-- <span class="input-group-text"><i class="bi bi-search"></i></span> -->
                             <form class="input-group">
-                                <input type="search" name="kw" class="form-control" placeholder="Nhập Tên Sách...">
+                                <input type="search" name="kw" class="form-control" placeholder="Nhập tên sách...">
                                 <button class="btn custom-btn" type="submit">Tìm kiếm</button>
                             </form>
                         </div>
@@ -31,11 +31,13 @@
                             {% endfor %}
                         </ul>
                     </div>
+                    {% if current_user.staff.role_permision == RolePer.MANAGER %}
                     <div class="col-auto ms-auto">
                         <a href="/manage">
                             <button her class="btn btn-success">Quản trị sách</button>
                         </a>
                     </div>
+                    {% endif %}
                 </div>
 
                 <!-- Sản phẩm -->
@@ -47,8 +49,8 @@
                                 <figure class="product-style">
                                     <img src="{{ book.image }}" alt="Books" class="product-item">
                                     <button type="button" class="add-to-cart btn btn-primary mt-2"
-                                        onclick="addToOrder('{{ book.name }}', {{ book.price }}, '{{ book.image }}')">
-                                        Xử lí giao dịch
+                                        onclick="addToOrder('{{ book.id }}', '{{ book.name }}', '{{ book.author.name }}', '{{ book.category.name }}', '{{ book.image }}', {{ book.price }})">
+                                        Thêm
                                     </button>
                                 </figure>
                                 <figcaption>
@@ -62,30 +64,34 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
         <!-- Phần Thanh toán -->
         <div class="col-md-4">
             <div class="card-order">
-                <div class="card-header" style="background-color: #9b9b9e; color: white;">Sản phẩm đang chờ</div>
+                <div class="card-header" style="background-color: #9b9b9e; color: white;">Đơn hàng</div>
+                <!-- Mã khách hàng -->
+                <div class="mb-3">
+                    <label class="form-label">Số điện thoại khách hàng:</label>
+                    <form class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="phone">
+                    </form>
+                </div>
                 <div class="card-body payment-card-body-order">
-
                     <!-- Giỏ hàng nếu có sản phẩm -->
                     <div id="cartItemsContainer">
                         <table class="table cart-table">
                             <thead>
-                            <tr>
-                                <th>Hình ảnh</th>
-                                <th>Tên sách</th>
-                                <th>Số lượng</th>
-                                <th>Tổng Giá</th>
-                            </tr>
+                                <tr>
+                                    <th>Tên sách</th>
+                                    <th>Số lượng</th>
+                                </tr>
                             </thead>
                             <tbody id="cartItems">
-                            <!-- Các sản phẩm sẽ được thêm vào đây -->
+                                <!-- Các sản phẩm sẽ được thêm vào đây -->
                             </tbody>
                         </table>
-                        <h5 class="text-end">Tổng cộng: <span id="totalAmount">$0</span></h5>
                     </div>
 
                     <!-- Thông báo giỏ hàng trống -->
@@ -95,8 +101,8 @@
 
                     <!-- Các nút thanh toán và xóa giỏ hàng -->
                     <div class="mt-auto payment-buttons">
-                        <button class="btn btn-warning" onclick="clearOrder()">Xóa giỏ hàng</button>
-                        <button class="btn btn-danger" onclick="proceedToPayment()">Thanh toán</button>
+                        <button class="btn btn-warning" onclick="removeCartFromOrder()">Xóa giỏ hàng</button>
+                        <button class="btn btn-danger" onclick="addCartFromOrder()">Thanh toán</button>
                     </div>
                 </div>
             </div>

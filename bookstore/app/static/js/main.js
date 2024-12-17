@@ -29,8 +29,31 @@ function addToCart(id, name, author, category, image, price, is_authenticated) {
     }
 }
 
+function addCartFromOrder() {
+    if (cartOrder != []) {
+        fetch("/api/add/cartOrders", {
+            method: "POST",
+            body: JSON.stringify({
+                "cartOrder": cartOrder
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json()).then(data => {
+            window.location.href = data.url;
+        });
+    };
+}
+
+function removeCartFromOrder() {
+    clearOrder()
+    fetch("/api/remove/carts").then(res => res.json()).then(data => {
+        alert("Giỏ hàng rỗng")
+    })
+}
+
 function removeFromCart(id) {
-    fetch("/api/remove/carts", {
+    fetch("/api/remove/cartID", {
         method: "POST",
         body: JSON.stringify({
             "id": id
@@ -47,8 +70,8 @@ function removeFromCart(id) {
     });
 }
 
-function updateQuantity(id) {
-    fetch("/api/updateQuantity/carts", {
+function increaseQuantity(id) {
+    fetch("/api/increaseQuantity/carts", {
         method: "POST",
         body: JSON.stringify({
             "id": id
@@ -65,23 +88,57 @@ function updateQuantity(id) {
     });
 }
 
-function payment(amount) {
-    fetch('/create_payment', {
+function decreaseQuantity(id) {
+    fetch("/api/decreaseQuantity/carts", {
         method: "POST",
         body: JSON.stringify({
-            'amount': amount
+            "id": id
         }),
         headers: {
             'Content-Type': 'application/json'
         }
     }).then(res => res.json()).then(data => {
-        console.log("Payment Data:", data);
-        if (data.payment_url) {
-            window.location.href = data.payment_url;
+        document.getElementById(`quantity-input-${data.id}`).value = data.quantity
+
+        let items = document.getElementsByClassName("cart-counter");
+        for (let item of items)
+            item.innerText = data.total_quantity;
+        
+    });
+}
+
+function payment(amount) {
+    if(amount != 0) {
+        let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+        if (paymentMethod === 'vnpay') {
+            fetch('/create_payment', {
+                method: "POST",
+                body: JSON.stringify({
+                    'amount': amount
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(data => {
+                console.log("Payment Data:", data);
+                if (data.payment_url) {
+                    window.location.href = data.payment_url;
+                } else {
+                    alert('Lỗi khi tạo thanh toán VNPay!');
+                };
+            })
         } else {
-            alert('Lỗi khi tạo thanh toán VNPay!');
+            fetch('/api/payment-direct', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json()).then(data => {
+                window.location.href = "http://127.0.0.1:5000/";
+            });
         }
-    })
+    }
 }
 
 // button them giam so luong trong book-detail
