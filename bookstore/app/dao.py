@@ -2,8 +2,9 @@ import hashlib
 from app import db, app, utils, mail
 import uuid
 from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
-from sqlalchemy import insert
+from sqlalchemy import insert, func
 from flask_mail import Message
+from datetime import datetime
 
 
 def add_user(phone, name, username, password, address, avatar=None):
@@ -156,3 +157,34 @@ def send_email(orderID, customerName):
         return "Email đã được gửi thành công!"
     except Exception as e:
         return f"Không thể gửi email: {str(e)}"
+
+# def revenue_stats(kw=None):
+#     return db.session.query(
+#         Category.id,
+#         Category.name,
+#         func.sum(book_order.c.price * book_order.c.quantity).label("total_revenue")
+#     ) \
+#     .join(Category, Category.id == Book.category_id) \
+#     .join(Book, Book.id == book_order.c.book_id)\
+#     .group_by(Category.id).all()
+
+def revenue_stats(p=12, year=datetime.now().year):
+    return db.session.query(
+        Category.id,
+        Category.name,
+        func.sum(book_order.c.price * book_order.c.quantity).label("total_revenue"),
+        func.sum(book_order.c.quantity)
+    )\
+    .join(Book, Book.category_id == Category.id)\
+    .join(book_order, book_order.c.book_id == Book.id)\
+    .join(Order, book_order.c.order_id == Order.id)\
+    .filter(func.extract('month', Order.createdDate) == p , func.extract('year', Order.createdDate))\
+    .group_by(Category.id).all()
+
+
+
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        print(revenue_stats())

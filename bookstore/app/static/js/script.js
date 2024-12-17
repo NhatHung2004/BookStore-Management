@@ -118,11 +118,11 @@ function showDialog(action, bookIndex = null) {
         modalTitle.textContent = 'Thêm sách mới';
         bookForm.reset(); // Đặt lại các trường trong biểu mẫu
         bookForm.dataset.index = ""; // Xóa chỉ số
-    } else if (action === 'edit') {
+    } else if (action === 'edit' ) {
         modalTitle.textContent = 'Chỉnh sửa sách';
         const book = books[bookIndex];
         bookForm.dataset.index = bookIndex; // Lưu chỉ số để chỉnh sửa
-        // Điền thông tin hiện tại vào các trường biểu mẫu
+//         Điền thông tin hiện tại vào các trường biểu mẫu
         document.getElementById('bookName').value = book.name;
         document.getElementById('bookPrice').value = book.price;
         document.getElementById('bookAuthor').value = book.author;

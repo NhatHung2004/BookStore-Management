@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="220bfd0f-46f1-4ae2-9e02-186361f75d8e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/bookstore/app/static/css/book-detail.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/bookstore/app/templates/book-detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/static/css/loginReg.css" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/css/loginReg.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +59,28 @@
       <recent name="$PROJECT_DIR$/bookstore" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.routes">
+  <component name="RunManager" selected="Python.dao">
+    <configuration name="dao" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BookStore-Management" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bookstore/app" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bookstore/app/dao.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="models" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="BookStore-Management" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -107,11 +125,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dao" />
         <item itemvalue="Python.routes" />
         <item itemvalue="Python.models" />
         <item itemvalue="Python.routes" />
         <item itemvalue="Python.models" />
-        <item itemvalue="Python.routes" />
       </list>
     </recent_temporary>
   </component>
@@ -125,5 +143,16 @@
       <updated>1733279140176</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

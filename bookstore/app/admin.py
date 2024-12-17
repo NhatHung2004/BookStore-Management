@@ -1,5 +1,5 @@
 from flask_admin.contrib.sqla import ModelView
-from app import db, app
+from app import db, app, dao
 from models import Staff, Book, Category, Author, UserRole, User, Form
 from flask_admin import Admin, BaseView, expose
 from flask_login import current_user, logout_user
@@ -42,10 +42,10 @@ class LogoutView(AuthenticatedView):
         return redirect('/admin')
 
 
-# class StatsView(AuthenticatedView):
-#     @expose('/')
-#     def index(self):
-#         return self.render('admin/stats.html')
+class StatsView(AuthenticatedView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/stats.html', stats=dao.revenue_stats())
 
 
 # admin.add_view(ModelView(Bill, db.session))
@@ -53,4 +53,5 @@ class LogoutView(AuthenticatedView):
 admin.add_view(CategoryView(Category, db.session))
 admin.add_view(AuthorView(Author, db.session))
 admin.add_view(BookView(Book, db.session))
+admin.add_view(StatsView(name='Thống kê - báo cáo'))
 

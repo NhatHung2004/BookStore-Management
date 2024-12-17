@@ -3,26 +3,70 @@
 {% block body %}
 <h1 class="text-center text-danger mt-1">THỐNG KÊ BÁO CÁO</h1>
 
-<div class="row">
-    <div class="col-md-7 col-12"></div>
-    <div class="col-md-5 col-12">
-         <canvas id="myChart"></canvas>
+
+<div class="report-container">
+    <h3 class="report-title">BÁO CÁO DOANH THU THEO THÁNG</h3>
+    <!-- Thông tin khách hàng và ngày lập báo cáo -->
+    <div class="report-info">
+        <span>Tháng: <strong>{{ selected_month }}</strong></span>
+        <span>Năm: <strong>{{ selected_year }}</strong></span>
+        <span>Ngày lập báo cáo: <strong>{{ current_date }}</strong></span>
+    </div>
+
+    <!-- Bảng dữ liệu thống kê -->
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Thể loại sách</th>
+                <th>Doanh thu</th>
+                <th>Số lượt bán</th>
+                <th>Tỷ lệ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in stats %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ s[1] }}</td>
+                <td>{{ s[3] }}</td>
+                <td>{{ "{:,.0f}".format(s[2]) }} VNĐ</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Biểu đồ doanh thu -->
+    <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
     </div>
 </div>
 
+
+<!--{{stats}}-->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    let data = [];
+    let labels = [];
+
+    {% for s in stats %}
+        labels.push('{{ s[1] }}');
+        data.push({{ s[2] }});
+    {% endfor %}
+
     window.onload = function() {
      const ctx = document.getElementById('myChart');
 
       new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: labels,
           datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1
+            label: 'Tổng Doanh Thu',
+            data: data,
+            borderWidth: 1,
+            backgroundColor: ['red', 'green', 'yellow', 'blue']
           }]
         },
         options: {
