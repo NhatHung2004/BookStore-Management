@@ -32,17 +32,18 @@ function displayPasswordConfirm() {
     }
 }
 
-let cart = [];
+var cartOrder = [];
 // Hàm thêm sản phẩm vào giỏ hàng
-function addToOrder(productName, productPrice, productImage) {
+function addToOrder(productID, productName, productAuthor, productCate, productImage, productPrice) {
     // Kiểm tra nếu sản phẩm đã có trong giỏ hàng bằng cách so sánh tên sản phẩm và hình ảnh
-    const existingProduct = cart.find(item => item.name === productName && item.image === productImage);
+    const existingProduct = cartOrder.find(item => item.name === productName && item.image === productImage);
     if (existingProduct) {
         // Nếu sản phẩm đã có, tăng số lượng lên 1
         existingProduct.quantity++;
     } else {
         // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
-        cart.push({ name: productName, price: productPrice, image: productImage, quantity: 1 });
+        cartOrder.push({ id: productID, name: productName,
+            author: productAuthor, category: productCate, price: productPrice, image: productImage, quantity: 1 });
     }
     // Cập nhật lại giao diện giỏ hàng
     updateOrderDisplay();
@@ -61,7 +62,7 @@ function updateOrderDisplay() {
     const cartItemsContainerWrapper = document.getElementById('cartItemsContainer');
     // Xóa hết sản phẩm cũ trong giỏ hàng
     cartItemsContainer.innerHTML = "";
-    if (cart.length === 0) {
+    if (cartOrder.length === 0) {
         // Nếu giỏ hàng trống, hiển thị thông báo
         emptyCartMessage.classList.remove('d-none');
         cartItemsContainerWrapper.classList.add('d-none');
@@ -71,15 +72,13 @@ function updateOrderDisplay() {
         cartItemsContainerWrapper.classList.remove('d-none');
         let totalAmount = 0;
         // Lặp qua từng sản phẩm trong giỏ hàng
-        cart.forEach(item => {
+        cartOrder.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                        <td><img src="${item.image}" class="product-image" alt="${item.name}"></td>
                         <td class="product-name">${truncateName(item.name)}</td>
                         <td>
                             <input type="number" class="form-control quantity-input" value="${item.quantity}" min="1" onchange="updateQuantity('${item.name}', '${item.image}', this.value)">
                         </td>
-                        <td>$${(item.price * item.quantity).toFixed(2)}</td>
                     `;
             cartItemsContainer.appendChild(row);
             // Tính tổng số tiền
@@ -91,7 +90,7 @@ function updateOrderDisplay() {
 }
 // Cập nhật số lượng sản phẩm trong giỏ hàng
 function updateQuantity(productName, productImage, quantity) {
-    const product = cart.find(item => item.name === productName && item.image === productImage);
+    const product = cartOrder.find(item => item.name === productName && item.image === productImage);
     if (product) {
         product.quantity = parseInt(quantity, 10);
         updateCartDisplay();
@@ -103,7 +102,7 @@ function proceedToPayment() {
 }
 // Hàm xóa giỏ hàng
 function clearOrder() {
-    cart = [];
+    cartOrder = [];
     updateOrderDisplay();
 }
 
@@ -202,3 +201,40 @@ function deleteBook(index) {
         updateBookTable();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+    const addressInput = document.getElementById('address');
+    const addressLabel = document.querySelector('label[for="address"]');
+    const checkoutButton = document.querySelector('.payment-checkout-radio-btn button');
+    // Hiện hoặc ẩn ô địa chỉ và label khi thay đổi phương thức thanh toán
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener('change', function () {
+            if (radio.value === 'vnpay') {
+                addressInput.style.display = 'block';
+                addressLabel.style.display = 'block';
+            } else {
+                addressInput.style.display = 'none';
+                addressLabel.style.display = 'none';
+            }
+        });
+    });
+    // Đặt mặc định ẩn ô địa chỉ và label nếu chọn VNPAY
+    if (document.getElementById('debit').checked) {
+        addressInput.style.display = 'none';
+        addressLabel.style.display = 'none';
+    }
+});
+
+// button them giam so luong trong book-detail
+// const decreaseBtn = document.getElementById("book-detail-decrease");
+// const increaseBtn = document.getElementById("book-detail-increase");
+// const quantityInput = document.getElementById("book-detail-quantity");
+// decreaseBtn.onclick = () => {
+//     let value = parseInt(quantityInput.value);
+//     if (value > 1) quantityInput.value = value - 1;
+// };
+// increaseBtn.onclick = () => {
+//     let value = parseInt(quantityInput.value);
+//     if (value < 20) quantityInput.value = value + 1;
+// };

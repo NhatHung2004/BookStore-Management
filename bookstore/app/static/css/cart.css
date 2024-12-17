@@ -8,7 +8,7 @@ body {
     margin-top: 70px;
 }
 
-.card-body {
+.card-body-cart {
     -ms-flex: 1 1 auto;
     flex: 1 1 auto;
     padding: 1.40rem;
@@ -41,7 +41,7 @@ body {
 }
 
 
-.text-muted {
+.text-muted-cart {
     color: #969696 !important;
 }
 

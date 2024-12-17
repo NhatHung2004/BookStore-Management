@@ -1,0 +1,47 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<body class="book-detail-body">
+    <div class="book-detail-container">
+        <!-- Phần chi tiết sách -->
+        <div class="book-detail-main">
+            <img src="{{ book.image }}"
+                alt="Ảnh sách" class="book-detail-image">
+            <div class="book-detail-info">
+                <h1 class="book-detail-title">{{ book.name }}</h1>
+                <p class="book-detail-author"><strong>Tác giả:</strong> {{ book.author.name }}</p>
+                <p class="book-detail-category"><strong>Thể loại:</strong> {{ book.category.name }}</p>
+                <p class="book-detail-stock"><strong>Số lượng trong kho:</strong> {{ book.inventoryQuantity }}</p>
+                <p class="book-detail-price">Giá: {{ book.price|currency }}</p>
+                <button class="book-detail-add-cart"
+                    onclick="addToCart({{ book.id }}, '{{ book.name }}', '{{ book.author.name }}', 
+                    '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
+                    Thêm vào giỏ hàng
+                </button>
+            </div>
+        </div>
+        <!-- Phần bình luận -->
+        <div class="book-detail-reviews">
+            <h2 class="book-detail-reviews-title">Đánh giá sản phẩm</h2>
+            <div class="book-detail-review-box">
+                <div class="book-detail-review">
+                    <img src="avatar-placeholder.jpg" alt="User Avatar" class="book-detail-avatar">
+                    <div class="book-detail-review-content">
+                        <p class="book-detail-review-name">Nguyễn Văn A</p>
+                        <p>Sách rất hay và bổ ích, tôi học được nhiều điều từ nó!</p>
+                        <p class="book-detail-review-time">5 phút trước</p>
+                    </div>
+                </div>
+                <div class="book-detail-review">
+                    <img src="avatar-placeholder.jpg" alt="User Avatar" class="book-detail-avatar">
+                    <div class="book-detail-review-content">
+                        <p class="book-detail-review-name">Trần Thị B</p>
+                        <p>Nội dung sách dễ hiểu và thực tế.</p>
+                        <p class="book-detail-review-time">10 phút trước</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

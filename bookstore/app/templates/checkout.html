@@ -21,8 +21,7 @@
                     {% endfor %}
                     <li class="list-group-item d-flex justify-content-between bg-light">
                         <strong class="text-danger">Tổng (VND)</strong>
-                        <strong class="text-danger" style="font-size: 1.5rem;">{{ cart_stats.total_amount|currency
-                            }}</strong>
+                        <strong class="text-danger" style="font-size: 1.5rem;">{{ cart_stats.total_amount|currency }}</strong>
                     </li>
                     {% endif %}
                 </ul>
@@ -48,33 +47,33 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <label for="address" class="form-label">Địa chỉ</label>
-                        <input type="text" class="form-control" id="address" value="{{ current_user.customer.address }}"
-                            required>
-                    </div>
-                    <div class="col-12">
                         <label for="phone" class="form-label">Số điện thoại</label>
                         <input type="text" class="form-control" id="phone" value="{{ current_user.customer.phone }}">
                     </div>
                     <hr class="my-4">
                     <h4 class="mb-3">Phương thức thanh toán</h4>
                     <form id="payment-form">
-                        <div class="my-3">
+                        <div class="my-3 payment-checkout-radio-btn">
                             <div class="form-check">
-                                <input id="credit" name="paymentMethod" value="vnpay" type="radio" class="form-check-input" checked
-                                    required>
+                                <input id="credit" name="paymentMethod" value="vnpay" type="radio" class="form-check-input" required>
                                 <label class="form-check-label" for="credit">Thanh toán qua vnpay</label>
                             </div>
                             <div class="form-check">
-                                <input id="debit" name="paymentMethod" value="direct" type="radio" class="form-check-input" required>
+                                <input id="debit" name="paymentMethod" value="direct" type="radio" class="form-check-input" checked required>
                                 <label class="form-check-label" for="debit">Trực tiếp</label>
+                            </div>
+                            <div class="col-12 my-4">
+                                <label for="address" class="form-label ">Địa chỉ</label>
+                                <input type="text" class="form-control" id="address"
+                                       value="{{ current_user.customer.address }}"
+                                       style="display: none;" required>
                             </div>
                         </div>
                     </form>
                     <hr class="my-4">
                     <button class="w-100 btn btn-primary btn-lg"
                         onclick="payment({{ cart_stats.total_amount }})">
-                        Tạo đơn hàng hàng
+                        Thanh toán
                     </button>
                 </div>
             </div>

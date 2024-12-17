@@ -20,15 +20,15 @@ h1 {
     font-weight: 1000;
 }
 
-.table th,
-.table td {
+.table-list-order th,
+.table-list-order td {
     text-align: center;
     /* Căn giữa theo chiều ngang */
     vertical-align: middle;
     /* Căn giữa theo chiều dọc */
 }
 
-.table tbody tr:hover {
+.table-list-order tbody tr:hover {
     background-color: #f9f9f9;
 }
 
@@ -69,19 +69,19 @@ h1 {
 }
 
 /* Tùy chỉnh hover cho hàng trong bảng */
-.table tbody tr:hover {
+.table-list-order tbody tr:hover {
     background-color: #f1f3f5;
     cursor: pointer;
 }
 
 /* Tùy chỉnh khoảng cách giữa các hàng */
-.table tbody tr {
+.table-list-order tbody tr {
     height: 60px;
     /* Chiều cao hàng */
 }
 
 /* Tùy chỉnh phần tiêu đề bảng (th) */
-.table thead th {
+.table-list-order thead th {
     background-color: #3a3f51;
     /* Màu xám đậm nhã nhặn */
     color: #f8f9fa;
@@ -101,7 +101,7 @@ h1 {
 }
 
 /* Hiệu ứng hover */
-.table thead th:hover {
+.table-list-order thead th:hover {
     background-color: #495057;
     /* Đổi màu nền khi hover sang xám nhạt hơn */
     cursor: pointer;
@@ -109,13 +109,13 @@ h1 {
 }
 
 /* Căn giữa cho cột Cài đặt với biểu tượng */
-.table thead th.settings-header {
+.table-list-order thead th.settings-header {
     text-align: center;
     /* Căn giữa cho cột này */
 }
 
 /* Tùy chỉnh cột "Cài đặt" với biểu tượng */
-.table thead th.settings-header::after {
+.table-list-order thead th.settings-header::after {
     content: " ⚙";
     /* Biểu tượng bánh răng */
     font-size: 0.9rem;
@@ -125,13 +125,12 @@ h1 {
 }
 
 /* Hiệu ứng bo góc và bóng nhẹ cho toàn bộ bảng */
-.table {
+
+.table-list-order {
+    width: 100%;
+    /* Ensure the table takes full width */
     border-radius: 8px;
-    /* Bo góc toàn bảng */
-    overflow: hidden;
-    /* Giữ các góc bo không bị tràn */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    /* Đổ bóng nhẹ */
 }
 
 .dropdown-menu {
@@ -143,7 +142,7 @@ h1 {
     /* Thêm cuộn dọc nếu danh sách dài */
 }
 
-.table {
+.table-list-order {
     position: relative;
     /* Đặt bảng ở trạng thái tương đối */
     overflow: visible;
@@ -364,11 +363,4 @@ footer#footer {
 body {
     background-color: #f4f6f9;
     /* Màu nền nhẹ cho toàn bộ trang */
-}
-
-.card {
-    background-color: #ffffff;
-    /* Màu nền trắng cho card */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    /* Tạo bóng đổ nhẹ */
 }

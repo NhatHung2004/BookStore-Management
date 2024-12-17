@@ -133,7 +133,8 @@ class Form(db.Model):
 if __name__ == '__main__':
     with app.app_context():
         # db.create_all()
-        # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()), user_role=UserRole.ADMIN)
+        # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             email="admin@gmail.com", user_role=UserRole.ADMIN)
         # db.session.add(admin)
         # db.session.commit()
         # manager = User(name='Manager', username='manager',

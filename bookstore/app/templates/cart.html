@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="table-responsive">
                     <table class="table table-borderless table-shopping-cart">
-                        <thead class="text-muted">
+                        <thead class="text-muted-cart">
                             <tr class="small text-uppercase">
                                 <th scope="col">Sản phẩm</th>
                                 <th scope="col" width="120" class="quantity">Số lượng</th>
@@ -35,29 +35,32 @@
                                     <div class="input-group quantity-control">
                                         <div class="input-group-prepend">
                                             <a class="btn btn-outline-secondary btn-decrement" type="button"
-                                                data-product-id="{{ c.id }}">-
+                                                data-product-id="{{ c.id }}"
+                                                onclick="decreaseQuantity({{ c.id }})">-
                                             </a>
                                         </div>
                                         <input type="text" class="form-control quantity-input" id="quantity-input-{{ c.id }}" value="{{ c.quantity }}">
                                         <div class="input-group-append">
                                             <a class="btn btn-outline-secondary btn-increment" type="button"
                                                 data-product-id="{{ c.id }}"
-                                                onclick="updateQuantity({{ c.id }})">+
+                                                onclick="increaseQuantity({{ c.id }})">+
                                             </a>
                                         </div>
 
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="price-wrap"><var class="price">{{ c.price|currency }}</var>
-                                        <small class="text-muted">9.20 VNĐ</small>
+                                    <div class="price-wrap">
+                                        <var class="price">{{ c.price|currency }}</var> 
                                     </div>
                                 </td>
+                                {% if current_user.user_role != UserRole.STAFF %}
                                 <td class="text-right d-none d-md-block">
                                     <a type="button" href="" class="btn btn-light" onclick="removeFromCart({{ c.id }})">
                                         Xoá Sản Phẩm
                                     </a>
                                 </td>
+                                {% endif %}
                             </tr>
                             {% endfor %}
                             {% endif %}
@@ -68,20 +71,20 @@
         </aside>
         <aside class="col-lg-3">
             <div class="card">
-                <div class="card-body">
-                    <dl class="dlist-align">
-                        <dt style="font-size: 20px;">Total price:</dt>
-                        <dd class="text-right ml-3" style="font-size: 23px;">{{ cart_stats.total_amount|currency }}</dd>
-                    </dl>
-                    <dl class="dlist-align">
-                        <dt style="font-size: 18px;">Total:</dt>
-                        <dd class="text-right text-dark b ml-3" style="font-size: 20px;"><strong>59.97 VNĐ</strong></dd>
-                    </dl>
+                <div class="card-body-cart">
                     <hr>
-                    <a href="#" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
-                        data-abc="true">Make Purchase</a>
-                    <a href="#" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
-                        data-abc="true">Continue Shopping</a>
+                    {% if current_user.user_role != UserRole.STAFF %}
+                    <a href="/checkout" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
+                        data-abc="true">Tạo đơn hàng</a>
+                    <a href="/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
+                        data-abc="true">Tiếp tục mua sách</a>
+                    {% else %}
+                    <a href="/bill" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
+                        data-abc="true">Tạo đơn hàng</a>
+                    <a href="/order/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
+                        data-abc="true">Tiếp tục mua sách</a>
+                    {% endif %}
+                    
                 </div>
             </div>
         </aside>
