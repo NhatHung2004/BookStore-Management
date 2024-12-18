@@ -1,9 +1,9 @@
 import hashlib
 from app import db, app, utils, mail
 import uuid
-from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
-from sqlalchemy import insert
+from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order
 from flask_mail import Message
+from sqlalchemy import func
 
 
 def add_user(phone, name, username, password, address, avatar=None):
@@ -17,32 +17,14 @@ def add_user(phone, name, username, password, address, avatar=None):
     return customer
 
 
-def add_to_book_order(book_id, order_id, quantity, price):
-    # Tạo câu lệnh chèn vào bảng trung gian
-    stmt = insert(book_order).values(
-        book_id=book_id,
-        order_id=order_id,
-        quantity=quantity,
-        price=price
-    )
-    # Thực thi câu lệnh
-    db.session.execute(stmt)
-    db.session.commit()
-
-
 def add_order(orderID, customerID, phone, isPay, cart):
     if cart != None:
         order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
         db.session.add(order)
-        db.session.flush()
 
         for c in cart.values():
-            add_to_book_order(
-                book_id=int(c['id']),
-                order_id=order.id, 
-                quantity=c['quantity'], 
-                price=c['price']
-            )
+            d = OrderDetails(book_id=int(c['id']), order=order, quantity=c['quantity'], unit_price=c['price'])
+            db.session.add(d)
             
         db.session.commit()
         return order.id
@@ -106,16 +88,14 @@ def load_orders(kw=None, customerID=None):
 
 
 def calculate_order_total(order_id):
-    total = db.session.query(
-        db.func.sum(book_order.quantity * book_order.price)
-    ).filter(book_order.order_id == order_id).scalar()
+    total = db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price)
+    ).filter(OrderDetails.order_id == order_id).scalar()
 
     return total or 0.0
 
 
 def load_detail_order(orderID):
-    order = Order.query.get(orderID)
-    order_books = db.session.execute(db.select(book_order).filter_by(order_id=order.id)).fetchall()
+    order_books = OrderDetails.query.filter(OrderDetails.order_id.__eq__(orderID)).all()
     detailOrder = []
     for order_book in order_books:
         book  = Book.query.filter(Book.id == order_book.book_id).first()
@@ -124,11 +104,48 @@ def load_detail_order(orderID):
             "name": book.name,
             "author": book.author,
             "image": book.image,
-            "price": int(order_book.price),
+            "price": int(order_book.unit_price),
             "quantity": int(order_book.quantity),
-            "total_price": int(order_book.price * order_book.quantity)
+            "total_price": int(order_book.unit_price * order_book.quantity)
         })
     return detailOrder
+
+
+def load_bill(orderID):
+    order = OrderDetails.query.filter(OrderDetails.order_id.__eq__(orderID)).all()
+    bill = []
+    for o in order:
+        bill.append({
+            "id": o.book_id,
+            "name": o.book.name,
+            "category": o.book.category.name,
+            "price": o.unit_price,
+            "quantity": o.quantity,
+            "totalUnitPrice": int(o.unit_price * o.quantity)
+        })
+    return bill
+
+
+def load_bill_info(orderID):
+    order = Order.query.get(orderID)
+    if order.staff_id:
+        return {
+            "cusID": order.customer.id,
+            "staffID": order.staff_id,
+            "cusName": order.customer.user.name,
+            "staffName": order.staff.user.name,
+            "createdDate": order.createdDate,
+            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
+                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
+        }
+    else:
+        return {
+            "cusID": order.customer.id,
+            "cusName": order.customer.user.name,
+            "createdDate": order.createdDate,
+            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
+                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
+        }
 
 
 def send_email(orderID, customerName):

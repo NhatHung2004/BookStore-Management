@@ -8,11 +8,11 @@
         </div>
         <div class="bill-customer-info">
             <div class="bill-customer-details">
-                <p><strong>Mã khách hàng:</strong> KH001</p>
-                <p><strong>Tên khách hàng:</strong> Nguyễn Văn A</p>
+                <p><strong>Mã khách hàng:</strong> {{ billInfo.cusID }}</p>
+                <p><strong>Tên khách hàng:</strong> {{ billInfo.cusName }}</p>
             </div>
             <div class="bill-invoice-date">
-                <p><strong>Ngày lập hóa đơn:</strong> 11/12/2024</p>
+                <p><strong>Ngày lập hóa đơn:</strong> {{ billInfo.createdDate }}</p>
             </div>
         </div>
         <table class="bill-table">
@@ -26,29 +26,27 @@
                     <th class="bill-th">Giá tổng</th>
                 </tr>
             </thead>
-            {% if cart %}
-            {% for c in cart.values() %}
+            {% for b in bill %}
             <tbody>
                 <tr class="bill-row">
-                    <td class="bill-td">{{ c.id }}</td>
-                    <td class="bill-td">{{ c.name }}</td>
-                    <td class="bill-td">{{ c.category }}</td>
-                    <td class="bill-td">{{ c.price|currency }}</td>
-                    <td class="bill-td">{{ c.quantity }}</td>
-                    <td class="bill-td">{{ c.total_price|currency }}</td>
+                    <td class="bill-td">{{ b.id }}</td>
+                    <td class="bill-td">{{ b.name }}</td>
+                    <td class="bill-td">{{ b.category }}</td>
+                    <td class="bill-td">{{ b.price|currency }}</td>
+                    <td class="bill-td">{{ b.quantity }}</td>
+                    <td class="bill-td">{{ b.totalUnitPrice|currency }}</td>
                 </tr>
             </tbody>
             {% endfor %}
-            {% endif %}
         </table>
 
         <div class="bill-footer-row">
-            <p class="bill-footer-label"><strong>Tổng cộng: </strong>{{ cart_stats.total_amount }}</p>
+            <p class="bill-footer-label"><strong>Tổng cộng: </strong>{{ billInfo.totalPrice|currency }}</p>
         </div>
         <div class="bill-employee-info">
             <div class="bill-employee-details">
-                <p><strong>Mã nhân viên thanh toán:</strong> NV001</p>
-                <p><strong>Tên nhân viên thanh toán:</strong> Trần Thị B</p>
+                <p><strong>Mã nhân viên thanh toán:</strong> {{ billInfo.staffID }}</p>
+                <p><strong>Tên nhân viên thanh toán:</strong> {{ billInfo.staffName }}</p>
             </div>
         </div>
 

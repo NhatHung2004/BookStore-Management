@@ -42,9 +42,11 @@ def manage():
     return render_template("manage.html")
 
 
-@app.route("/bill")
-def bill():
-    return render_template("bill.html")
+@app.route("/bill/<orderID>")
+def bill(orderID):
+    bill = dao.load_bill(orderID)
+    billInfo = dao.load_bill_info(orderID)
+    return render_template("bill.html", bill=bill, billInfo=billInfo)
 
 
 @app.route("/cart")
@@ -53,7 +55,7 @@ def cart():
     return render_template("cart.html", books=books)
 
 
-@app.route('/api/add/carts', methods=['post'])
+@app.route('/api/carts', methods=['post'])
 def add_to_cart():
     cart = session.get('cart')
 
@@ -85,7 +87,7 @@ def add_to_cart():
     return jsonify(utils.stats_cart(cart))
 
 
-@app.route("/api/add/cartOrders", methods=['post'])
+@app.route("/api/cartOrders", methods=['post'])
 def add_cartOrders():
     cartOrder = request.json.get('cartOrder')
     cart = session.get('cart')
@@ -103,51 +105,40 @@ def add_cartOrders():
     return jsonify({"url": "http://127.0.0.1:5000/cart"})
 
 
-@app.route('/api/remove/carts')
+@app.route('/api/cartOrders', methods=['delete'])
 def remove_cart():
     session['cart'] = {}
     return jsonify({})
 
 
-@app.route('/api/remove/cartID', methods=['post'])
-def remove_from_cartID():
+@app.route('/api/carts/<book_id>', methods=['delete'])
+def remove_from_cartID(book_id):
     cart = session.get('cart')
 
-    id = str(request.json.get('id'))
-    del cart[id]
+    if cart and book_id in cart:
+        del cart[book_id]
 
     session['cart'] = cart
 
     return jsonify(utils.stats_cart(cart))
 
 
-@app.route('/api/increaseQuantity/carts', methods=['post'])
-def increase_quantity():
+@app.route('/api/carts/<book_id>', methods=['put'])
+def update_quantity(book_id):
     cart = session.get('cart')
 
-    id = str(request.json.get('id'))
-    cart[id]['quantity'] += 1
+    if cart and book_id in cart:
+        btn = request.json.get('btn')
+        if btn == "tang":
+            cart[book_id]['quantity'] += 1
+        else:
+            cart[book_id]['quantity'] -= 1
 
     session['cart'] = cart
 
     stats = utils.stats_cart(cart)
 
-    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
-
-
-@app.route('/api/decreaseQuantity/carts', methods=['post'])
-def decrease_quantity():
-    cart = session.get('cart')
-
-    id = str(request.json.get('id'))
-    if cart[id]['quantity'] > 0:
-        cart[id]['quantity'] -= 1
-
-    session['cart'] = cart
-
-    stats = utils.stats_cart(cart)
-
-    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[id]['quantity'], 'id': cart[id]['id'] })
+    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
 
 
 @app.route("/list-order")
@@ -158,7 +149,7 @@ def orderOnline():
     return render_template("list_order.html", books=books, orders=orders)
 
 
-@app.route("/book-detail/<int:bookID>")
+@app.route("/books/<int:bookID>")
 def book_detail(bookID):
     book = dao.load_book_by_id(bookID=bookID)
     return render_template("book-detail.html", book=book)
@@ -168,7 +159,7 @@ def book_detail(bookID):
 def detail_order(orderID):
     detailOrder = dao.load_detail_order(orderID=orderID)
     total = utils.total_price(detailOrder=detailOrder)
-    return render_template("detail-order.html", detailOrder=detailOrder, total=total)
+    return render_template("detail-order.html", detailOrder=detailOrder, total=total, orderID=orderID)
 
 
 @app.route("/order/")
@@ -260,7 +251,7 @@ def payment_direct():
     return jsonify({})
 
 
-@app.route('/create_payment', methods=['POST'])
+@app.route('/api/create_payment', methods=['POST'])
 def create_payment():
     """Tạo URL thanh toán."""
     orderID = str(uuid.uuid4())

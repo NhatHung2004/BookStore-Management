@@ -1,6 +1,6 @@
 function addToCart(id, name, author, category, image, price, is_authenticated) {
     if (is_authenticated === 'True') {
-        fetch("/api/add/carts", {
+        fetch("/api/carts", {
             method: "POST",
             body: JSON.stringify({
                 "id": id,
@@ -31,7 +31,7 @@ function addToCart(id, name, author, category, image, price, is_authenticated) {
 
 function addCartFromOrder() {
     if (cartOrder != []) {
-        fetch("/api/add/cartOrders", {
+        fetch("/api/cartOrders", {
             method: "POST",
             body: JSON.stringify({
                 "cartOrder": cartOrder
@@ -47,34 +47,31 @@ function addCartFromOrder() {
 
 function removeCartFromOrder() {
     clearOrder()
-    fetch("/api/remove/carts").then(res => res.json()).then(data => {
+    fetch("/api/cartOrders", {
+        method: "DELETE"
+    }).then(res => res.json()).then(data => {
         alert("Giỏ hàng rỗng")
     })
 }
 
 function removeFromCart(id) {
-    fetch("/api/remove/cartID", {
-        method: "POST",
-        body: JSON.stringify({
-            "id": id
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json()).then(data => {
-        let items = document.getElementsByClassName("cart-counter");
-        let i = a.parentElement;
-        i.remove()
-        for (let item of items)
-            item.innerText = data.total_quantity;
-    });
+    if (confirm("Bạn muốn xóa sản phẩm?") === true) {
+        fetch(`/api/carts/${id}`, {
+            method: "delete"
+        }).then(res => res.json()).then(data => {
+            let items = document.getElementsByClassName("cart-counter");
+            document.getElementById(`cart${id}`).style.display = "none"
+            for (let item of items)
+                item.innerText = data.total_quantity;
+        });
+    }
 }
 
-function increaseQuantity(id) {
-    fetch("/api/increaseQuantity/carts", {
-        method: "POST",
+function updateQuantity(id, btn) {
+    fetch(`/api/carts/${id}`, {
+        method: "PUT",
         body: JSON.stringify({
-            "id": id
+            "btn": btn
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -85,34 +82,15 @@ function increaseQuantity(id) {
         let items = document.getElementsByClassName("cart-counter");
         for (let item of items)
             item.innerText = data.total_quantity;
-    });
-}
-
-function decreaseQuantity(id) {
-    fetch("/api/decreaseQuantity/carts", {
-        method: "POST",
-        body: JSON.stringify({
-            "id": id
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json()).then(data => {
-        document.getElementById(`quantity-input-${data.id}`).value = data.quantity
-
-        let items = document.getElementsByClassName("cart-counter");
-        for (let item of items)
-            item.innerText = data.total_quantity;
-        
     });
 }
 
 function payment(amount) {
-    if(amount != 0) {
+    if (amount != 0) {
         let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
 
         if (paymentMethod === 'vnpay') {
-            fetch('/create_payment', {
+            fetch('/api/create_payment', {
                 method: "POST",
                 body: JSON.stringify({
                     'amount': amount

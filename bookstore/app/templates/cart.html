@@ -18,7 +18,7 @@
                         <tbody>
                             {% if cart %}
                             {% for c in cart.values() %}
-                            <tr>
+                            <tr id="cart{{ c.id }}">
                                 <td>
                                     <figure class="itemside align-items-center">
                                         <div class="aside"><img src="{{ c.image }}" class="img-sm"></div>
@@ -36,14 +36,14 @@
                                         <div class="input-group-prepend">
                                             <a class="btn btn-outline-secondary btn-decrement" type="button"
                                                 data-product-id="{{ c.id }}"
-                                                onclick="decreaseQuantity({{ c.id }})">-
+                                                onclick="updateQuantity({{ c.id }}, 'giam')">-
                                             </a>
                                         </div>
                                         <input type="text" class="form-control quantity-input" id="quantity-input-{{ c.id }}" value="{{ c.quantity }}">
                                         <div class="input-group-append">
                                             <a class="btn btn-outline-secondary btn-increment" type="button"
                                                 data-product-id="{{ c.id }}"
-                                                onclick="increaseQuantity({{ c.id }})">+
+                                                onclick="updateQuantity({{ c.id }}, 'tang')">+
                                             </a>
                                         </div>
 
@@ -56,9 +56,9 @@
                                 </td>
                                 {% if current_user.user_role != UserRole.STAFF %}
                                 <td class="text-right d-none d-md-block">
-                                    <a type="button" href="" class="btn btn-light" onclick="removeFromCart({{ c.id }})">
+                                    <button type="button" class="btn btn-light" onclick="removeFromCart({{ c.id }})">
                                         Xoá Sản Phẩm
-                                    </a>
+                                    </button>
                                 </td>
                                 {% endif %}
                             </tr>
