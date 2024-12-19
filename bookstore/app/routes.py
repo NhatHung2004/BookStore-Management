@@ -332,12 +332,12 @@ def currency_filter(value):
     return f"{value:,.0f} VND"
 
 
-# @app.route("/book-detail")
-# def book_detail():
-#     return render_template("book-detail.html")
+@app.route("/book-entry")
+def book_entry_form():
+    return render_template("book-entry-form.html")
 
 
 
 if __name__ == "__main__":
     from app import admin
-    app.run(debug=True, port="5003")
+    app.run(debug=True, port=5003)

@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="220bfd0f-46f1-4ae2-9e02-186361f75d8e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/bookstore/app/static/css/book-entry-form.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bookstore/app/static/css/stats.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/bookstore/app/templates/book-entry-form.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/dao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/routes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +63,7 @@
       <recent name="$PROJECT_DIR$/bookstore" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.dao">
+  <component name="RunManager" selected="Python.routes">
     <configuration name="dao" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="BookStore-Management" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -125,8 +129,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.dao" />
         <item itemvalue="Python.routes" />
+        <item itemvalue="Python.dao" />
         <item itemvalue="Python.models" />
         <item itemvalue="Python.routes" />
         <item itemvalue="Python.models" />

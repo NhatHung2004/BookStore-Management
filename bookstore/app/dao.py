@@ -2,7 +2,7 @@ import hashlib
 from app import db, app, utils, mail
 import uuid
 from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
-from sqlalchemy import insert, func
+from sqlalchemy import insert, func, cast, Float
 from flask_mail import Message
 from datetime import datetime
 
@@ -177,23 +177,46 @@ def send_email(orderID, customerName):
 #     .join(Book, Book.id == book_order.c.book_id)\
 #     .group_by(Category.id).all()
 
-def revenue_stats(p=12, year=datetime.now().year):
+def revenue_stats(month=12, year=datetime.now().year):
     return db.session.query(
         Category.id,
         Category.name,
         func.sum(book_order.c.price * book_order.c.quantity).label("total_revenue"),
-        func.sum(book_order.c.quantity)
+        func.sum(book_order.c.quantity).label("total_sales"),
+        (func.sum(book_order.c.quantity) / cast(func.sum(func.sum(book_order.c.quantity)).over(), Float) * 100)
     )\
     .join(Book, Book.category_id == Category.id)\
     .join(book_order, book_order.c.book_id == Book.id)\
     .join(Order, book_order.c.order_id == Order.id)\
-    .filter(func.extract('month', Order.createdDate) == p , func.extract('year', Order.createdDate))\
+    .filter(func.extract('month', Order.createdDate) == month, func.extract('year', Order.createdDate) == year)\
     .group_by(Category.id).all()
 
+def book_frequency_stats(month=12, year=datetime.now().year):
+    total_quantity_subquery = db.session.query(
+        func.sum(book_order.c.quantity).label("total_quantity")
+    ).join(Order, book_order.c.order_id == Order.id)\
+     .filter(
+         func.extract('month', Order.createdDate) == month,
+         func.extract('year', Order.createdDate) == year
+     ).scalar_subquery()
 
-
-
+    return db.session.query(
+        Book.id.label("book_id"),
+        Book.name.label("book_name"),
+        Category.name.label("category_name"),
+        func.sum(book_order.c.quantity).label("quantity"),
+        (func.sum(book_order.c.quantity) / total_quantity_subquery * 100).label("percentage")
+    )\
+    .join(Category, Book.category_id == Category.id)\
+    .join(book_order, book_order.c.book_id == Book.id)\
+    .join(Order, book_order.c.order_id == Order.id)\
+    .filter(
+        func.extract('month', Order.createdDate) == month,
+        func.extract('year', Order.createdDate) == year
+    )\
+    .group_by(Book.id, Category.name)\
+    .all()
 
 if __name__ == '__main__':
     with app.app_context():
-        print(revenue_stats())
+        print(book_frequency_stats())

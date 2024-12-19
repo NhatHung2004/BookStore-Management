@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from flask_admin.contrib.sqla import ModelView
 from app import db, app, dao
 from models import Staff, Book, Category, Author, UserRole, User, Form
 from flask_admin import Admin, BaseView, expose
 from flask_login import current_user, logout_user
-from flask import redirect
+from flask import redirect, request
 
 admin = Admin(app=app, name="Bookstore Admin", template_mode='bootstrap4')
 
@@ -42,10 +44,24 @@ class LogoutView(AuthenticatedView):
         return redirect('/admin')
 
 
-class StatsView(AuthenticatedView):
+class StatsView(BaseView):
     @expose('/')
     def index(self):
-        return self.render('admin/stats.html', stats=dao.revenue_stats())
+        # Lấy giá trị tháng và năm từ sự kiện click của button
+        month = request.args.get('month', type=int)
+        year = request.args.get('year', type=int)
+
+        # Gọi hàm DAO để lấy dữ liệu thống kê
+        month_revenue_stats = dao.revenue_stats(month, year)
+        book_frequency_stats = dao.book_frequency_stats(month, year)
+
+        total_revenue = sum([s[2] for s in month_revenue_stats])
+
+        # Trả về dữ liệu thống kê
+        return self.render('admin/stats.html', month_revenue_stats=month_revenue_stats,
+                           book_frequency_stats =book_frequency_stats, total_revenue=total_revenue)
+
+
 
 
 # admin.add_view(ModelView(Bill, db.session))
