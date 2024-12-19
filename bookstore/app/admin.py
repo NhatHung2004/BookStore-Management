@@ -52,7 +52,7 @@ class StatsView(BaseView):
         year = request.args.get('year', type=int)
 
         # Gọi hàm DAO để lấy dữ liệu thống kê
-        month_revenue_stats = dao.revenue_stats(month, year)
+        month_revenue_stats = dao.month_revenue_stats(month, year)
         book_frequency_stats = dao.book_frequency_stats(month, year)
 
         total_revenue = sum([s[2] for s in month_revenue_stats])

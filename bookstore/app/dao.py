@@ -1,7 +1,7 @@
 import hashlib
 from app import db, app, utils, mail
 import uuid
-from models import Customer, Staff, Book, Author, Category, User, UserRole, book_order, Order
+from models import Customer, Staff, Book, Author, Category, User, UserRole, Order, OrderDetails
 from sqlalchemy import insert, func, cast, Float
 from flask_mail import Message
 from datetime import datetime
@@ -18,32 +18,14 @@ def add_user(phone, name, username, password, address, avatar=None):
     return customer
 
 
-def add_to_book_order(book_id, order_id, quantity, price):
-    # Tạo câu lệnh chèn vào bảng trung gian
-    stmt = insert(book_order).values(
-        book_id=book_id,
-        order_id=order_id,
-        quantity=quantity,
-        price=price
-    )
-    # Thực thi câu lệnh
-    db.session.execute(stmt)
-    db.session.commit()
-
-
 def add_order(orderID, customerID, phone, isPay, cart):
     if cart != None:
         order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
         db.session.add(order)
-        db.session.flush()
 
         for c in cart.values():
-            add_to_book_order(
-                book_id=int(c['id']),
-                order_id=order.id, 
-                quantity=c['quantity'], 
-                price=c['price']
-            )
+            d = OrderDetails(book_id=int(c['id']), order=order, quantity=c['quantity'], unit_price=c['price'])
+            db.session.add(d)
             
         db.session.commit()
         return order.id
@@ -107,16 +89,14 @@ def load_orders(kw=None, customerID=None):
 
 
 def calculate_order_total(order_id):
-    total = db.session.query(
-        db.func.sum(book_order.quantity * book_order.price)
-    ).filter(book_order.order_id == order_id).scalar()
+    total = db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price)
+    ).filter(OrderDetails.order_id == order_id).scalar()
 
     return total or 0.0
 
 
 def load_detail_order(orderID):
-    order = Order.query.get(orderID)
-    order_books = db.session.execute(db.select(book_order).filter_by(order_id=order.id)).fetchall()
+    order_books = OrderDetails.query.filter(OrderDetails.order_id.__eq__(orderID)).all()
     detailOrder = []
     for order_book in order_books:
         book  = Book.query.filter(Book.id == order_book.book_id).first()
@@ -125,11 +105,48 @@ def load_detail_order(orderID):
             "name": book.name,
             "author": book.author,
             "image": book.image,
-            "price": int(order_book.price),
+            "price": int(order_book.unit_price),
             "quantity": int(order_book.quantity),
-            "total_price": int(order_book.price * order_book.quantity)
+            "total_price": int(order_book.unit_price * order_book.quantity)
         })
     return detailOrder
+
+
+def load_bill(orderID):
+    order = OrderDetails.query.filter(OrderDetails.order_id.__eq__(orderID)).all()
+    bill = []
+    for o in order:
+        bill.append({
+            "id": o.book_id,
+            "name": o.book.name,
+            "category": o.book.category.name,
+            "price": o.unit_price,
+            "quantity": o.quantity,
+            "totalUnitPrice": int(o.unit_price * o.quantity)
+        })
+    return bill
+
+
+def load_bill_info(orderID):
+    order = Order.query.get(orderID)
+    if order.staff_id:
+        return {
+            "cusID": order.customer.id,
+            "staffID": order.staff_id,
+            "cusName": order.customer.user.name,
+            "staffName": order.staff.user.name,
+            "createdDate": order.createdDate,
+            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
+                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
+        }
+    else:
+        return {
+            "cusID": order.customer.id,
+            "cusName": order.customer.user.name,
+            "createdDate": order.createdDate,
+            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
+                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
+        }
 
 
 def send_email(orderID, customerName):
@@ -177,46 +194,49 @@ def send_email(orderID, customerName):
 #     .join(Book, Book.id == book_order.c.book_id)\
 #     .group_by(Category.id).all()
 
-def revenue_stats(month=12, year=datetime.now().year):
-    return db.session.query(
-        Category.id,
-        Category.name,
-        func.sum(book_order.c.price * book_order.c.quantity).label("total_revenue"),
-        func.sum(book_order.c.quantity).label("total_sales"),
-        (func.sum(book_order.c.quantity) / cast(func.sum(func.sum(book_order.c.quantity)).over(), Float) * 100)
-    )\
-    .join(Book, Book.category_id == Category.id)\
-    .join(book_order, book_order.c.book_id == Book.id)\
-    .join(Order, book_order.c.order_id == Order.id)\
-    .filter(func.extract('month', Order.createdDate) == month, func.extract('year', Order.createdDate) == year)\
-    .group_by(Category.id).all()
+# month_revenue_stats
+def month_revenue_stats(month=12, year=datetime.now().year):
+    with app.app_context():
+        return db.session.query(
+            Category.id,
+            Category.name,
+            func.sum(OrderDetails.unit_price * OrderDetails.quantity).label("total_revenue"),
+            func.sum(OrderDetails.quantity).label("total_sales"),
+            (func.sum(OrderDetails.quantity) / cast(func.sum(func.sum(OrderDetails.quantity)).over(), Float) * 100).label("percentage_of_total_sales")
+        )\
+        .join(Book, Book.category_id == Category.id)\
+        .join(OrderDetails, OrderDetails.book_id == Book.id)\
+        .join(Order, OrderDetails.order_id == Order.id)\
+        .filter(func.extract('month', Order.createdDate) == month, func.extract('year', Order.createdDate) == year)\
+        .group_by(Category.id).all()
 
 def book_frequency_stats(month=12, year=datetime.now().year):
-    total_quantity_subquery = db.session.query(
-        func.sum(book_order.c.quantity).label("total_quantity")
-    ).join(Order, book_order.c.order_id == Order.id)\
-     .filter(
-         func.extract('month', Order.createdDate) == month,
-         func.extract('year', Order.createdDate) == year
-     ).scalar_subquery()
+    with app.app_context():
+        total_quantity_subquery = db.session.query(
+            func.sum(OrderDetails.quantity).label("total_quantity")
+        ).join(Order, OrderDetails.order_id == Order.id)\
+         .filter(
+             func.extract('month', Order.createdDate) == month,
+             func.extract('year', Order.createdDate) == year
+         ).scalar_subquery()
 
-    return db.session.query(
-        Book.id.label("book_id"),
-        Book.name.label("book_name"),
-        Category.name.label("category_name"),
-        func.sum(book_order.c.quantity).label("quantity"),
-        (func.sum(book_order.c.quantity) / total_quantity_subquery * 100).label("percentage")
-    )\
-    .join(Category, Book.category_id == Category.id)\
-    .join(book_order, book_order.c.book_id == Book.id)\
-    .join(Order, book_order.c.order_id == Order.id)\
-    .filter(
-        func.extract('month', Order.createdDate) == month,
-        func.extract('year', Order.createdDate) == year
-    )\
-    .group_by(Book.id, Category.name)\
-    .all()
+        return db.session.query(
+            Book.id.label("book_id"),
+            Book.name.label("book_name"),
+            Category.name.label("category_name"),
+            func.sum(OrderDetails.quantity).label("quantity_sold"),
+            (func.sum(OrderDetails.quantity) / total_quantity_subquery * 100).label("percentage_of_total_quantity_sold")
+        )\
+        .join(Category, Book.category_id == Category.id)\
+        .join(OrderDetails, OrderDetails.book_id == Book.id)\
+        .join(Order, OrderDetails.order_id == Order.id)\
+        .filter(
+            func.extract('month', Order.createdDate) == month,
+            func.extract('year', Order.createdDate) == year
+        )\
+        .group_by(Book.id, Category.name)\
+        .all()
 
 if __name__ == '__main__':
     with app.app_context():
-        print(book_frequency_stats())
+        print(month_revenue_stats())

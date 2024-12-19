@@ -2,12 +2,12 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Enum, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Boolean
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, backref
 from enum import Enum as RoleEnum
 from app import db, app
-from datetime import date
+from datetime import datetime
 import hashlib
 
 # quyền của nhân viên
@@ -43,6 +43,7 @@ class Customer(db.Model):
     address = Column(String(100), nullable=False)
 
     orders = relationship('Order', backref='customer', lazy=True)
+    comments = relationship('Comment', backref='customer', lazy=True)
     
 
 class Staff(db.Model):
@@ -50,9 +51,7 @@ class Staff(db.Model):
     phone = Column(String(50))
     role_permision = Column(Enum(RolePermision), nullable=False)
 
-    # quan hệ one-to-many với bảng Order
     orders = relationship('Order', backref='staff', lazy=True)
-    # quan hệ one-to-many với bảng Form
     forms = relationship('Form', backref='staff', lazy=True)
 
 
@@ -74,19 +73,6 @@ class Category(db.Model):
 
     def __str__(self):
         return self.name
-    
-
-book_order = db.Table("book_order", 
-                        Column("book_id", Integer, ForeignKey('book.id'), primary_key=True),
-                        Column("order_id", String(50), ForeignKey('order.id'), primary_key=True),
-                        Column('quantity', Integer, nullable=False),
-                        Column('price', Integer, nullable=False))
-
-
-book_form = db.Table("book_form", 
-                        Column("book_id", Integer, ForeignKey('book.id'), primary_key=True),
-                        Column("form_id", Integer, ForeignKey('form.id'), primary_key=True),
-                        Column('quantity', Integer, nullable=False))
 
 
 class Book(db.Model):
@@ -97,10 +83,11 @@ class Book(db.Model):
                     default="https://res.cloudinary.com/dvahhupo0/image/upload/v1732094791/samples/cloudinary-icon.png")
     price = Column(Integer, nullable=False)
 
-    # quan hệ one-to-many với bảng Author
     author_id = Column(Integer, ForeignKey('author.id'), nullable=False)
-    # quan hệ one-to-many với bảng Category
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
+    order_details = relationship("OrderDetails", backref="book", lazy=True)
+    form_details = relationship("FormDetails", backref="book", lazy=True)
+    comments = relationship("Comment", backref="book", lazy=True)
 
     def __str__(self):
         return self.name
@@ -108,26 +95,45 @@ class Book(db.Model):
 
 class Order(db.Model):
     id = Column(String(50), primary_key=True)
-    createdDate = Column(Date, default=date.today(), nullable=False)
-    pickupDate = Column(Date, default=date.today(), nullable=False)
+    createdDate = Column(DateTime, default=datetime.now(), nullable=False)
     isPay = Column(Boolean, default=False)
     phone = Column(String(20), nullable=True)
 
-    # quan hệ one-to-many với bảng Customer
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=True)
-    
-    # quan hệ many-to-many với bảng Book
-    books = relationship('Book', secondary='book_order', lazy='subquery', backref=backref('orders', lazy=True))
+
+    order_details = relationship("OrderDetails", backref="order", lazy=True)
 
 
 class Form(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    createdDate = Column(Date, default=date.today())
+    createdDate = Column(DateTime, default=datetime.now())
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False)
 
-    # quan hệ many-to-many với bảng Book
-    books = relationship('Book', secondary='book_form', lazy='subquery', backref=backref('forms', lazy=True))
+    form_details = relationship("FormDetails", backref="form", lazy=True)
+
+
+class OrderDetails(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    order_id = Column(String(50), ForeignKey(Order.id), nullable=False)
+    quantity = Column(Integer, nullable=False, default=0)
+    unit_price = Column(Integer, nullable=False, default=0)
+
+
+class FormDetails(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    form_id = Column(Integer, ForeignKey(Form.id), nullable=False)
+    quantity = Column(Integer, nullable=False, default=0)
+
+
+class Comment(db.Model):
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    content = Column(String(255), nullable=False)
+    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
+    created_date = Column(DateTime, default=datetime.now())
 
 
 if __name__ == '__main__':
@@ -141,14 +147,14 @@ if __name__ == '__main__':
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="manager@gmail.com", user_role=UserRole.STAFF)
         # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
-
+        #
         # seller = User(name='Seller', username='seller',
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="seller@gmail.com", user_role=UserRole.STAFF)
         # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
         # db.session.add_all([m, s])
         # db.session.commit()
-
+        #
         # customer = User(name="Nguyễn Nhật Hưng", username="nhathung",
         #                 password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #                 email="hung2004py@gmail.com", user_role=UserRole.CUSTOMER,
@@ -321,12 +327,12 @@ if __name__ == '__main__':
         #     prod = Category(name=p['name'])
         #     db.session.add(prod)
         # db.session.commit()
-
+        #
         # for p in dataAuthor:
         #     prod = Author(name=p['name'])
         #     db.session.add(prod)
         # db.session.commit()
-
+        #
         # for p in dataBook:
         #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
         #     db.session.add(prod)

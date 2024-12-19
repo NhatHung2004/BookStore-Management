@@ -16,7 +16,7 @@
     </ul>
     {% for book in books %}
     <div class="col-md-3 col-sm-6 mb-4">
-        <a href="/book-detail/{{ book.id }}" class="product-item">
+        <a href="/books/{{ book.id }}" class="product-item">
             <figure class="product-style">
                 <img src="{{ book.image }}" alt="{{ book.name }}" class="img-fluid w-100">
             </figure>

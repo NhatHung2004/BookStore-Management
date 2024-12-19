@@ -1,5 +1,5 @@
 /* styles.css */
-.book-entry-form-body {
+.book-inventory-body {
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 0;
@@ -7,8 +7,8 @@
     margin-top: 100px;
 }
 
-.book-entry-form-container {
-    max-width: 900px; /* Tăng diện tích chiều rộng */
+.book-inventory-container {
+    max-width: 900px; /* Increase width */
     margin: 0 auto;
     padding: 30px;
     border: 1px solid #01579b;
@@ -19,20 +19,20 @@
     text-align: center;
 }
 
-.book-entry-form-header {
+.book-inventory-header {
     text-align: center;
     margin-bottom: 20px;
     color: #0277bd;
 }
 
-.book-entry-form-header h1 {
+.book-inventory-header h1 {
     font-size: 28px;
     margin: 0;
     font-weight: bold;
     color: #0277bd;
 }
 
-.book-entry-form-date {
+.book-inventory-date {
     font-size: 20px;
     color: #01579b;
     text-align: center;
@@ -40,36 +40,41 @@
     font-weight: bold;
 }
 
-.book-entry-form-table {
+.book-inventory-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0 auto; /* Căn giữa bảng */
+    margin: 0 auto; /* Center table */
     margin-bottom: 20px;
     border-radius: 5px;
     overflow: hidden;
 }
 
-.book-entry-form-table, th, td {
+/* styles.css */
+.book-inventory-table,
+.book-inventory-table th,
+.book-inventory-table td {
     border: 1px solid #01579b;
 }
 
-th, td {
+.book-inventory-table th,
+.book-inventory-table td {
     padding: 12px;
     text-align: left;
     font-size: 16px;
 }
 
-th {
+.book-inventory-table th {
     background-color: #0277bd;
     color: #ffffff;
 }
 
-td img {
+.book-inventory-table td img {
     max-width: 80px;
     border-radius: 5px;
 }
 
-.book-entry-form-footer {
+
+.book-inventory-footer {
     text-align: center;
     font-size: 14px;
     color: #0277bd;
