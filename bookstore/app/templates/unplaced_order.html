@@ -49,7 +49,7 @@
                                 <figure class="product-style">
                                     <img src="{{ book.image }}" alt="Books" class="product-item">
                                     <button type="button" class="add-to-cart btn btn-primary mt-2"
-                                        onclick="addToOrder('{{ book.id }}', '{{ book.name }}', '{{ book.author.name }}', '{{ book.category.name }}', '{{ book.image }}', {{ book.price }})">
+                                        onclick="addToOrder('{{ book.id }}', '{{ book.name }}', '{{ book.author.name }}', '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, {{ cart }})">
                                         Thêm
                                     </button>
                                 </figure>
@@ -70,14 +70,6 @@
         <div class="col-md-4">
             <div class="card-order">
                 <div class="card-header" style="background-color: #9b9b9e; color: white;">Đơn hàng</div>
-                <!-- Mã khách hàng -->
-                <div class="mb-3">
-                    <label class="form-label">Số điện thoại khách hàng:</label>
-                    <form class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" name="phone">
-                    </form>
-                </div>
                 <div class="card-body payment-card-body-order">
                     <!-- Giỏ hàng nếu có sản phẩm -->
                     <div id="cartItemsContainer">
@@ -89,6 +81,17 @@
                                 </tr>
                             </thead>
                             <tbody id="cartItems">
+                                {% if cart %}
+                                {% for c in cart.values() %}
+                                <tr>
+                                    <td class="product-name">{{c.name}}</td>
+                                    <td>
+                                        <input type="number" class="form-control quantity-input" value="{{c.quantity}}"
+                                            min="1" onchange="updateQuantityOrder('{{c.name}}', '{{c.image}}', this, {{ cart }})">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
                                 <!-- Các sản phẩm sẽ được thêm vào đây -->
                             </tbody>
                         </table>

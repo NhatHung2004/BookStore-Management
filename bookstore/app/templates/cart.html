@@ -22,8 +22,8 @@
                                 <td>
                                     <figure class="itemside align-items-center">
                                         <div class="aside"><img src="{{ c.image }}" class="img-sm"></div>
-                                        <figcaption class="info"><a href="#" class="title text-dark"
-                                                data-abc="true">{{ c.name }}</a>
+                                        <figcaption class="info"><a href="#" class="title text-dark" data-abc="true">{{
+                                                c.name }}</a>
                                             <p class="text-muted small">
                                                 Tác giả: {{ c.author }}<br>
                                                 Loại: {{ c.category }}
@@ -32,6 +32,7 @@
                                     </figure>
                                 </td>
                                 <td>
+                                    {% if current_user.user_role != UserRole.STAFF %}
                                     <div class="input-group quantity-control">
                                         <div class="input-group-prepend">
                                             <a class="btn btn-outline-secondary btn-decrement" type="button"
@@ -39,19 +40,23 @@
                                                 onclick="updateQuantity({{ c.id }}, 'giam')">-
                                             </a>
                                         </div>
-                                        <input type="text" class="form-control quantity-input" id="quantity-input-{{ c.id }}" value="{{ c.quantity }}">
+                                        <input type="text" class="form-control quantity-input"
+                                            id="quantity-input-{{ c.id }}" value="{{ c.quantity }}">
                                         <div class="input-group-append">
                                             <a class="btn btn-outline-secondary btn-increment" type="button"
                                                 data-product-id="{{ c.id }}"
                                                 onclick="updateQuantity({{ c.id }}, 'tang')">+
                                             </a>
                                         </div>
-
                                     </div>
+                                    {% else %}
+                                    <input type="text" class="form-control quantity-input"
+                                        id="quantity-input-{{ c.id }}" value="{{ c.quantity }}x" readonly>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <div class="price-wrap">
-                                        <var class="price">{{ c.price|currency }}</var> 
+                                        <var class="price">{{ (c.price * c.quantity)|currency }}</var>
                                     </div>
                                 </td>
                                 {% if current_user.user_role != UserRole.STAFF %}
@@ -66,6 +71,15 @@
                             {% endif %}
                         </tbody>
                     </table>
+                    {% if current_user.user_role == UserRole.STAFF %}
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại khách hàng:</label>
+                        <form class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" name="phone" id="phone" value="">
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </aside>
@@ -79,12 +93,11 @@
                     <a href="/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
                         data-abc="true">Tiếp tục mua sách</a>
                     {% else %}
-                    <a href="/bill" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
-                        data-abc="true">Tạo đơn hàng</a>
+                    <button onclick="payOrder(document.getElementById('phone').value)" class="btn btn-out btn-danger btn-square btn-main"
+                        style="font-size: 18px;" data-abc="true">Thanh toán</button>
                     <a href="/order/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
                         data-abc="true">Tiếp tục mua sách</a>
                     {% endif %}
-                    
                 </div>
             </div>
         </aside>

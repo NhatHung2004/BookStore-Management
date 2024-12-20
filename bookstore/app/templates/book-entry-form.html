@@ -1,0 +1,50 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<body class="book-inventory-body">
+
+    <div class="book-inventory-container">
+        <div class="book-inventory-header">
+            <h1>Phiếu nhập sách</h1>
+        </div>
+
+        <div class="book-inventory-date">Ngày nhập: 20/12/2024</div>
+
+        <table class="book-inventory-table">
+            <thead>
+                <tr>
+                    <th>Mã sách</th>
+                    <th>Tên sách</th>
+                    <th>Thể loại</th>
+                    <th>Tác giả</th>
+                    <th>Số lượng</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>S001</td>
+                    <td>Hành Trình Khát Vọng</td>
+                    <td>Truyện</td>
+                    <td>Nguyễn Nhật Ánh</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>S002</td>
+                    <td>Cuộc Đời Tươi Đẹp</td>
+                    <td>Tiểu thuyết</td>
+                    <td>J.K. Rowling</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>S003</td>
+                    <td>Khúc Giao Mùa</td>
+                    <td>Thơ</td>
+                    <td>Hoàng Cầm</td>
+                    <td>3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+{% endblock %}

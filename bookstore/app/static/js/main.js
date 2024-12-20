@@ -50,7 +50,8 @@ function removeCartFromOrder() {
     fetch("/api/cartOrders", {
         method: "DELETE"
     }).then(res => res.json()).then(data => {
-        alert("Giỏ hàng rỗng")
+        location.reload();
+        console.log(data);
     })
 }
 
@@ -82,6 +83,34 @@ function updateQuantity(id, btn) {
         let items = document.getElementsByClassName("cart-counter");
         for (let item of items)
             item.innerText = data.total_quantity;
+    });
+}
+
+function updateQuantityCartOrder(id, obj) {
+    fetch(`/api/cartOrders/${id}`, {
+        method: "put",
+        body: JSON.stringify({
+            quantity: obj.value
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(data => {
+        console.log(data);
+    })
+}
+
+function payOrder(phone) {
+    fetch("/api/orders", {
+        method: "POST",
+        body: JSON.stringify({
+            "phone": phone
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json()).then(data => {
+        window.location.href = data.url;
     });
 }
 
@@ -117,4 +146,31 @@ function payment(amount) {
             });
         }
     }
+}
+
+function addComment(book_id) {
+    fetch(`/api/books/${book_id}/comments`, {
+        method: "post",
+        body: JSON.stringify({
+            'content': document.getElementById("comment").value
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(c => {
+        // location.reload();
+        let html =  `
+            <div class="book-detail-review">
+                <img src="${ c.user.avatar }" alt="User Avatar" class="book-detail-avatar">
+                <div class="book-detail-review-content">
+                    <p class="book-detail-review-name">${ c.user.name }</p>
+                    <p>${ c.content }</p>
+                    <p class="book-detail-review-time">${ moment(c.created_date).locale("vi").fromNow() }</p>
+                </div>
+            </div>
+        `;
+
+        let h = document.getElementById("comments");
+        h.innerHTML = html + h.innerHTML;
+    })
 }
