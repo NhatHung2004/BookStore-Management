@@ -77,7 +77,7 @@ function updateOrderDisplay() {
             row.innerHTML = `
                         <td class="product-name">${truncateName(item.name)}</td>
                         <td>
-                            <input type="number" class="form-control quantity-input" value="${item.quantity}" min="1" onchange="updateQuantity('${item.name}', '${item.image}', this.value)">
+                            <input type="number" class="form-control quantity-input" value="${item.quantity}" min="1" onchange="updateQuantity('${item.id}', '${item.image}', this.value)">
                         </td>
                     `;
             cartItemsContainer.appendChild(row);

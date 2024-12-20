@@ -7,9 +7,9 @@ from flask_mail import Message
 from datetime import datetime
 
 
-def add_user(phone, name, username, password, address, avatar=None):
+def add_user(phone, name, username, password, email, address, avatar=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, avatar=avatar)
+    user = User(name=name, username=username, password=password, email=email, user_role=UserRole.CUSTOMER, avatar=avatar)
     customer = Customer(phone=phone, user=user, address=address)
 
     db.session.add(customer)

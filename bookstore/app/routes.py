@@ -102,7 +102,7 @@ def add_cartOrders():
 
     session['cart'] = cart
 
-    return jsonify({"url": "http://127.0.0.1:5000/cart"})
+    return jsonify({"url": "http://127.0.0.1:5002/cart"})
 
 
 @app.route('/api/cartOrders', methods=['delete'])
@@ -331,4 +331,4 @@ def book_entry_form():
 
 if __name__ == "__main__":
     from app import admin
-    app.run(debug=True, port=5003)
+    app.run(debug=True, port=5002)

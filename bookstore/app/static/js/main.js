@@ -113,7 +113,7 @@ function payment(amount) {
                     'Content-Type': 'application/json'
                 }
             }).then(res => res.json()).then(data => {
-                window.location.href = "http://127.0.0.1:5000/";
+                window.location.href = "http://127.0.0.1:5002/";
             });
         }
     }
