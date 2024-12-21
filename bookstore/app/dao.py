@@ -1,7 +1,7 @@
 import hashlib
 from app import db, app, utils, mail
 import uuid
-from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order, Comment
+from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order, Comment, FormDetails, Form
 from flask_mail import Message
 from flask_login import current_user
 from sqlalchemy import func, cast, Float
@@ -23,7 +23,10 @@ def add_order(orderID, customerID, phone, isPay, cart):
     if cart != None:
         if customerID == None:
             customer = Customer.query.filter(Customer.phone==phone).first()
-            order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay)
+            if customer != None:
+                order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay, staff_id=current_user.id)
+            else:
+                order = Order(id=orderID, phone=phone, isPay=isPay, staff_id=current_user.id)
         else:
             order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
         db.session.add(order)
@@ -67,6 +70,7 @@ def load_book_by_id(bookID):
     
 def load_books(kw=None, page=1, cate=None):
     books = Book.query
+    books = books.order_by(Book.id.desc())
 
     if kw:
         books = books.filter(Book.name.icontains(kw))
@@ -84,6 +88,64 @@ def count_books():
     return Book.query.count()
 
 
+def delete_book(bookID):
+    book = Book.query.get(bookID)
+    if not book:
+        return 0
+    db.session.delete(book)
+    db.session.commit()
+    return 1
+
+
+def update_book(bookID, inventoryQuantity):
+    book = Book.query.filter(Book.id.__eq__(bookID)).first()
+
+    if not book:
+        return {"message": "Sách không tồn tại!", "status": "fail"}
+    
+    if book.inventoryQuantity >= 300:
+        return {"message": "Chỉ cập nhật sách có số lượng dưới 300!", "status": "fail"}
+
+    if inventoryQuantity >= 150:
+        book.inventoryQuantity += inventoryQuantity
+        db.session.commit()
+        return {"message": "Cập nhật số lượng sách thành công!", "status": "success"}
+    
+    return {"message": "Số lượng sách không hợp lệ!", "status": "fail"}
+
+
+def add_form(form):
+    fo = Form(staff_id=current_user.id)
+    db.session.add(fo)
+
+    for f in form.values():
+        d = FormDetails(book_id=f['bookID'], form=fo, quantity=f['inventoryQuantity'])
+        db.session.add(d)
+    
+    db.session.commit()
+
+    return fo.id
+
+
+def load_forms(formID=None):
+    if formID:
+        return Form.query.filter(Form.id.__eq__(formID)).first()
+
+
+def add_book(name, author, price, inventoryQuantity, category, image):
+    au = Author.query.filter(Author.name.__eq__(author)).first()
+    cate = Category.query.filter(Category.name.__eq__(category)).first()
+
+    if not au:
+        au = Author(name=author)
+        db.session.add(au)
+
+    book = Book(name=name, author=au, price=price, inventoryQuantity=inventoryQuantity, category=cate, image=image)
+    db.session.add(book)
+    db.session.commit()
+    return book
+
+
 def load_orders(kw=None, customerID=None):
     orders = Order.query
 
@@ -97,7 +159,6 @@ def add_comment(content, book_id):
     c = Comment(content=content, book_id=book_id, customer=current_user.customer)
     db.session.add(c)
     db.session.commit()
-
     return c
 
 
@@ -142,24 +203,30 @@ def load_bill(orderID):
 
 def load_bill_info(orderID):
     order = Order.query.get(orderID)
-    if order.staff_id:
-        return {
-            "cusID": order.customer.id,
-            "staffID": order.staff_id,
-            "cusName": order.customer.user.name,
-            "staffName": order.staff.user.name,
-            "createdDate": order.createdDate,
-            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
-                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
-        }
+
+    if order.customer_id != None:
+        cusID = order.customer_id
+        cusName = order.customer.user.name
     else:
-        return {
-            "cusID": order.customer.id,
-            "cusName": order.customer.user.name,
-            "createdDate": order.createdDate,
-            "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
-                                    .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
-        }
+        cusID = 0
+        cusName = ""
+
+    if order.staff_id != None:
+        staffID = order.staff_id
+        staffName = order.staff.user.name
+    else:
+        staffID = 0
+        staffName = ""
+
+    return {
+        "cusID": cusID,
+        "staffID": staffID,
+        "cusName": cusName,
+        "staffName": staffName,
+        "createdDate": order.createdDate,
+        "totalPrice": db.session.query(func.sum(OrderDetails.quantity * OrderDetails.unit_price))
+                                .filter(OrderDetails.order_id.__eq__(orderID)).scalar()
+    }
 
 
 def send_email(orderID, customerName):

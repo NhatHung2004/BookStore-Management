@@ -86,9 +86,12 @@ class Book(db.Model):
 
     author_id = Column(Integer, ForeignKey('author.id'), nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
-    order_details = relationship("OrderDetails", backref="book", lazy=True)
+    order_details = relationship("OrderDetails", backref="book", cascade="all, delete-orphan", lazy=True)
     form_details = relationship("FormDetails", backref="book", lazy=True)
     comments = relationship("Comment", backref="book", lazy=True)
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         return self.name
@@ -100,7 +103,7 @@ class Order(db.Model):
     isPay = Column(Boolean, default=False)
     phone = Column(String(20), nullable=True)
 
-    customer_id = Column(Integer, ForeignKey('customer.id'), nullable=False)
+    customer_id = Column(Integer, ForeignKey('customer.id'), nullable=True)
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=True)
 
     order_details = relationship("OrderDetails", backref="order", lazy=True)
@@ -341,3 +344,4 @@ if __name__ == '__main__':
         #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
         #     db.session.add(prod)
         # db.session.commit()
+        

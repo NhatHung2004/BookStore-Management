@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole, RolePermision, Customer
+from models import User, UserRole, RolePermision, Book, Form
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -37,9 +37,13 @@ def index():
                            pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
-@app.route("/manage")
+@app.route("/manage/")
 def manage():
-    return render_template("manage.html")
+    page = request.args.get('page', 1)
+    books = dao.load_books(page=int(page))
+    cates = dao.load_cates()
+    total = dao.count_books()
+    return render_template("manage.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]), cates=cates)
 
 
 @app.route("/bill")
@@ -59,7 +63,7 @@ def bill(orderID):
 def add_order():
     orderID = str(uuid.uuid4())
     phone = request.json.get('phone')
-    dao.add_order(orderID, None, phone, True, session.get('cart'))
+    dao.add_order(orderID=orderID, customerID=None, phone=phone, isPay=True, cart=session.get('cart'))
     session['cart'] = {}
     return jsonify({"orderID": orderID, "url": "http://" + request.host + "/bill/" + orderID})
 
@@ -169,6 +173,66 @@ def update_quantity(book_id):
     return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
 
 
+@app.route('/api/books/<book_id>', methods=['delete'])
+def delete_book(book_id):
+    result = dao.delete_book(book_id)
+
+    if result == 0:
+        return jsonify({"message": f"Sách với mã {book_id} không tìm thấy", "status": "fail"})
+    
+    return jsonify({"message": f"Sách với mã {book_id} đã được xóaxóa", "status": "success"})
+
+
+@app.route('/api/books', methods=['put'])
+def update_book():
+    form = session.get('form')
+
+    if not form:
+        form = {}
+
+    inventoryQuantity = int(request.json.get('inventoryQuantity'))
+    book_id = request.json.get('book_id')
+    result = dao.update_book(bookID=book_id, inventoryQuantity=inventoryQuantity)
+
+    book = Book.query.get(book_id)
+
+    if book_id in form:
+        form[book_id]["inventoryQuantity"] = int(form[book_id]["inventoryQuantity"]) + inventoryQuantity
+    else:
+        form[book_id] = {
+            "bookID": book_id,
+            "inventoryQuantity": int(inventoryQuantity),
+            "name": book.name,
+            "author": book.author.name,
+            "category": book.category.name,
+        }
+
+    session['form'] = form
+
+    return jsonify(result)
+
+
+@app.route('/api/books', methods=['post'])
+def add_book():
+    name = request.json.get('name')
+    author = request.json.get('author')
+    price = request.json.get('price')
+    category = request.json.get('category')
+    image = request.json.get('image')
+    inventoryQuantity = request.json.get('inventoryQuantity')
+
+    book = dao.add_book(name=name, author=author, price=price, inventoryQuantity=inventoryQuantity, category=category, image=image)
+    return jsonify({"id": book.id, "name": book.name, "author": book.author.name, "price": book.price, "category_id": book.category_id, "image": book.image, "inventoryQuantity": book.inventoryQuantity})
+
+
+@app.route("/api/forms", methods=['post'])
+def add_form():
+    f = session.get("form")
+    formID = dao.add_form(form=f)
+    session["formID"] = formID
+    return jsonify({"url": "http://" + request.host + "/bookEntrys"})
+
+
 @app.route("/list-order")
 def orderOnline():
     kw = request.args.get("kw")
@@ -210,11 +274,6 @@ def add_comment(book_id):
             'name': c.customer.user.name
         }
     }
-
-
-@app.route("/order/<string:order_id>")
-def order_details(order_id):
-    pass
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -344,9 +403,12 @@ def checkout():
     return render_template("checkout.html")
 
 
-@app.route("/book-entry")
+@app.route("/bookEntrys")
 def book_entry_form():
-    return render_template("book-entry-form.html")
+    fo = session.pop('form', None)
+    formID = session.pop('formID', None)
+    f = Form.query.get(formID)
+    return render_template("book-entry-form.html", fo=fo, createdDate=f.createdDate)
 
 
 @login.user_loader
@@ -360,6 +422,7 @@ def common_response():
         "cates" : dao.load_cates(),
         'cart_stats': utils.stats_cart(session.get('cart')),
         "cart": session.get('cart'),
+        "form": session.get('form'),
         "UserRole": UserRole,
         "RolePer": RolePermision
     }

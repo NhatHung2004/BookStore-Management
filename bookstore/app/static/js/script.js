@@ -36,13 +36,13 @@ var cartOrder = [];
 
 // Hàm thêm sản phẩm vào giỏ hàng
 function addToOrder(productID, productName, productAuthor, productCate, productImage, productPrice, cart) {
-    if(cartOrder.length === 0) {
-        if(Object.keys(cart).length > 0) {
+    if (cartOrder.length === 0) {
+        if (Object.keys(cart).length > 0) {
             for (var c in cart) {
                 cartOrder.push({ id: cart[c]["id"], name: cart[c]["name"], author: cart[c]["author"], category: cart[c]["category"], price: cart[c]["price"], image: cart[c]["image"], quantity: cart[c]["quantity"] });
             }
         }
-    } 
+    }
     console.log(cartOrder);
     // Kiểm tra nếu sản phẩm đã có trong giỏ hàng bằng cách so sánh tên sản phẩm và hình ảnh
     const existingProduct = cartOrder.find(item => item.name === productName && item.image === productImage);
@@ -51,8 +51,10 @@ function addToOrder(productID, productName, productAuthor, productCate, productI
         existingProduct.quantity++;
     } else {
         // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
-        cartOrder.push({ id: productID, name: productName,
-            author: productAuthor, category: productCate, price: productPrice, image: productImage, quantity: 1 });
+        cartOrder.push({
+            id: productID, name: productName,
+            author: productAuthor, category: productCate, price: productPrice, image: productImage, quantity: 1
+        });
     }
     // Cập nhật lại giao diện giỏ hàng
     updateOrderDisplay();
@@ -96,13 +98,13 @@ function updateOrderDisplay() {
 // Cập nhật số lượng sản phẩm trong giỏ hàng
 function updateQuantityOrder(productName, productImage, obj, cart) {
     console.log(cartOrder);
-    if(cartOrder.length === 0) {
-        if(Object.keys(cart).length > 0) {
+    if (cartOrder.length === 0) {
+        if (Object.keys(cart).length > 0) {
             for (var c in cart) {
                 cartOrder.push({ id: cart[c]["id"], name: cart[c]["name"], author: cart[c]["author"], category: cart[c]["category"], price: cart[c]["price"], image: cart[c]["image"], quantity: cart[c]["quantity"] });
             }
         }
-    }   
+    }
     const product = cartOrder.find(item => item.name === productName && item.image === productImage);
     if (product) {
         product.quantity = parseInt(obj.value, 10);
@@ -145,6 +147,7 @@ function showDialog(action, bookIndex = null) {
     const modal = new bootstrap.Modal(document.getElementById('bookModal'));
     modal.show();
 }
+
 function saveBook() {
     const bookName = document.getElementById('bookName').value;
     const bookPrice = document.getElementById('bookPrice').value;
@@ -182,6 +185,7 @@ function saveBook() {
     const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
     modal.hide();
 }
+
 function updateBookTable() {
     const tableBody = document.getElementById('bookTableBody');
     tableBody.innerHTML = ""; // Xóa các dòng hiện tại
@@ -208,6 +212,7 @@ function updateBookTable() {
         tableBody.appendChild(row);
     });
 }
+
 function deleteBook(index) {
     if (confirm("Bạn có chắc chắn muốn xóa sách này?")) {
         books.splice(index, 1);
@@ -251,3 +256,38 @@ document.addEventListener('DOMContentLoaded', function () {
 //     let value = parseInt(quantityInput.value);
 //     if (value < 20) quantityInput.value = value + 1;
 // };
+
+// Hàm hiển thị toast
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container');
+
+    // Tạo HTML cho toast
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+
+    // Nội dung của toast
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+
+    // Thêm toast vào container
+    toastContainer.appendChild(toast);
+
+    // Kích hoạt bootstrap toast
+    const bootstrapToast = new bootstrap.Toast(toast);
+    bootstrapToast.show();
+
+    // Xóa khỏi DOM sau khi ẩn
+    toast.addEventListener('hidden.bs.toast', () => {
+        toast.remove();
+    });
+}
+

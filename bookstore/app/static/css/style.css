@@ -10,3 +10,8 @@
 .content {
     margin-top: 100px;
 }
+
+.toast-container {
+    z-index: 1055;
+    /* Bảo đảm hiển thị phía trên */
+}

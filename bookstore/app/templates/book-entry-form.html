@@ -8,7 +8,7 @@
             <h1>Phiếu nhập sách</h1>
         </div>
 
-        <div class="book-inventory-date">Ngày nhập: 20/12/2024</div>
+        <div class="book-inventory-date">Ngày nhập: {{ createdDate }}</div>
 
         <table class="book-inventory-table">
             <thead>
@@ -21,30 +21,20 @@
                 </tr>
             </thead>
             <tbody>
+                {% for f in fo.values() %}
                 <tr>
-                    <td>S001</td>
-                    <td>Hành Trình Khát Vọng</td>
-                    <td>Truyện</td>
-                    <td>Nguyễn Nhật Ánh</td>
-                    <td>2</td>
+                    <td>{{ f.bookID }}</td>
+                    <td>{{f.name }}</td>
+                    <td>{{ f.category }}</td>
+                    <td>{{ f.author }}</td>
+                    <td>{{ f.inventoryQuantity }}</td>
                 </tr>
-                <tr>
-                    <td>S002</td>
-                    <td>Cuộc Đời Tươi Đẹp</td>
-                    <td>Tiểu thuyết</td>
-                    <td>J.K. Rowling</td>
-                    <td>1</td>
-                </tr>
-                <tr>
-                    <td>S003</td>
-                    <td>Khúc Giao Mùa</td>
-                    <td>Thơ</td>
-                    <td>Hoàng Cầm</td>
-                    <td>3</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-
+    <div>
+        <a type="button" class="btn btn-secondary" href="/manage/">Quay lại</a>
+    </div>
 </body>
 {% endblock %}
