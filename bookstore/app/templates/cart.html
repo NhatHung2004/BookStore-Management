@@ -6,6 +6,15 @@
         <aside class="col-lg-9">
             <div class="card">
                 <div class="table-responsive">
+                        {% if current_user.user_role == UserRole.STAFF %}
+                            <div class="phone-input">
+                                <label class="form-label">Nhập số điện thoại khách hàng:</label>
+                                <form class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" name="phone" id="phone" value="">
+                                </form>
+                            </div>
+                        {% endif %}
                     <table class="table table-borderless table-shopping-cart">
                         <thead class="text-muted-cart">
                             <tr class="small text-uppercase">
@@ -51,7 +60,7 @@
                                     </div>
                                     {% else %}
                                     <input type="text" class="form-control quantity-input"
-                                        id="quantity-input-{{ c.id }}" value="{{ c.quantity }}x" readonly>
+                                        id="quantity-input-{{ c.id }}" value="{{ c.quantity }}" readonly>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -71,15 +80,6 @@
                             {% endif %}
                         </tbody>
                     </table>
-                    {% if current_user.user_role == UserRole.STAFF %}
-                    <div class="mb-3">
-                        <label class="form-label">Số điện thoại khách hàng:</label>
-                        <form class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" name="phone" id="phone" value="">
-                        </form>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </aside>

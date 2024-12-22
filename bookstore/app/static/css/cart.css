@@ -35,12 +35,6 @@ body {
     display: block;
 }
 
-.quantity-control .quantity-input {
-    width: 10px;
-    /* Chiều rộng cho ô input */
-}
-
-
 .text-muted-cart {
     color: #969696 !important;
 }
@@ -162,3 +156,56 @@ a {
     color: white;
     border-radius: 50%;
 }
+
+.quantity-input {
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Container tổng */
+.phone-input {
+    margin: 20px;
+    margin-bottom: 1rem;
+}
+
+/* Nhãn */
+.form-label {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+/* Ô nhập liệu */
+.form-control {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    flex-grow: 1;
+    box-sizing: border-box;
+    max-width: 230px;
+}
+
+/* Khi tập trung vào ô nhập liệu */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Biểu tượng trong nhóm nhập liệu */
+.input-group-text {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-right: none;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    border-radius: 4px 0 0 4px;
+}
+
+/* Nhóm nhập liệu */
+

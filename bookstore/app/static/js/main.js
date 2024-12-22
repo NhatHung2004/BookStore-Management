@@ -159,13 +159,13 @@ function addComment(book_id) {
         }
     }).then(res => res.json()).then(c => {
         // location.reload();
-        let html =  `
+        let html = `
             <div class="book-detail-review">
-                <img src="${ c.user.avatar }" alt="User Avatar" class="book-detail-avatar">
+                <img src="${c.user.avatar}" alt="User Avatar" class="book-detail-avatar">
                 <div class="book-detail-review-content">
-                    <p class="book-detail-review-name">${ c.user.name }</p>
-                    <p>${ c.content }</p>
-                    <p class="book-detail-review-time">${ moment(c.created_date).locale("vi").fromNow() }</p>
+                    <p class="book-detail-review-name">${c.user.name}</p>
+                    <p>${c.content}</p>
+                    <p class="book-detail-review-time">${moment(c.created_date).locale("vi").fromNow()}</p>
                 </div>
             </div>
         `;
@@ -173,4 +173,75 @@ function addComment(book_id) {
         let h = document.getElementById("comments");
         h.innerHTML = html + h.innerHTML;
     })
+}
+
+function deleteBook(book_id) {
+    if (confirm("Bạn muốn xóa sách?") === true) {
+        fetch(`/api/books/${book_id}`, {
+            method: "delete"
+        }).then(res => res.json()).then(data => {
+            if (data.status === "success") {
+                showToast(data.message, data.status);
+                document.getElementById(`book${book_id}`).style.display = "none";
+            } else {
+                showToast(data.message, data.status);
+            }
+        });
+    }
+}
+
+function addBook(name, author, category, price, image, inventoryQuantity) {
+    if (name === "" || author === "" || category === "" || price === "" || inventoryQuantity === "") {
+        showToast("Vui lòng điền đầy đủ thông tin", "error");
+        return;
+    }
+    fetch("/api/books", {
+        method: "POST",
+        body: JSON.stringify({
+            "name": name,
+            "author": author,
+            "category": category,
+            "price": price,
+            "image": image,
+            "inventoryQuantity":inventoryQuantity ,
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json()).then(book => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+        modal.hide();
+        location.reload();
+    });
+}
+
+function updateBook(book_id, inventoryQuantity) {
+    if (inventoryQuantity == "" || parseInt(inventoryQuantity) < 0 || book_id == "") {
+        showToast("Vui lòng điền đủ thông tin", "error");
+        return;
+    }
+    fetch(`/api/books`, {
+        method: "PUT",
+        body: JSON.stringify({
+            "inventoryQuantity": inventoryQuantity,
+            "book_id": book_id
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json()).then(data => {
+        if (data.status === "success") {
+            location.reload();
+        } else {
+            showToast(data.message, data.status);
+        }
+    });
+}
+
+function addForm() {
+    fetch("/api/forms", {
+        method: "POST"
+    }).then(res => res.json()).then(data => {
+        window.location.href = data.url;
+    });
 }

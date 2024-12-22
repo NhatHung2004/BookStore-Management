@@ -7,10 +7,12 @@
             <h1 class="bill-title">Hóa đơn bán sách</h1>
         </div>
         <div class="bill-customer-info">
+            {% if billInfo.cusID != 0 and billInfo.cusName != "" %}
             <div class="bill-customer-details">
                 <p id="idCus"><strong>Mã khách hàng:</strong> {{ billInfo.cusID }}</p>
                 <p id="nameCus"><strong>Tên khách hàng:</strong> {{ billInfo.cusName }}</p>
             </div>
+            {% endif %}
             <div class="bill-invoice-date">
                 <p><strong>Ngày lập hóa đơn:</strong> {{ billInfo.createdDate }}</p>
             </div>
@@ -43,11 +45,14 @@
         <div class="bill-footer-row">
             <p class="bill-footer-label"><strong>Tổng cộng: </strong>{{ billInfo.totalPrice|currency }}</p>
         </div>
+        
         <div class="bill-employee-info">
+            {% if billInfo.staffID != 0 and billInfo.staffName != "" %}
             <div class="bill-employee-details">
                 <p><strong>Mã nhân viên thanh toán:</strong> {{ billInfo.staffID }}</p>
                 <p><strong>Tên nhân viên thanh toán:</strong> {{ billInfo.staffName }}</p>
             </div>
+            {% endif %}
         </div>
 
         <div class="bill-footer">
