@@ -1,9 +1,10 @@
 import hashlib
 from app import db, app, utils, mail
 import uuid
-from models import Customer, Staff, Book, Author, Category, User, UserRole, Order, OrderDetails
-from sqlalchemy import insert, func, cast, Float
+from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order, Comment
 from flask_mail import Message
+from flask_login import current_user
+from sqlalchemy import func, cast, Float, insert
 from datetime import datetime
 
 
@@ -20,7 +21,11 @@ def add_user(phone, name, username, password, email, address, avatar=None):
 
 def add_order(orderID, customerID, phone, isPay, cart):
     if cart != None:
-        order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
+        if customerID == None:
+            customer = Customer.query.filter(Customer.phone==phone).first()
+            order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay)
+        else:
+            order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
         db.session.add(order)
 
         for c in cart.values():
@@ -86,6 +91,14 @@ def load_orders(kw=None, customerID=None):
         orders = orders.filter(Order.id.icontains(kw))
 
     return orders.all()
+
+
+def add_comment(content, book_id):
+    c = Comment(content=content, book_id=book_id, customer=current_user.customer)
+    db.session.add(c)
+    db.session.commit()
+
+    return c
 
 
 def calculate_order_total(order_id):
@@ -184,31 +197,17 @@ def send_email(orderID, customerName):
     except Exception as e:
         return f"Không thể gửi email: {str(e)}"
 
-# def revenue_stats(kw=None):
-#     return db.session.query(
-#         Category.id,
-#         Category.name,
-#         func.sum(book_order.c.price * book_order.c.quantity).label("total_revenue")
-#     ) \
-#     .join(Category, Category.id == Book.category_id) \
-#     .join(Book, Book.id == book_order.c.book_id)\
-#     .group_by(Category.id).all()
 
-# month_revenue_stats
 def month_revenue_stats(month=12, year=datetime.now().year):
-    with app.app_context():
-        return db.session.query(
-            Category.id,
-            Category.name,
-            func.sum(OrderDetails.unit_price * OrderDetails.quantity).label("total_revenue"),
-            func.sum(OrderDetails.quantity).label("total_sales"),
-            (func.sum(OrderDetails.quantity) / cast(func.sum(func.sum(OrderDetails.quantity)).over(), Float) * 100).label("percentage_of_total_sales")
-        )\
-        .join(Book, Book.category_id == Category.id)\
-        .join(OrderDetails, OrderDetails.book_id == Book.id)\
-        .join(Order, OrderDetails.order_id == Order.id)\
-        .filter(func.extract('month', Order.createdDate) == month, func.extract('year', Order.createdDate) == year)\
-        .group_by(Category.id).all()
+    return db.session.query(
+        Category.id, Category.name,
+        func.sum(OrderDetails.unit_price * OrderDetails.quantity).label("Tổng doanh thu"),
+        func.sum(OrderDetails.quantity).label("Số lượng bán"),
+        (func.sum(OrderDetails.quantity) / cast(func.sum(func.sum(OrderDetails.quantity)).over(), Float) * 100).label("Phần trăm lượt bán")
+    ).join(Book, Book.category_id == Category.id).join(OrderDetails, OrderDetails.book_id == Book.id)\
+    .join(Order, OrderDetails.order_id == Order.id).filter(func.extract('month', Order.createdDate) == month, func.extract('year', Order.createdDate) == year)\
+    .group_by(Category.id).all()
+
 
 def book_frequency_stats(month=12, year=datetime.now().year):
     with app.app_context():
@@ -236,7 +235,3 @@ def book_frequency_stats(month=12, year=datetime.now().year):
         )\
         .group_by(Book.id, Category.name)\
         .all()
-
-if __name__ == '__main__':
-    with app.app_context():
-        print(month_revenue_stats())

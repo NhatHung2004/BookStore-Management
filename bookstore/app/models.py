@@ -9,6 +9,7 @@ from enum import Enum as RoleEnum
 from app import db, app
 from datetime import datetime
 import hashlib
+from zoneinfo import ZoneInfo
 
 # quyền của nhân viên
 class RolePermision(RoleEnum):
@@ -95,7 +96,7 @@ class Book(db.Model):
 
 class Order(db.Model):
     id = Column(String(50), primary_key=True)
-    createdDate = Column(DateTime, default=datetime.now(), nullable=False)
+    createdDate = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), nullable=False)
     isPay = Column(Boolean, default=False)
     phone = Column(String(20), nullable=True)
 
@@ -107,7 +108,7 @@ class Order(db.Model):
 
 class Form(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    createdDate = Column(DateTime, default=datetime.now())
+    createdDate = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False)
 
     form_details = relationship("FormDetails", backref="form", lazy=True)
@@ -133,7 +134,10 @@ class Comment(db.Model):
     content = Column(String(255), nullable=False)
     customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
     book_id = Column(Integer, ForeignKey(Book.id), nullable=False)
-    created_date = Column(DateTime, default=datetime.now())
+    created_date = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), nullable=False)
+
+    class Meta:
+        ordering = ['-created_date']
 
 
 if __name__ == '__main__':

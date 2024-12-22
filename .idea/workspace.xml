@@ -6,10 +6,23 @@
   <component name="ChangeListManager">
     <list default="true" id="220bfd0f-46f1-4ae2-9e02-186361f75d8e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/static/css/book-entry-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/css/book-entry-form.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/admin/stats.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/bill.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/bill.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/book-detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/book-detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/cart.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/checkout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/layout/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/unplaced_order.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/unplaced_order.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +60,7 @@
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;layout&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging layout&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/macbook/Desktop/clone/4_12_24/BookStore-Management&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }

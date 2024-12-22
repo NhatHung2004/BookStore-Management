@@ -8,7 +8,8 @@
 }
 
 .book-inventory-container {
-    max-width: 900px; /* Increase width */
+    max-width: 900px;
+    /* Increase width */
     margin: 0 auto;
     padding: 30px;
     border: 1px solid #01579b;
@@ -43,7 +44,8 @@
 .book-inventory-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0 auto; /* Center table */
+    margin: 0 auto;
+    /* Center table */
     margin-bottom: 20px;
     border-radius: 5px;
     overflow: hidden;

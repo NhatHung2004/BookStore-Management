@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole, RolePermision
+from models import User, UserRole, RolePermision, Customer
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -42,11 +42,26 @@ def manage():
     return render_template("manage.html")
 
 
+@app.route("/bill")
+def recent_bill():
+    phone = request.args.get("phone")
+    return render_template("bill.html", phone=phone)
+
+
 @app.route("/bill/<orderID>")
 def bill(orderID):
     bill = dao.load_bill(orderID)
     billInfo = dao.load_bill_info(orderID)
     return render_template("bill.html", bill=bill, billInfo=billInfo)
+
+
+@app.route("/api/orders", methods=['post'])
+def add_order():
+    orderID = str(uuid.uuid4())
+    phone = request.json.get('phone')
+    dao.add_order(orderID, None, phone, True, session.get('cart'))
+    session['cart'] = {}
+    return jsonify({"orderID": orderID, "url": "http://" + request.host + "/bill/" + orderID})
 
 
 @app.route("/cart")
@@ -108,7 +123,20 @@ def add_cartOrders():
 @app.route('/api/cartOrders', methods=['delete'])
 def remove_cart():
     session['cart'] = {}
-    return jsonify({})
+    return jsonify({"cart": session.get('cart')})
+
+
+@app.route('/api/cartOrders/<book_id>', methods=['put'])
+def update_quantity_cartOrders(book_id):
+    cart = session.get('cart')
+
+    if cart and book_id in cart:
+        quantity = int(request.json.get('quantity', 0))
+        cart[book_id]['quantity'] = quantity
+
+    session['cart'] = cart
+
+    return jsonify(utils.stats_cart(cart))
 
 
 @app.route('/api/carts/<book_id>', methods=['delete'])
@@ -171,6 +199,19 @@ def unplacedOrder():
     return render_template("unplaced_order.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]))
 
 
+@app.route('/api/books/<book_id>/comments', methods=['post'])
+def add_comment(book_id):
+    c = dao.add_comment(content=request.json.get('content'), book_id=book_id)
+    return {
+        'content': c.content,
+        'created_date': c.created_date,
+        'user': {
+            'avatar': c.customer.user.avatar,
+            'name': c.customer.user.name
+        }
+    }
+
+
 @app.route("/order/<string:order_id>")
 def order_details(order_id):
     pass
@@ -187,7 +228,8 @@ def login_process():
         if user:
             login_user(user)
             if user.user_role == UserRole.CUSTOMER:
-                return redirect('/')
+                next = request.args.get('next')
+                return redirect(next if next else '/')
             else:
                 return redirect('/order')
         else:
@@ -300,6 +342,11 @@ def payment_success():
 @app.route("/checkout")
 def checkout():
     return render_template("checkout.html")
+
+
+# @app.route("/book-entry")
+# def book_entry_form():
+#     return render_template("book-entry-form.html")
 
 
 @login.user_loader

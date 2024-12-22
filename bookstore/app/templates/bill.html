@@ -8,8 +8,8 @@
         </div>
         <div class="bill-customer-info">
             <div class="bill-customer-details">
-                <p><strong>Mã khách hàng:</strong> {{ billInfo.cusID }}</p>
-                <p><strong>Tên khách hàng:</strong> {{ billInfo.cusName }}</p>
+                <p id="idCus"><strong>Mã khách hàng:</strong> {{ billInfo.cusID }}</p>
+                <p id="nameCus"><strong>Tên khách hàng:</strong> {{ billInfo.cusName }}</p>
             </div>
             <div class="bill-invoice-date">
                 <p><strong>Ngày lập hóa đơn:</strong> {{ billInfo.createdDate }}</p>
@@ -53,6 +53,11 @@
         <div class="bill-footer">
             <p class="bill-footer-text">Cảm ơn quý khách đã mua hàng!</p>
         </div>
+    </div>
+    <div class="button-container" style="text-align: right;">
+        <a type="button" href="/order/" class="btn btn-primary mt-3" style="background-color: #00796b; border-color: #00796b;">
+            Trang chủ
+        </a>
     </div>
 </body>
 {% endblock %}
