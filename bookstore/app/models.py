@@ -1,10 +1,12 @@
 import sys
 import os
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Boolean
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.hybrid import hybrid_property
 from enum import Enum as RoleEnum
 from app import db, app
 from datetime import datetime
@@ -12,7 +14,7 @@ import hashlib
 from zoneinfo import ZoneInfo
 
 # quyền của nhân viên
-class RolePermision(RoleEnum):
+class RolePermission(RoleEnum):
     MANAGER = 1
     SELLER = 2
 
@@ -44,7 +46,6 @@ class User(db.Model, UserMixin):
         """Kiểm tra mật khẩu so với giá trị đã băm."""
         return self.password == hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
-    
 
 class Customer(db.Model):
     id = Column(Integer, ForeignKey(User.id), primary_key=True)
@@ -58,10 +59,14 @@ class Customer(db.Model):
 class Staff(db.Model):
     id = Column(Integer, ForeignKey(User.id), primary_key=True)
     phone = Column(String(50))
-    role_permision = Column(Enum(RolePermision), nullable=False)
+    role_permission = Column(Enum(RolePermission), nullable=False)
 
     orders = relationship('Order', backref='staff', lazy=True)
     forms = relationship('Form', backref='staff', lazy=True)
+
+    @hybrid_property
+    def username(self):
+        return self.user.username  # Lấy username từ bảng User
 
 
 class Author(db.Model):
@@ -159,7 +164,7 @@ class ImportRule(db.Model):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        # db.create_all()
         # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="admin@gmail.com", user_role=UserRole.ADMIN)
         # db.session.add(admin)
@@ -167,12 +172,12 @@ if __name__ == '__main__':
         # manager = User(name='Manager', username='manager',
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="manager@gmail.com", user_role=UserRole.STAFF)
-        # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
+        # m = Staff(phone='123456789', role_permission=RolePermission.MANAGER, user=manager)
         #
         # seller = User(name='Seller', username='seller',
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="seller@gmail.com", user_role=UserRole.STAFF)
-        # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
+        # s = Staff(phone='123456789', role_permission=RolePermission.SELLER, user=seller)
         # db.session.add_all([m, s])
         # db.session.commit()
         #
@@ -344,10 +349,10 @@ if __name__ == '__main__':
             }
         ]
 
-        r = ImportRule(min_quantity=150, max_quantity=300)
-        db.session.add(r)
-        db.session.commit()
-
+        # r = ImportRule(min_quantity=150, max_quantity=300)
+        # db.session.add(r)
+        # db.session.commit()
+        #
         # for p in dataCategory:
         #     prod = Category(name=p['name'])
         #     db.session.add(prod)
@@ -362,4 +367,3 @@ if __name__ == '__main__':
         #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
         #     db.session.add(prod)
         # db.session.commit()
-        #

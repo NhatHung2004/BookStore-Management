@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole, RolePermision, Book, Form, ImportRule
+from models import User, UserRole, RolePermission, Book, Form, ImportRule
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -464,7 +464,7 @@ def common_response():
         "cart": session.get('cart'),
         "form": session.get('form'),
         "UserRole": UserRole,
-        "RolePer": RolePermision
+        "RolePer": RolePermission
     }
 
 
