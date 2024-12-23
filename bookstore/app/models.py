@@ -87,7 +87,7 @@ class Book(db.Model):
     author_id = Column(Integer, ForeignKey('author.id'), nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     order_details = relationship("OrderDetails", backref="book", cascade="all, delete-orphan", lazy=True)
-    form_details = relationship("FormDetails", backref="book", lazy=True)
+    form_details = relationship("FormDetails", backref="book", cascade="all, delete-orphan", lazy=True)
     comments = relationship("Comment", backref="book", lazy=True)
 
     class Meta:
@@ -141,6 +141,12 @@ class Comment(db.Model):
 
     class Meta:
         ordering = ['-created_date']
+
+
+class ImportRule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    min_quantity = db.Column(db.Integer, nullable=False, default=150)
+    max_quantity = db.Column(db.Integer, nullable=False, default=300)
 
 
 if __name__ == '__main__':
@@ -329,6 +335,10 @@ if __name__ == '__main__':
                 "category_id": 2
             }
         ]
+
+        # r = ImportRule(min_quantity=150, max_quantity=300)
+        # db.session.add(r)
+        # db.session.commit()
 
         # for p in dataCategory:
         #     prod = Category(name=p['name'])

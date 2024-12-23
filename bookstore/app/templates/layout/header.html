@@ -17,6 +17,11 @@
 
             {% if current_user.is_authenticated %}
             <div class="d-flex align-items-center" style="margin-right: 30px;">
+                <a href="#" class="cart-icon">
+                    <i class="fas fa-solid fa-table"></i>
+                </a>
+            </div>
+            <div class="d-flex align-items-center" style="margin-right: 30px;">
                 <a href="/cart" class="cart-icon">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge cart-counter">{{ cart_stats.total_quantity }}</span>
@@ -37,6 +42,7 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><p class="dropdown-item">Chào {{ current_user.name }}</p></li>
+                    <li><a class="dropdown-item" href="/profile">Thay đổi thông tin giao hàng</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>

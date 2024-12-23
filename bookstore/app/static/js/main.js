@@ -82,7 +82,7 @@ function updateQuantity(id, btn) {
 
         let items = document.getElementsByClassName("cart-counter");
         for (let item of items)
-            item.innerText = data.total_quantity;
+            item.innerText = data.stats.total_quantity;
     });
 }
 
@@ -195,24 +195,26 @@ function addBook(name, author, category, price, image, inventoryQuantity) {
         showToast("Vui lòng điền đầy đủ thông tin", "error");
         return;
     }
-    fetch("/api/books", {
-        method: "POST",
-        body: JSON.stringify({
-            "name": name,
-            "author": author,
-            "category": category,
-            "price": price,
-            "image": image,
-            "inventoryQuantity":inventoryQuantity ,
-        }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json()).then(book => {
-        const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
-        modal.hide();
-        location.reload();
-    });
+    if (parseInt(inventoryQuantity) >= 150) {
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("author", author);
+        formData.append("category", category);
+        formData.append("price", price);
+        formData.append("inventoryQuantity", inventoryQuantity);
+        formData.append("image", image);
+        fetch("/api/books", {
+            method: "POST",
+            body: formData
+        }).then(res => res.json()).then(book => {
+            if (book.status === "success") {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+                modal.hide();
+                window.location.reload();            }
+        });
+    } else {
+        showToast("Số lượng nhập tối thiểu 150 cuốn", "error");
+    }
 }
 
 function updateBook(book_id, inventoryQuantity) {
@@ -243,5 +245,42 @@ function addForm() {
         method: "POST"
     }).then(res => res.json()).then(data => {
         window.location.href = data.url;
+    });
+}
+
+function saveChanges() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+
+    if (name === '' || email === '' || phone === '' || address === '') {
+        alert("Vui lòng điền đầy đủ thông tin!");
+        return;
+    }
+
+    // Gọi API để lưu thông tin
+    fetch('/api/profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "address": address
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json()).then(data => {
+        if (data.status === 'success') {
+            // Hiển thị thông báo thành công
+            alert("Cập nhật thông tin thành công!");
+            window.location.href = data.url;
+        } else {
+            alert("Cập nhật thông tin thất bại. Vui lòng thử lại!");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("Đã xảy ra lỗi. Vui lòng thử lại sau!");
     });
 }

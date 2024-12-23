@@ -101,7 +101,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="bookForm" enctype="multipart/form-data">
+                    <form method="post" id="bookForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="bookName" class="form-label">Tên sách</label>
                             <input type="text" class="form-control" id="name" required>
@@ -120,7 +120,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="bookImage" class="form-label">Book Image</label>
-                            <input type="file" class="form-control" id="image" accept="image/*">
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
                         </div>
                         <!-- New Category Field -->
                         <div class="mb-3">
@@ -139,7 +139,7 @@
                     <button type="button" class="btn btn-primary"
                         onclick='addBook(document.getElementById("name").value, document.getElementById("author").value,
                                         document.getElementById("category").value, document.getElementById("price").value, 
-                                        document.getElementById("image").value, document.getElementById("inventoryQuantity").value)'>
+                                        document.getElementById("image").files[0], document.getElementById("inventoryQuantity").value)'>
                         Save
                     </button>
                 </div>

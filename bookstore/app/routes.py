@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole, RolePermision, Book, Form
+from models import User, UserRole, RolePermision, Book, Form, ImportRule
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -13,6 +13,22 @@ import hashlib
 import cloudinary
 import urllib.parse
 import uuid
+
+
+@app.route("/profile")
+def profile():
+    return render_template("profile.html")
+
+
+@app.route("/api/profile", methods=['put'])
+def update_profile():
+    name = request.json.get('name')
+    email = request.json.get('email')
+    address = request.json.get('address')
+    phone = request.json.get('phone')
+
+    dao.update_profile(name=name, email=email, address=address, phone=phone)
+    return jsonify({"status": "success", "url": "http://" + request.host + "/"})
 
 
 @app.route("/")
@@ -170,7 +186,7 @@ def update_quantity(book_id):
 
     stats = utils.stats_cart(cart)
 
-    return jsonify({ "total_quantity": stats['total_quantity'], 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
+    return jsonify({ "stats": stats, 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
 
 
 @app.route('/api/books/<book_id>', methods=['delete'])
@@ -214,15 +230,39 @@ def update_book():
 
 @app.route('/api/books', methods=['post'])
 def add_book():
-    name = request.json.get('name')
-    author = request.json.get('author')
-    price = request.json.get('price')
-    category = request.json.get('category')
-    image = request.json.get('image')
-    inventoryQuantity = request.json.get('inventoryQuantity')
+    form = session.get('form')
 
-    book = dao.add_book(name=name, author=author, price=price, inventoryQuantity=inventoryQuantity, category=category, image=image)
-    return jsonify({"id": book.id, "name": book.name, "author": book.author.name, "price": book.price, "category_id": book.category_id, "image": book.image, "inventoryQuantity": book.inventoryQuantity})
+    if not form:
+        form = {}
+
+    name = request.form.get('name')
+    author = request.form.get('author')
+    price = request.form.get('price')
+    category = request.form.get('category')
+    image = request.files.get('image')
+    inventoryQuantity = int(request.form.get('inventoryQuantity'))
+
+    if image:
+        res = cloudinary.uploader.upload(image)
+        image = res["secure_url"]
+    else:
+        image = "https://res.cloudinary.com/dvahhupo0/image/upload/v1732094791/samples/cloudinary-icon.png"
+
+    r = ImportRule.query.first()
+
+    if inventoryQuantity >= r.min_quantity:
+        book = dao.add_book(name=name, author=author, price=price, inventoryQuantity=inventoryQuantity, category=category, image=image)
+        form[str(book.id)] = {
+            "bookID": book.id,
+            "inventoryQuantity": book.inventoryQuantity,
+            "name": book.name,
+            "author": book.author.name,
+            "category": book.category.name
+        }
+        session['form'] = form
+        return jsonify({"status": "success", "id": book.id, "name": book.name, "author": book.author.name, "price": book.price, "category_id": book.category_id, "image": book.image, "inventoryQuantity": book.inventoryQuantity})
+    else:
+        return jsonify({"status": "fail"})
 
 
 @app.route("/api/forms", methods=['post'])
@@ -390,7 +430,7 @@ def payment_success():
         session['message'] = 'success'
         session['order_id'] = vnp_params.get('vnp_TxnRef')
         dao.add_order(vnp_params.get('vnp_TxnRef'), current_user.customer.id, current_user.customer.phone, True, session.get('cart'))
-        dao.send_email(vnp_params.get('vnp_TxnRef'), current_user.name)
+        dao.send_email(vnp_params.get('vnp_TxnRef'), current_user.name, current_user.customer.address, current_user.email)
         session['cart'] = {}
         return redirect(url_for('index'))
     else:
