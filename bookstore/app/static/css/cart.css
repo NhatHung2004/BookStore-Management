@@ -176,36 +176,5 @@ a {
     display: block;
 }
 
-/* Ô nhập liệu */
-.form-control {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    outline: none;
-    flex-grow: 1;
-    box-sizing: border-box;
-    max-width: 230px;
-}
 
-/* Khi tập trung vào ô nhập liệu */
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
-}
-
-/* Biểu tượng trong nhóm nhập liệu */
-.input-group-text {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-right: none;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #555;
-    border-radius: 4px 0 0 4px;
-}
-
-/* Nhóm nhập liệu */
 

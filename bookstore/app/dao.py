@@ -1,22 +1,31 @@
 import hashlib
 from app import db, app, utils, mail
 import uuid
-from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order, Comment, FormDetails, Form
+from models import Customer, Staff, Book, Author, Category, User, UserRole, OrderDetails, Order, Comment, FormDetails, Form, ImportRule
 from flask_mail import Message
 from flask_login import current_user
 from sqlalchemy import func, cast, Float, insert
 from datetime import datetime
 
 
-def add_user(phone, name, username, password, email, address, avatar=None):
+def add_user(phone, name, username, password, address, email, avatar=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    user = User(name=name, username=username, password=password, email=email, user_role=UserRole.CUSTOMER, avatar=avatar)
+    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, avatar=avatar, email=email)
     customer = Customer(phone=phone, user=user, address=address)
 
     db.session.add(customer)
     db.session.commit()
 
     return customer
+
+
+def update_profile(name, phone, address, email):
+    customer = Customer.query.filter(Customer.id == current_user.id).first()
+    customer.phone = phone
+    customer.address = address
+    customer.user.name = name
+    customer.user.email = email
+    db.session.commit()
 
 
 def add_order(orderID, customerID, phone, isPay, cart):
@@ -99,14 +108,15 @@ def delete_book(bookID):
 
 def update_book(bookID, inventoryQuantity):
     book = Book.query.filter(Book.id.__eq__(bookID)).first()
+    r = ImportRule.query.first()
 
     if not book:
         return {"message": "Sách không tồn tại!", "status": "fail"}
     
-    if book.inventoryQuantity >= 300:
+    if book.inventoryQuantity >= r.max_quantity:
         return {"message": "Chỉ cập nhật sách có số lượng dưới 300!", "status": "fail"}
 
-    if inventoryQuantity >= 150:
+    if inventoryQuantity >= r.min_quantity:
         book.inventoryQuantity += inventoryQuantity
         db.session.commit()
         return {"message": "Cập nhật số lượng sách thành công!", "status": "success"}
@@ -146,7 +156,7 @@ def add_book(name, author, price, inventoryQuantity, category, image):
     return book
 
 
-def load_orders(kw=None, customerID=None):
+def load_orders(kw=None):
     orders = Order.query
 
     if kw:
@@ -229,7 +239,7 @@ def load_bill_info(orderID):
     }
 
 
-def send_email(orderID, customerName):
+def send_email(orderID, customerName, address, email):
     order = Order.query.get(orderID)
 
     orderData = load_detail_order(orderID)
@@ -250,13 +260,14 @@ def send_email(orderID, customerName):
     if order.isPay == False:
         email_body += f"\nPhương thức thanh toán: tiền mặt\n\n Sau 48 tiếng từ thời điểm đặt sách, nếu khách hàng không đến tiệm nhận sách thì đơn hàng sẽ bị hủy bỏ.\n"
     
+    email_body += "\nĐịa chỉ giao hàng: " + address
     email_body += "\nCảm ơn quý khách đã mua hàng!"
 
     # Gửi email
     try:
         msg = Message(
             subject="Hóa đơn bán sách",
-            recipients=["hung2004py@gmail.com"],  # Email người nhận
+            recipients=[email],  # Email người nhận
             body=email_body
         )
         mail.send(msg)

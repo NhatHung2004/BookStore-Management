@@ -65,7 +65,7 @@
                                 </td>
                                 <td>
                                     <div class="price-wrap">
-                                        <var class="price">{{ (c.price * c.quantity)|currency }}</var>
+                                        <var id="unitPrice" class="price">{{ (c.price * c.quantity)|currency }}</var>
                                     </div>
                                 </td>
                                 {% if current_user.user_role != UserRole.STAFF %}
@@ -88,8 +88,10 @@
                 <div class="card-body-cart">
                     <hr>
                     {% if current_user.user_role != UserRole.STAFF %}
+                    {% if cart_stats.total_quantity != 0 %}
                     <a href="/checkout" class="btn btn-out btn-danger btn-square btn-main" style="font-size: 18px;"
                         data-abc="true">Tạo đơn hàng</a>
+                    {% endif %}
                     <a href="/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
                         data-abc="true">Tiếp tục mua sách</a>
                     {% else %}

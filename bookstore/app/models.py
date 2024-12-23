@@ -87,7 +87,7 @@ class Book(db.Model):
     author_id = Column(Integer, ForeignKey('author.id'), nullable=False)
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     order_details = relationship("OrderDetails", backref="book", cascade="all, delete-orphan", lazy=True)
-    form_details = relationship("FormDetails", backref="book", lazy=True)
+    form_details = relationship("FormDetails", backref="book", cascade="all, delete-orphan", lazy=True)
     comments = relationship("Comment", backref="book", lazy=True)
 
     class Meta:
@@ -143,9 +143,15 @@ class Comment(db.Model):
         ordering = ['-created_date']
 
 
+class ImportRule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    min_quantity = db.Column(db.Integer, nullable=False, default=150)
+    max_quantity = db.Column(db.Integer, nullable=False, default=300)
+
+
 if __name__ == '__main__':
     with app.app_context():
-        # db.create_all()
+        db.create_all()
         # admin = User(name="Admin", username="admin", password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="admin@gmail.com", user_role=UserRole.ADMIN)
         # db.session.add(admin)
@@ -330,6 +336,10 @@ if __name__ == '__main__':
             }
         ]
 
+        r = ImportRule(min_quantity=150, max_quantity=300)
+        db.session.add(r)
+        db.session.commit()
+
         # for p in dataCategory:
         #     prod = Category(name=p['name'])
         #     db.session.add(prod)
@@ -344,4 +354,4 @@ if __name__ == '__main__':
         #     prod = Book(name=p['name'], inventoryQuantity=p['inventoryQuantity'], image=p['image'], price=p['price'], author_id=p['author_id'], category_id=p['category_id'],)
         #     db.session.add(prod)
         # db.session.commit()
-        
+        #
