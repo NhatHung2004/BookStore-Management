@@ -7,7 +7,11 @@
     <list default="true" id="220bfd0f-46f1-4ae2-9e02-186361f75d8e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/admin/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/admin/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/register.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

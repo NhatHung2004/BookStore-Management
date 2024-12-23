@@ -313,3 +313,11 @@ def book_frequency_stats(month=12, year=datetime.now().year):
         )\
         .group_by(Book.id, Category.name)\
         .all()
+
+def stats_products():
+    return db.session.query(Category.id, Category.name, func.count(Book.id)) \
+        .join(Book, Book.category_id.__eq__(Category.id), isouter=True).group_by(Category.id).all()
+
+if __name__ == '__main__':
+    with app.app_context():
+        print(stats_products())

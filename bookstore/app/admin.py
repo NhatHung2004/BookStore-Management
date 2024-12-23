@@ -1,17 +1,29 @@
 from flask_admin.contrib.sqla import ModelView
 from app import db, app, dao
 from models import Staff, Book, Category, Author, UserRole, User, Form, ImportRule, Customer
-from flask_admin import Admin, BaseView, expose
+from flask_admin import Admin, BaseView, expose, AdminIndexView
 from flask_login import current_user, logout_user
 from flask import redirect, request
 from datetime import datetime
 from flask_admin.form import rules
 
-admin = Admin(app=app, name="Bookstore Admin", template_mode='bootstrap4')
+
+class MyAdminIndexView(AdminIndexView):
+    @expose("/")
+    def index(self):
+        return self.render('admin/index.html', cates=dao.stats_products())
+
+
+admin = Admin(app=app, name="Bookstore Admin", template_mode='bootstrap4', index_view=MyAdminIndexView())
+
 
 class AdminView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role.__eq__(UserRole.ADMIN)
+
+    # @expose("/")
+    # def index(self):
+    #     return self.render('admin/index.html', cates=dao.stats_products())
 
 
 class MyView(BaseView):
@@ -53,6 +65,7 @@ class UserView(AdminView):
         rules.Field('password')
     ]
 
+
 class LogoutView(MyView):
     @expose('/')
     def index(self):
@@ -76,6 +89,7 @@ class StatsView(MyView):
         # Trả về dữ liệu thống kê
         return self.render('admin/stats.html', month_revenue_stats=month_revenue_stats,
                            book_frequency_stats=book_frequency_stats, total_revenue=total_revenue)
+
 
 admin.add_view(RuleView(ImportRule, db.session))
 admin.add_view(UserView(User, db.session))

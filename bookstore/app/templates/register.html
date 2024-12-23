@@ -14,7 +14,7 @@
     <div class="col-md-6 mt-3">
         <div class="card shadow-sm p-3">
             <div class="card-body">
-                <h4>Sign Up</h4>
+                <h4>Đăng kí</h4>
                 <p class="text-muted">Sign Up for the Best Book!</p>
                 {% if err_msg %}
                 <div class="alert alert-danger">
@@ -23,7 +23,7 @@
                 {% endif %}
                 <form action="/register" class="mt-4" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        <input type="number" class="form-control" name="phone" id="phone" placeholder="Số điện thoạithoại"
+                        <input type="number" class="form-control" name="phone" id="phone" placeholder="Số điện thoại"
                             required />
                     </div>
                     <div class="form-group mt-2">
@@ -68,7 +68,7 @@
                             Đăng ký
                         </button>
                         <p class="text-center">
-                            Đã có tìa khoản ?
+                            Đã có tài khoản ?
                             <a class="text-theme nav-link text-danger" href="/login">Đăng nhập</a>
                         </p>
                     </div>
