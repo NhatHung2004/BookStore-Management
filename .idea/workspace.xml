@@ -5,18 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="220bfd0f-46f1-4ae2-9e02-186361f75d8e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/bookstore/app/templates/profile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/dao.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bookstore/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/static/css/cart.css" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/css/cart.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/cart.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/cart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/checkout.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/checkout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/layout/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/layout/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bookstore/app/templates/manage.html" beforeDir="false" afterPath="$PROJECT_DIR$/bookstore/app/templates/manage.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +45,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Merging layout",
+    "git-widget-placeholder": "layout",
     "last_opened_file_path": "/Users/macbook/Desktop/clone/4_12_24/BookStore-Management",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }

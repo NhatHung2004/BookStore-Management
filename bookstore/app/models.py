@@ -33,8 +33,16 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(UserRole), nullable=False)
     avatar = Column(String(250), default='https://res.cloudinary.com/dvahhupo0/image/upload/v1733131895/user_e5uokm.jpg')
 
-    customer = relationship('Customer', backref='user', uselist=False)
-    staff = relationship('Staff', backref='user', uselist=False)
+    customer = relationship('Customer', backref='user', uselist=False, cascade='all, delete-orphan')
+    staff = relationship('Staff', backref='user', uselist=False, cascade='all, delete-orphan')
+
+    def set_password(self, password):
+        """Băm mật khẩu bằng MD5 và lưu."""
+        self.password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+
+    def check_password(self, password):
+        """Kiểm tra mật khẩu so với giá trị đã băm."""
+        return self.password == hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     
 

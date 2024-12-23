@@ -1,10 +1,11 @@
 from flask_admin.contrib.sqla import ModelView
 from app import db, app, dao
-from models import Staff, Book, Category, Author, UserRole, User, Form, ImportRule
+from models import Staff, Book, Category, Author, UserRole, User, Form, ImportRule, Customer
 from flask_admin import Admin, BaseView, expose
 from flask_login import current_user, logout_user
 from flask import redirect, request
 from datetime import datetime
+from flask_admin.form import rules
 
 admin = Admin(app=app, name="Bookstore Admin", template_mode='bootstrap4')
 
@@ -21,6 +22,36 @@ class MyView(BaseView):
 class RuleView(AdminView):
     column_list = ['min_quantity', 'max_quantity']
 
+
+class UserView(AdminView):
+    column_list = ['username', 'user_role']
+
+    # Hàm xử lý trước khi lưu vào database
+    def on_model_change(self, form, model, is_created):
+        if form.password.data:  # Nếu có mật khẩu được nhập
+            model.set_password(form.password.data)  # Băm mật khẩu trước khi lưu
+
+        super().on_model_change(form, model, is_created)
+
+        if is_created and model.user_role == UserRole.CUSTOMER:
+
+            # Tạo bản ghi Customer với customerID = userID
+            customer = Customer(user=model, phone="0123456789", address="Nhà Bè")
+            db.session.add(customer)
+            db.session.commit()  # Lưu Customer vào database
+
+
+
+        return model
+
+    # Ẩn mật khẩu băm khỏi danh sách người dùng
+    column_exclude_list = ['password']
+
+    # Đặt quy tắc hiển thị form
+    form_edit_rules = [
+        rules.Field('username'),
+        rules.Field('password')
+    ]
 
 class LogoutView(MyView):
     @expose('/')
@@ -47,5 +78,6 @@ class StatsView(MyView):
                            book_frequency_stats=book_frequency_stats, total_revenue=total_revenue)
 
 admin.add_view(RuleView(ImportRule, db.session))
+admin.add_view(UserView(User, db.session))
 admin.add_view(StatsView(name='Thống kê - Báo cáo'))
 admin.add_view(LogoutView(name='Đăng xuất'))
