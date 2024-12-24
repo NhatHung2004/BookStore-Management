@@ -95,11 +95,6 @@ def cart():
 
 @app.route('/api/carts', methods=['post'])
 def add_to_cart():
-    cart = session.get('cart')
-
-    if not cart:
-        cart = {}
-
     id = str(request.json.get('id'))
     name = request.json.get('name')
     author = request.json.get('author')
@@ -107,22 +102,32 @@ def add_to_cart():
     image = request.json.get('image')
     price = request.json.get('price')
 
-    if id in cart:
-        cart[id]["quantity"] += 1
-    else:
-        cart[id] = {
-            "id": id,
-            "name": name,
-            "author": author,
-            "category": category,
-            "image": image,
-            "price": price,
-            "quantity": 1
-        }
+    if dao.check_inventory_quantity(bookID=id, quantity=1):
+        cart = session.get('cart')
 
-    session['cart'] = cart
+        if not cart:
+            cart = {}
 
-    return jsonify(utils.stats_cart(cart))
+        dao.buy_book(bookID=id, quantity=1)
+
+        if id in cart:
+            cart[id]["quantity"] += 1
+        else:
+            cart[id] = {
+                "id": id,
+                "name": name,
+                "author": author,
+                "category": category,
+                "image": image,
+                "price": price,
+                "quantity": 1
+            }
+
+        session['cart'] = cart
+
+        return jsonify({"stats": utils.stats_cart(cart), "status": "success"})
+    
+    return jsonify({"status": "fail", "message": "Số lượng sách không đủ"})
 
 
 @app.route("/api/cartOrders", methods=['post'])
@@ -135,12 +140,14 @@ def add_cartOrders():
 
     if cartOrder:
         for c in cartOrder:
-            cart[c['id']] = c
-            cart[c['id']]['total_price'] = int(c['price']) * int(c['quantity'])
-
+            if dao.check_inventory_quantity(bookID=c['id'], quantity=c['quantity']):
+                cart[c['id']] = c
+                cart[c['id']]['total_price'] = int(c['price']) * int(c['quantity'])
+            else:
+                return jsonify({"status": "fail", "message": "Số lượng sách không đủ"})
     session['cart'] = cart
 
-    return jsonify({"url": "http://127.0.0.1:5000/cart"})
+    return jsonify({"url": "http://" + request.host + "/cart"})
 
 
 @app.route('/api/cartOrders', methods=['delete'])
@@ -167,6 +174,7 @@ def remove_from_cartID(book_id):
     cart = session.get('cart')
 
     if cart and book_id in cart:
+        dao.refund_book(bookID=book_id, quantity=cart[book_id]['quantity'])
         del cart[book_id]
 
     session['cart'] = cart
@@ -178,18 +186,21 @@ def remove_from_cartID(book_id):
 def update_quantity(book_id):
     cart = session.get('cart')
 
-    if cart and book_id in cart:
+    if dao.check_inventory_quantity(bookID=book_id, quantity=1):
         btn = request.json.get('btn')
         if btn == "tang":
+            dao.buy_book(bookID=book_id, quantity=1)
             cart[book_id]['quantity'] += 1
         else:
+            dao.refund_book(bookID=book_id, quantity=1)
             cart[book_id]['quantity'] -= 1
 
-    session['cart'] = cart
+        session['cart'] = cart
 
-    stats = utils.stats_cart(cart)
+        stats = utils.stats_cart(cart)
 
-    return jsonify({ "stats": stats, 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
+        return jsonify({ "stats": stats, 'quantity': cart[book_id]['quantity'], 'id': cart[book_id]['id'] })
+    return jsonify({"status": "fail", "message": "Số lượng sách không đủ"})
 
 
 @app.route('/api/books/<book_id>', methods=['delete'])
@@ -397,9 +408,10 @@ def register_process():
 @app.route('/api/payment-direct', methods=['POST'])
 def payment_direct():
     orderID = str(uuid.uuid4())
+    session['message'] = 'success'
+    session['order_id'] = orderID
     dao.add_order(orderID, current_user.customer.id, current_user.customer.phone, False, session.get('cart'))
     dao.send_email(orderID, current_user.name, current_user.customer.address, current_user.email)
-    dao.update_inventory_quantity(session.get('cart'))
     session['cart'] = {}
     return jsonify({})
 
@@ -411,7 +423,7 @@ def create_payment():
     amount = int(request.json.get('amount'))
     ip_address = request.remote_addr
 
-    payment_url = vnpay.create_payment_url(orderID, amount, 'http://127.0.0.1:5000/payment_success', ip_address)
+    payment_url = vnpay.create_payment_url(orderID, amount, "http://" + request.host + "/payment_success", ip_address)
     return jsonify({"payment_url": payment_url})
 
 
@@ -443,7 +455,6 @@ def payment_success():
         session['order_id'] = vnp_params.get('vnp_TxnRef')
         dao.add_order(vnp_params.get('vnp_TxnRef'), current_user.customer.id, current_user.customer.phone, True, session.get('cart'))
         dao.send_email(vnp_params.get('vnp_TxnRef'), current_user.name, current_user.customer.address, current_user.email)
-        dao.update_inventory_quantity(session.get('cart'))
         session['cart'] = {}
         return redirect(url_for('index'))
     else:
@@ -487,8 +498,10 @@ def currency_filter(value):
 
 
 if __name__ == "__main__":
+    with app.app_context():
+        time = ImportRule.query.first().expire_time
     from app import admin
     scheduler = BackgroundScheduler()
-    scheduler.add_job(dao.delete_expired_orders, 'interval', minutes=1)
+    scheduler.add_job(dao.delete_expired_orders, 'interval', minutes=time)
     scheduler.start()
     app.run(debug=True)

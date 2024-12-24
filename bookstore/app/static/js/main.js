@@ -14,12 +14,13 @@ function addToCart(id, name, author, category, image, price, is_authenticated) {
                 'Content-Type': 'application/json'
             }
         }).then(res => res.json()).then(data => {
-            if (Object.keys(data).length === 0) {
-
+            if (data.status === "fail") {
+                alert(data.message);
+                location.reload();
             } else {
                 let items = document.getElementsByClassName("cart-counter");
                 for (let item of items)
-                    item.innerText = data.total_quantity;
+                    item.innerText = data.stats.total_quantity;
             }
 
         });
@@ -40,7 +41,11 @@ function addCartFromOrder() {
                 'Content-Type': 'application/json'
             }
         }).then(res => res.json()).then(data => {
-            window.location.href = data.url;
+            if (data.status === "fail") {
+                alert(data.message);
+                window.location.reload();
+            } else
+                window.location.href = data.url;
         });
     };
 }
@@ -78,11 +83,15 @@ function updateQuantity(id, btn) {
             'Content-Type': 'application/json'
         }
     }).then(res => res.json()).then(data => {
-        document.getElementById(`quantity-input-${data.id}`).value = data.quantity
+        if (data.status === "fail") {
+            alert(data.message);
+        } else {
+            document.getElementById(`quantity-input-${data.id}`).value = data.quantity
 
-        let items = document.getElementsByClassName("cart-counter");
-        for (let item of items)
-            item.innerText = data.stats.total_quantity;
+            let items = document.getElementsByClassName("cart-counter");
+            for (let item of items)
+                item.innerText = data.stats.total_quantity;
+        }
     });
 }
 

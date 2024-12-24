@@ -35,9 +35,15 @@
             </tfoot>
         </table>
         <div class="button-container" style="text-align: right;">
+            {% if current_user.user_role == UserRole.STAFF %}
             <a type="button" href="/bill/{{ orderID }}" class="btn btn-primary mt-3" style="background-color: #00796b; border-color: #00796b;">
                 In hoá đơn
             </a>
+            {% else %}
+            <a type="button" href="/list-order/{{ current_user.id }}" class="btn btn-primary mt-3" style="background-color: #00796b; border-color: #00796b;">
+                Quay lại
+            </a>
+            {% endif %}
         </div>
     </div>
 </body>

@@ -43,7 +43,6 @@ function addToOrder(productID, productName, productAuthor, productCate, productI
             }
         }
     }
-    console.log(cartOrder);
     // Kiểm tra nếu sản phẩm đã có trong giỏ hàng bằng cách so sánh tên sản phẩm và hình ảnh
     const existingProduct = cartOrder.find(item => item.name === productName && item.image === productImage);
     if (existingProduct) {
@@ -243,19 +242,6 @@ document.addEventListener('DOMContentLoaded', function () {
         addressLabel.style.display = 'none';
     }
 });
-
-// button them giam so luong trong book-detail
-// const decreaseBtn = document.getElementById("book-detail-decrease");
-// const increaseBtn = document.getElementById("book-detail-increase");
-// const quantityInput = document.getElementById("book-detail-quantity");
-// decreaseBtn.onclick = () => {
-//     let value = parseInt(quantityInput.value);
-//     if (value > 1) quantityInput.value = value - 1;
-// };
-// increaseBtn.onclick = () => {
-//     let value = parseInt(quantityInput.value);
-//     if (value < 20) quantityInput.value = value + 1;
-// };
 
 // Hàm hiển thị toast
 function showToast(message, type = 'success') {

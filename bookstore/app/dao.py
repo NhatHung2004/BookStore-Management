@@ -13,6 +13,25 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 
+def check_inventory_quantity(bookID, quantity):
+    book = Book.query.filter(Book.id.__eq__(bookID)).first()
+    if book.inventoryQuantity < quantity:
+        return False
+    return True
+
+
+def buy_book(bookID, quantity):
+    book = Book.query.filter(Book.id.__eq__(bookID)).first()
+    book.inventoryQuantity -= quantity
+    db.session.commit()
+
+
+def refund_book(bookID, quantity):
+    book = Book.query.filter(Book.id.__eq__(bookID)).first()
+    book.inventoryQuantity += quantity
+    db.session.commit()
+
+
 def add_user(phone, name, username, password, address, email, avatar=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     if avatar:
@@ -41,14 +60,14 @@ def add_order(orderID, customerID, phone, isPay, cart):
         if customerID == None:
             customer = Customer.query.filter(Customer.phone==phone).first()
             if customer != None:
-                order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+                order = Order(id=orderID, customer_id=customer.id, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
             else:
-                order = Order(id=orderID, phone=phone, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+                order = Order(id=orderID, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
         else:
             if isPay == False:
-                order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), expireDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")) + timedelta(minutes=ImportRule.query.first().expire_time))
+                order = Order(id=orderID, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), expireDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")) + timedelta(minutes=ImportRule.query.first().expire_time))
             else:
-                order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
+                order = Order(id=orderID, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
         db.session.add(order)
 
         for c in cart.values():
