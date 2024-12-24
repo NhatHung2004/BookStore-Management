@@ -334,7 +334,7 @@ if __name__ == '__main__':
             },
             {
                 "name": "Một Đời Quản Trị (Tái Bản 2019)",
-                "inventoryQuantity": 610,
+                "inventoryQuantity": 0,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733282895/8934974164623_ogy5ya.webp",
                 "price": 154000,
                 "author_id": 9,
@@ -342,7 +342,7 @@ if __name__ == '__main__':
             },
             {
                 "name": "Cơn lốc quản trị - Ba trụ cột của văn hóa doanh nghiệp",
-                "inventoryQuantity": 200,
+                "inventoryQuantity": 2,
                 "image": "https://res.cloudinary.com/dvahhupo0/image/upload/v1733283038/58c17950e24e1f9b0b08221edec27dc5.jpg_bueomz.webp",
                 "price": 93000,
                 "author_id": 9,
