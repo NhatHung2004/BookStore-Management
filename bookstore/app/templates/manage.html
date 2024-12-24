@@ -12,6 +12,9 @@
     <div class="d-flex">
         <!-- Main content -->
         <div class="container-fluid">
+            <form action="/manage/" role="search">
+                <input type="search" class="form-control" placeholder="Tên sách..." aria-label="Search" name="kw">
+            </form>
             <div class="table-container fade-in">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2>Danh sách sản phẩm</h2>
@@ -22,7 +25,6 @@
                     <div class="collapse mt-3" id="updateForm">
                         <div class="card card-body">
                             <form id="bookForm">
-                                <h5>Số lượng nhập tối thiểu 150 cuốn</h5>
                                 <!-- Input for Book ID -->
                                 <div class="mb-3">
                                     <label for="bookId" class="form-label">Mã sách</label>
@@ -83,13 +85,22 @@
         </div>
     </div>
     </div>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination mt-3">
-            {% for i in range (1, pages + 1) %}
-            <li class="page-item"><a class="page-link" href="/manage/?page={{ i }}">{{ i }}</a></li>
-            {% endfor %}
-        </ul>
-    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination mt-3">
+                {% for i in range (1, pages + 1) %}
+                <li class="page-item"><a class="page-link" href="/manage/?page={{ i }}">{{ i }}</a></li>
+                {% endfor %}
+            </ul>
+        </nav>
+
+        <a type="btn" class="btn btn-primary" href="/order/">
+            Quay lại
+        </a>
+
+    </div>
     <!-- Modal -->
     </div>
 

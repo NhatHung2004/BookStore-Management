@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Boolean
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.hybrid import hybrid_property
 from enum import Enum as RoleEnum
 from app import db, app
 from datetime import datetime
@@ -12,7 +13,7 @@ import hashlib
 from zoneinfo import ZoneInfo
 
 # quyền của nhân viên
-class RolePermision(RoleEnum):
+class RolePermission(RoleEnum):
     MANAGER = 1
     SELLER = 2
 
@@ -33,11 +34,18 @@ class User(db.Model, UserMixin):
     user_role = Column(Enum(UserRole), nullable=False)
     avatar = Column(String(250), default='https://res.cloudinary.com/dvahhupo0/image/upload/v1733131895/user_e5uokm.jpg')
 
-    customer = relationship('Customer', backref='user', uselist=False)
-    staff = relationship('Staff', backref='user', uselist=False)
+    customer = relationship('Customer', backref='user', cascade="all, delete-orphan", uselist=False)
+    staff = relationship('Staff', backref='user', cascade="all, delete-orphan", uselist=False)
+
+    def set_password(self, password):
+        """Băm mật khẩu bằng MD5 và lưu."""
+        self.password = hashlib.md5(password.strip().encode('utf-8')).hexdigest()
+
+    def check_password(self, password):
+        """Kiểm tra mật khẩu so với giá trị đã băm."""
+        return self.password == hashlib.md5(password.strip().encode('utf-8')).hexdigest()
 
     
-
 class Customer(db.Model):
     id = Column(Integer, ForeignKey(User.id), primary_key=True)
     phone = Column(String(50), nullable=False)
@@ -50,10 +58,15 @@ class Customer(db.Model):
 class Staff(db.Model):
     id = Column(Integer, ForeignKey(User.id), primary_key=True)
     phone = Column(String(50))
-    role_permision = Column(Enum(RolePermision), nullable=False)
+    role_permission = Column(Enum(RolePermission), nullable=False)
 
     orders = relationship('Order', backref='staff', lazy=True)
     forms = relationship('Form', backref='staff', lazy=True)
+
+
+    @hybrid_property
+    def username(self):
+        return self.user.username
 
 
 class Author(db.Model):
@@ -100,13 +113,14 @@ class Book(db.Model):
 class Order(db.Model):
     id = Column(String(50), primary_key=True)
     createdDate = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), nullable=False)
+    expireDate = Column(DateTime, nullable=True)
     isPay = Column(Boolean, default=False)
     phone = Column(String(20), nullable=True)
 
     customer_id = Column(Integer, ForeignKey('customer.id'), nullable=True)
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=True)
 
-    order_details = relationship("OrderDetails", backref="order", lazy=True)
+    order_details = relationship("OrderDetails", backref="order", cascade="all, delete-orphan", lazy=True)
 
 
 class Form(db.Model):
@@ -140,13 +154,14 @@ class Comment(db.Model):
     created_date = Column(DateTime, default=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), nullable=False)
 
     class Meta:
-        ordering = ['-created_date']
+        ordering = ['-id']
 
 
 class ImportRule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     min_quantity = db.Column(db.Integer, nullable=False, default=150)
     max_quantity = db.Column(db.Integer, nullable=False, default=300)
+    expire_time = db.Column(db.Integer, nullable=False, default=2)
 
 
 if __name__ == '__main__':
@@ -159,12 +174,12 @@ if __name__ == '__main__':
         # manager = User(name='Manager', username='manager',
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="manager@gmail.com", user_role=UserRole.STAFF)
-        # m = Staff(phone='123456789', role_permision=RolePermision.MANAGER, user=manager)
+        # m = Staff(phone='123456789', role_permission=RolePermission.MANAGER, user=manager)
 
         # seller = User(name='Seller', username='seller',
         #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #             email="seller@gmail.com", user_role=UserRole.STAFF)
-        # s = Staff(phone='123456789', role_permision=RolePermision.SELLER, user=seller)
+        # s = Staff(phone='123456789', role_permission=RolePermission.SELLER, user=seller)
         # db.session.add_all([m, s])
         # db.session.commit()
 
@@ -336,7 +351,7 @@ if __name__ == '__main__':
             }
         ]
 
-        # r = ImportRule(min_quantity=150, max_quantity=300)
+        # r = ImportRule()
         # db.session.add(r)
         # db.session.commit()
 

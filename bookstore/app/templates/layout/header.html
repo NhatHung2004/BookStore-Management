@@ -17,7 +17,7 @@
 
             {% if current_user.is_authenticated %}
             <div class="d-flex align-items-center" style="margin-right: 30px;">
-                <a href="#" class="cart-icon">
+                <a href="/list-order/{{ current_user.id }}" class="cart-icon">
                     <i class="fas fa-solid fa-table"></i>
                 </a>
             </div>
@@ -42,7 +42,9 @@
                 </a>
                 <ul class="dropdown-menu text-small">
                     <li><p class="dropdown-item">Chào {{ current_user.name }}</p></li>
+                    {% if current_user.user_role != UserRole.STAFF %}
                     <li><a class="dropdown-item" href="/profile">Thay đổi thông tin giao hàng</a></li>
+                    {% endif %}
                     <li>
                         <hr class="dropdown-divider">
                     </li>

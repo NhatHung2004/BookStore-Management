@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import math
 import cloudinary.uploader
-from models import User, UserRole, RolePermision, Book, Form, ImportRule
+from models import User, UserRole, RolePermission, Book, Form, ImportRule
 from flask import render_template, redirect, request, session, jsonify, url_for
 from flask_login import login_user, logout_user, current_user
 from app import login, dao, app, utils, vnpay, VNP_HASH_SECRET
@@ -13,6 +13,7 @@ import hashlib
 import cloudinary
 import urllib.parse
 import uuid
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 @app.route("/profile")
@@ -56,7 +57,8 @@ def index():
 @app.route("/manage/")
 def manage():
     page = request.args.get('page', 1)
-    books = dao.load_books(page=int(page))
+    kw = request.args.get('kw')
+    books = dao.load_books(page=int(page), kw=kw)
     cates = dao.load_cates()
     total = dao.count_books()
     return render_template("manage.html", books=books, pages=math.ceil(total / app.config["PAGE_SIZE"]), cates=cates)
@@ -80,6 +82,7 @@ def add_order():
     orderID = str(uuid.uuid4())
     phone = request.json.get('phone')
     dao.add_order(orderID=orderID, customerID=None, phone=phone, isPay=True, cart=session.get('cart'))
+    dao.update_inventory_quantity(session.get('cart'))
     session['cart'] = {}
     return jsonify({"orderID": orderID, "url": "http://" + request.host + "/bill/" + orderID})
 
@@ -196,7 +199,7 @@ def delete_book(book_id):
     if result == 0:
         return jsonify({"message": f"Sách với mã {book_id} không tìm thấy", "status": "fail"})
     
-    return jsonify({"message": f"Sách với mã {book_id} đã được xóaxóa", "status": "success"})
+    return jsonify({"message": f"Sách với mã {book_id} đã được xóa", "status": "success"})
 
 
 @app.route('/api/books', methods=['put'])
@@ -262,7 +265,7 @@ def add_book():
         session['form'] = form
         return jsonify({"status": "success", "id": book.id, "name": book.name, "author": book.author.name, "price": book.price, "category_id": book.category_id, "image": book.image, "inventoryQuantity": book.inventoryQuantity})
     else:
-        return jsonify({"status": "fail"})
+        return jsonify({"status": "fail", "message": f"Số lượng sách phải tối thiểu {r.min_quantity}"})
 
 
 @app.route("/api/forms", methods=['post'])
@@ -279,6 +282,12 @@ def orderOnline():
     orders = dao.load_orders(kw=kw)
     books = dao.load_books()
     return render_template("list_order.html", books=books, orders=orders)
+
+
+@app.route("/list-order/<int:cusID>")
+def cus_detail_order(cusID):
+    orders = dao.load_orders(cusID=cusID)
+    return render_template("list_order.html", orders=orders)
 
 
 @app.route("/books/<int:bookID>")
@@ -308,7 +317,7 @@ def add_comment(book_id):
     c = dao.add_comment(content=request.json.get('content'), book_id=book_id)
     return {
         'content': c.content,
-        'created_date': c.created_date,
+        'created_date': c.created_date.isoformat(),
         'user': {
             'avatar': c.customer.user.avatar,
             'name': c.customer.user.name
@@ -329,6 +338,8 @@ def login_process():
             if user.user_role == UserRole.CUSTOMER:
                 next = request.args.get('next')
                 return redirect(next if next else '/')
+            elif user.user_role == UserRole.ADMIN:
+                return redirect('/admin')
             else:
                 return redirect('/order')
         else:
@@ -387,7 +398,8 @@ def register_process():
 def payment_direct():
     orderID = str(uuid.uuid4())
     dao.add_order(orderID, current_user.customer.id, current_user.customer.phone, False, session.get('cart'))
-    dao.send_email(orderID, current_user.name)
+    dao.send_email(orderID, current_user.name, current_user.customer.address, current_user.email)
+    dao.update_inventory_quantity(session.get('cart'))
     session['cart'] = {}
     return jsonify({})
 
@@ -431,6 +443,7 @@ def payment_success():
         session['order_id'] = vnp_params.get('vnp_TxnRef')
         dao.add_order(vnp_params.get('vnp_TxnRef'), current_user.customer.id, current_user.customer.phone, True, session.get('cart'))
         dao.send_email(vnp_params.get('vnp_TxnRef'), current_user.name, current_user.customer.address, current_user.email)
+        dao.update_inventory_quantity(session.get('cart'))
         session['cart'] = {}
         return redirect(url_for('index'))
     else:
@@ -464,7 +477,7 @@ def common_response():
         "cart": session.get('cart'),
         "form": session.get('form'),
         "UserRole": UserRole,
-        "RolePer": RolePermision
+        "RolePer": RolePermission
     }
 
 
@@ -475,4 +488,7 @@ def currency_filter(value):
 
 if __name__ == "__main__":
     from app import admin
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(dao.delete_expired_orders, 'interval', minutes=1)
+    scheduler.start()
     app.run(debug=True)

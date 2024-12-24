@@ -10,6 +10,7 @@
                 <h1 class="book-detail-title">{{ book.name }}</h1>
                 <p class="book-detail-author"><strong>Tác giả:</strong> {{ book.author.name }}</p>
                 <p class="book-detail-category"><strong>Thể loại:</strong> {{ book.category.name }}</p>
+                {% if book.inventoryQuantity != 0 %}
                 <p class="book-detail-stock"><strong>Số lượng trong kho:</strong> {{ book.inventoryQuantity }}</p>
                 <p class="book-detail-price">Giá: {{ book.price|currency }}</p>
                 <button class="book-detail-add-cart"
@@ -17,13 +18,19 @@
                     '{{ book.category.name }}', '{{ book.image }}', {{ book.price }}, '{{ current_user.is_authenticated }}')">
                     Thêm vào giỏ hàng
                 </button>
+                {% else %}
+                <p class="book-detail-stock" style="color: red;"><strong>Số lượng trong kho:</strong> Hết hàng</p>
+                {% endif %}
+                <a type="button" class="btn btn-warning ml-2" href="/">
+                    Tiếp tục mua hàng
+                </a>
             </div>
         </div>
         <!-- Phần bình luận -->
         <div class="book-detail-reviews">
             <h2 class="book-detail-reviews-title">Đánh giá sản phẩm</h2>
             <div class="book-detail-review-box" id="comments">
-                {% for c in book.comments %}
+                {% for c in book.comments|sort(attribute='id', reverse=True) %}
                 <div class="book-detail-review">
                     <img src="{{ c.customer.user.avatar }}" alt="User Avatar" class="book-detail-avatar">
                     <div class="book-detail-review-content">

@@ -95,8 +95,10 @@
                     <a href="/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
                         data-abc="true">Tiếp tục mua sách</a>
                     {% else %}
+                    {% if cart_stats.total_quantity != 0 %}
                     <button onclick="payOrder(document.getElementById('phone').value)" class="btn btn-out btn-danger btn-square btn-main"
                         style="font-size: 18px;" data-abc="true">Thanh toán</button>
+                    {% endif %}
                     <a href="/order/" class="btn btn-out btn-primary btn-square btn-main mt-2" style="font-size: 18px;"
                         data-abc="true">Tiếp tục mua sách</a>
                     {% endif %}

@@ -31,7 +31,7 @@
                             {% endfor %}
                         </ul>
                     </div>
-                    {% if current_user.staff.role_permision == RolePer.MANAGER %}
+                    {% if current_user.staff.role_permission == RolePer.MANAGER %}
                     <div class="col-auto ms-auto">
                         <a href="/manage">
                             <button her class="btn btn-success">Quản trị sách</button>
@@ -44,6 +44,7 @@
                 <div class="product-background p-4 mt-4" style="background-color: #f7f7f7; border-radius: 8px;">
                     <div class="row">
                         {% for book in books %}
+                        {% if book.inventoryQuantity != 0 %}
                         <div class="col-md-3 col-lg-3 mb-4">
                             <div class="product-item">
                                 <figure class="product-style">
@@ -60,6 +61,7 @@
                                 </figcaption>
                             </div>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </div>
                 </div>

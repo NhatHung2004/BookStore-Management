@@ -33,7 +33,7 @@
                         <td>{{ o.id }}</td>
                         <td>{{ o.customer_id }}</td>
                         <td>{{ o.createdDate }}</td>
-                        <td>{{ o.pickupDate }}</td>
+                        <td>{{ o.expireDate }}</td>
                         {% if o.isPay == True %}
                         <td><span class="badge bg-success">Đã thanh toán</span></td>
                         {% else %}
@@ -60,6 +60,15 @@
                 </tbody>
             </table>
         </div>
+        {% if current_user.user_role != UserRole.STAFF %}
+        <a href="/" type="btn" class="btn btn-primary mt-3">
+            Quay lại
+        </a>
+        {% else %}
+        <a href="/order/" type="btn" class="btn btn-primary mt-3">
+            Quay lại
+        </a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

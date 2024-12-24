@@ -195,26 +195,25 @@ function addBook(name, author, category, price, image, inventoryQuantity) {
         showToast("Vui lòng điền đầy đủ thông tin", "error");
         return;
     }
-    if (parseInt(inventoryQuantity) >= 150) {
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("author", author);
-        formData.append("category", category);
-        formData.append("price", price);
-        formData.append("inventoryQuantity", inventoryQuantity);
-        formData.append("image", image);
-        fetch("/api/books", {
-            method: "POST",
-            body: formData
-        }).then(res => res.json()).then(book => {
-            if (book.status === "success") {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
-                modal.hide();
-                window.location.reload();            }
-        });
-    } else {
-        showToast("Số lượng nhập tối thiểu 150 cuốn", "error");
-    }
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("author", author);
+    formData.append("category", category);
+    formData.append("price", price);
+    formData.append("inventoryQuantity", inventoryQuantity);
+    formData.append("image", image);
+    fetch("/api/books", {
+        method: "POST",
+        body: formData
+    }).then(res => res.json()).then(book => {
+        if (book.status === "success") {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+            modal.hide();
+            window.location.reload();
+        } else {
+            showToast(book.message, book.status);
+        }
+    });
 }
 
 function updateBook(book_id, inventoryQuantity) {

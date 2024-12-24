@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import hashlib
 from app import db, app, utils, mail
 import uuid
@@ -5,12 +9,16 @@ from models import Customer, Staff, Book, Author, Category, User, UserRole, Orde
 from flask_mail import Message
 from flask_login import current_user
 from sqlalchemy import func, cast, Float
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 
 def add_user(phone, name, username, password, address, email, avatar=None):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, avatar=avatar, email=email)
+    if avatar:
+        user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, avatar=avatar, email=email)
+    else:
+        user = User(name=name, username=username, password=password, user_role=UserRole.CUSTOMER, email=email)
     customer = Customer(phone=phone, user=user, address=address)
 
     db.session.add(customer)
@@ -33,11 +41,14 @@ def add_order(orderID, customerID, phone, isPay, cart):
         if customerID == None:
             customer = Customer.query.filter(Customer.phone==phone).first()
             if customer != None:
-                order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay, staff_id=current_user.id)
+                order = Order(id=orderID, phone=phone, customer_id=customer.id, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
             else:
-                order = Order(id=orderID, phone=phone, isPay=isPay, staff_id=current_user.id)
+                order = Order(id=orderID, phone=phone, isPay=isPay, staff_id=current_user.id, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
         else:
-            order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay)
+            if isPay == False:
+                order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")), expireDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")) + timedelta(minutes=ImportRule.query.first().expire_time))
+            else:
+                order = Order(id=orderID, phone=phone, customer_id=customerID, isPay=isPay, createdDate=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")))
         db.session.add(order)
 
         for c in cart.values():
@@ -45,6 +56,7 @@ def add_order(orderID, customerID, phone, isPay, cart):
             db.session.add(d)
             
         db.session.commit()
+
         return order.id
     return None
 
@@ -121,7 +133,7 @@ def update_book(bookID, inventoryQuantity):
         db.session.commit()
         return {"message": "Cập nhật số lượng sách thành công!", "status": "success"}
     
-    return {"message": "Số lượng sách không hợp lệ!", "status": "fail"}
+    return {"message": f"Số lượng sách tối thiểu {ImportRule.query.first().min_quantity}!", "status": "fail"}
 
 
 def add_form(form):
@@ -156,17 +168,23 @@ def add_book(name, author, price, inventoryQuantity, category, image):
     return book
 
 
-def load_orders(kw=None):
+def load_orders(kw=None, cusID=None):
     orders = Order.query
 
     if kw:
         orders = orders.filter(Order.id.icontains(kw))
 
+    if cusID:
+        orders = orders.filter(Order.customer_id.__eq__(cusID))
+
     return orders.all()
 
 
 def add_comment(content, book_id):
-    c = Comment(content=content, book_id=book_id, customer=current_user.customer)
+    c = Comment(content=content, book_id=book_id,
+                customer=current_user.customer,
+                created_date=datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
+    )
     db.session.add(c)
     db.session.commit()
     return c
@@ -213,6 +231,9 @@ def load_bill(orderID):
 
 def load_bill_info(orderID):
     order = Order.query.get(orderID)
+    order.isPay = True
+    order.expireDate = None
+    db.session.commit()
 
     if order.customer_id != None:
         cusID = order.customer_id
@@ -258,9 +279,10 @@ def send_email(orderID, customerName, address, email):
         email_body += f"- {book['name']} (Mã: {book['id']}): {book['quantity']} quyển, Tác giả: {book['author']}\n"
 
     if order.isPay == False:
-        email_body += f"\nPhương thức thanh toán: tiền mặt\n\n Sau 48 tiếng từ thời điểm đặt sách, nếu khách hàng không đến tiệm nhận sách thì đơn hàng sẽ bị hủy bỏ.\n"
+        email_body += f"\nPhương thức thanh toán: tiền mặt\n\n Sau {ImportRule.query.first().expire_time} tiếng từ thời điểm đặt sách, nếu khách hàng không đến tiệm nhận sách thì đơn hàng sẽ bị hủy bỏ.\n"
+    else:
+        email_body += "\nĐịa chỉ giao hàng: " + address
     
-    email_body += "\nĐịa chỉ giao hàng: " + address
     email_body += "\nCảm ơn quý khách đã mua hàng!"
 
     # Gửi email
@@ -274,6 +296,41 @@ def send_email(orderID, customerName, address, email):
         return "Email đã được gửi thành công!"
     except Exception as e:
         return f"Không thể gửi email: {str(e)}"
+    
+
+def send_notification(subject, email, body):
+    try:
+        msg = Message(subject, recipients=[email], body=body)
+        mail.send(msg)
+        print(f"Email đã được gửi tới {email}")
+    except Exception as e:
+        print(f"Lỗi khi gửi email: {e}")
+    
+
+def update_inventory_quantity(cart):
+    for c in cart.values():
+        book = Book.query.filter(Book.id.__eq__(c['id'])).first()
+        book.inventoryQuantity -= c['quantity']
+        db.session.commit()
+
+
+# Hàm tự động xóa đơn hàng sau 48 tiếng
+def delete_expired_orders():
+    with app.app_context():
+        now = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
+        expired_orders = Order.query.filter(Order.expireDate <= now).all()
+        if expired_orders:
+            deleted_order_id = [order.id for order in expired_orders]
+
+            for order in expired_orders:
+                email = order.customer.user.email if order.customer_id else None
+                db.session.delete(order)
+            db.session.commit()
+
+            subject = "Thông báo: Đơn hàng hết hạn đã bị xóa"
+            body = f"Các đơn hàng sau đã bị xóa:\n" + "\n".join(deleted_order_id)
+            send_notification(subject, email, body)
+        print(f"{len(expired_orders)} đơn hàng đã bị xóa.")
     
 
 def month_revenue_stats(month=12, year=datetime.now().year):
@@ -313,3 +370,13 @@ def book_frequency_stats(month=12, year=datetime.now().year):
         )\
         .group_by(Book.id, Category.name)\
         .all()
+    
+
+def stats_products():
+    return db.session.query(Category.id, Category.name, func.count(Book.id)) \
+        .join(Book, Book.category_id.__eq__(Category.id), isouter=True).group_by(Category.id).all()
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        print(stats_products())
