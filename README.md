@@ -41,6 +41,7 @@
 
 4.Chạy dự án
 ```bash
+  # Tạo database storedb trong workbench
   # Tạo dữ liệu mẫu
   python models.py
   # Chạy dự án
